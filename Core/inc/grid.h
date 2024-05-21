@@ -2,9 +2,11 @@
 
 #include "cell.h"
 
-class Grid {
+namespace GridGenerator {
 
-};
+    class Grid {
+
+    };
 
 
-
+}
