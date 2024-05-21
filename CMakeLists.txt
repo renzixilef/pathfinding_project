@@ -9,4 +9,9 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(pathfinding Core/src/main.cpp)
+file(GLOB_RECURSE SRC
+        Core/src/*.cpp
+)
+
+
+add_executable(pathfinding ${SRC})
