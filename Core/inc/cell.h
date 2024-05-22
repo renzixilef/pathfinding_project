@@ -1,5 +1,7 @@
 #pragma once
 
+//TODO: documentation
+
 namespace GridGenerator {
 
     enum class CellState {

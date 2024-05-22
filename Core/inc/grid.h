@@ -5,6 +5,8 @@
 #include "cell.h"
 #include "obstacle_gen.h"
 
+//TODO: documentation
+
 namespace GridGenerator {
 
     class Grid {
