@@ -24,6 +24,8 @@ namespace GridGenerator {
         inline void markOpen(){state = CellState::CELL_OPEN;}
         inline void markVisited(){state = CellState::CELL_VISITED;}
         inline void markPATH(){state = CellState::CELL_PATH;}
+        inline void setGCost(float gCost){cost.gCost = gCost;}
+        inline void setHCost(float hCost){cost.hCost = hCost;}
         inline CellState getState(){return state;}
         inline CellCost getCost(){return cost;}
 

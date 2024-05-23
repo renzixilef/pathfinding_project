@@ -14,7 +14,9 @@ namespace GridGenerator {
         Grid(uint32_t size, float obstacleDensity, ObstacleGenerator& generator) : size(size), cells(size, std::vector<Cell>(size)), start(nullptr),
                                               end(nullptr) {
             generator.generateObstacles(cells, obstacleDensity);
+            //TODO: set start and end cell in init
             init();
+            calculateCosts();
         }
 
         inline Cell* getStart(){return start;}
@@ -22,6 +24,7 @@ namespace GridGenerator {
 
     private:
         void init();
+        void calculateCosts();
         uint32_t size;
         std::vector<std::vector<Cell>> cells;
         Cell *start;
