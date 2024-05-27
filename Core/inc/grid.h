@@ -35,10 +35,6 @@ namespace GridGenerator {
 
         std::vector<std::reference_wrapper<Cell>> getNeighbors(size_t row, size_t col);
 
-
-
-
-
         inline Cell *getStart() { return start; }
 
         inline Cell *getEnd() { return start; }
