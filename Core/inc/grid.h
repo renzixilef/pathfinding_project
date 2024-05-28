@@ -10,15 +10,15 @@
 //TODO: documentation
 
 namespace GridGenerator {
+    struct GridCoordinates{
+        uint32_t x;
+        uint32_t y;
+    };
+
 
     class Grid {
     public:
-        Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity, ObstacleGenerator &generator) :
-                sizeX(sizeX), sizeY(sizeY), cells(sizeX, std::vector<Cell>(sizeY)), start(nullptr), end(nullptr) {
-            generator.generateObstacles(cells, obstacleDensity);
-            //TODO: set start and end cell in init or in generateObstacles
-            init();
-        }
+        Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity, ObstacleGenerator &generator);
 
         Cell& operator() (size_t row, size_t col) {
             if(row >= sizeX || col >= sizeY)
@@ -35,9 +35,11 @@ namespace GridGenerator {
 
         std::vector<std::reference_wrapper<Cell>> getNeighbors(size_t row, size_t col);
 
-        inline Cell *getStart() { return start; }
+        inline Cell *getStartCell() {return startCell;}
+        inline Cell *getEndCell() {return endCell;}
 
-        inline Cell *getEnd() { return start; }
+        inline GridCoordinates getStartCoordinates(){return startCoordinates;}
+        inline GridCoordinates getEndCoordinates(){return endCoordinates;}
 
 
     private:
@@ -46,8 +48,12 @@ namespace GridGenerator {
         uint32_t sizeX;
         uint32_t sizeY;
         std::vector<std::vector<Cell>> cells;
-        Cell *start;
-        Cell *end;
+
+        Cell *startCell;
+        Cell *endCell;
+
+        GridCoordinates startCoordinates;
+        GridCoordinates endCoordinates;
     };
 
 
