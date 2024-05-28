@@ -23,4 +23,9 @@ namespace Pathfinder {
         void markShortestPath() override;
     };
 
+    class AStarSolve : public pathfindingParent{
+    public:
+        void markShortestPath() override;
+    };
+
 }

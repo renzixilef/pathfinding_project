@@ -2,14 +2,16 @@
 
 #include <queue>
 
-void Pathfinder::DijkstraSolve::markShortestPath() {
+void Pathfinder::AStarSolve::markShortestPath() {
     GridGenerator::GridCoordinates currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     GridGenerator::GridCoordinates endCoordinates = grid.getEndCoordinates();
     std::vector<GridGenerator::GridCoordinates> neighbors;
 
     grid(currentCoordinates).setGCost(0);
+    grid(currentCoordinates).setHCost(currentCoordinates.getAbsDistanceTo(endCoordinates));
     grid(currentCoordinates).markPath();
+    grid(endCoordinates).setHCost(0);
 
     std::priority_queue<GridGenerator::GridCoordinates, std::vector<GridGenerator::GridCoordinates>,
             decltype(grid.compareCells())> nextCellQueue(grid.compareCells());
@@ -33,6 +35,7 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
                 return;
             } else if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
                 neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
+                neighborCell.setHCost(neighborCoordinates.getAbsDistanceTo(endCoordinates));
                 neighborCell.setParent(&grid(currentCoordinates));
                 neighborCell.markVisited();
                 nextCellQueue.push(neighborCoordinates);
