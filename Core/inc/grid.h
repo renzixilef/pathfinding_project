@@ -46,6 +46,8 @@ namespace GridGenerator {
             return cells[coords.x][coords.y];
         }
 
+        void markPathByParentCells();
+
 
         std::vector<std::reference_wrapper<Cell>> getNeighborsCells(GridCoordinates coords);
 

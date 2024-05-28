@@ -68,4 +68,12 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity,
     init();
 }
 
+void GridGenerator::Grid::markPathByParentCells() {
+    Cell* nextCell = endCell;
+    while(nextCell != nullptr) {
+        nextCell->markPath();
+        nextCell = nextCell->getParent();
+    }
+}
+
 

@@ -11,8 +11,6 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
     grid(currentCoordinates).setGCost(0);
     grid(currentCoordinates).markPath();
 
-    grid(endCoordinates).markPath();
-
     std::priority_queue<GridGenerator::GridCoordinates, std::vector<GridGenerator::GridCoordinates>,
             decltype(grid.compareCells())> nextCellQueue(grid.compareCells());
     nextCellQueue.push(currentCoordinates);
@@ -31,6 +29,7 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
             if (neighborCoordinates == endCoordinates) {
                 grid.getEndCell()->setGCost(neighborCellTotalCostFromCurrentCell);
                 grid.setSolved();
+                grid.markPathByParentCells();
                 return;
             } else if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
                 neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
@@ -46,5 +45,5 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
         }
         grid.setUnsolvable();
     }
-        
+
 }

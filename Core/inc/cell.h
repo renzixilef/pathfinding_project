@@ -37,6 +37,8 @@ namespace GridGenerator {
 
         inline void setParent(Cell *parentCell) { parent = parentCell; }
 
+        inline Cell* getParent(){return parent;}
+
         [[nodiscard]] inline CellState getState() const { return state; }
 
         [[nodiscard]] inline CellCost getCost() const { return cost; }
