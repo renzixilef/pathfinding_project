@@ -20,20 +20,20 @@ namespace GridGenerator {
     public:
         Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity, ObstacleGenerator &generator);
 
-        Cell& operator() (size_t row, size_t col) {
-            if(row >= sizeX || col >= sizeY)
+        Cell& operator() (GridCoordinates coords) {
+            if(coords.x >= sizeX || coords.y >= sizeY)
                 throw std::out_of_range("Grid indices out of range");
-            return cells[row][col];
+            return cells[coords.x][coords.y];
         }
 
-        const Cell& operator() (size_t row, size_t col) const {
-            if(row >= sizeX || col >= sizeY)
+        const Cell& operator() (GridCoordinates coords) const {
+            if(coords.x >= sizeX || coords.y >= sizeY)
                 throw std::out_of_range("Grid indices out of range");
-            return cells[row][col];
+            return cells[coords.x][coords.y];
         }
 
 
-        std::vector<std::reference_wrapper<Cell>> getNeighbors(size_t row, size_t col);
+        std::vector<std::reference_wrapper<Cell>> getNeighbors(GridCoordinates coords);
 
         inline Cell *getStartCell() {return startCell;}
         inline Cell *getEndCell() {return endCell;}
