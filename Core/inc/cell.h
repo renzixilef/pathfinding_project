@@ -5,10 +5,11 @@
 namespace GridGenerator {
 
     enum class CellState {
-        CELL_OBSTACLE = false,
-        CELL_OPEN = 0x1,
-        CELL_VISITED = 0x2,
-        CELL_PATH = 0x3
+        CELL_OBSTACLE = 0,
+        CELL_OPEN = 1,
+        CELL_VISITED = 2,
+        CELL_CLOSED = 3,
+        CELL_PATH = 4
     };
 
     struct CellCost {
@@ -29,6 +30,8 @@ namespace GridGenerator {
 
         inline void markVisited() { state = CellState::CELL_VISITED; }
 
+        inline void markClosed() { state = CellState::CELL_CLOSED; }
+
         inline void markPath() { state = CellState::CELL_PATH; }
 
         inline void setGCost(float gCost) { cost.gCost = gCost; }
@@ -37,7 +40,7 @@ namespace GridGenerator {
 
         inline void setParent(Cell *parentCell) { parent = parentCell; }
 
-        inline Cell* getParent(){return parent;}
+        inline Cell *getParent() { return parent; }
 
         [[nodiscard]] inline CellState getState() const { return state; }
 

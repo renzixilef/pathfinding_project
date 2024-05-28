@@ -10,7 +10,6 @@ void Pathfinder::AStarSolve::markShortestPath() {
 
     grid(currentCoordinates).setGCost(0);
     grid(currentCoordinates).setHCost(currentCoordinates.getAbsDistanceTo(endCoordinates));
-    grid(currentCoordinates).markPath();
     grid(endCoordinates).setHCost(0);
 
     std::priority_queue<GridGenerator::GridCoordinates, std::vector<GridGenerator::GridCoordinates>,
@@ -19,6 +18,10 @@ void Pathfinder::AStarSolve::markShortestPath() {
 
     while (!nextCellQueue.empty()) {
         currentCoordinates = nextCellQueue.top();
+        if(currentCoordinates == endCoordinates){
+            grid.markPathByParentCells();
+            break;
+        }
         nextCellQueue.pop();
         currentCell = grid(currentCoordinates);
 
@@ -28,12 +31,7 @@ void Pathfinder::AStarSolve::markShortestPath() {
             GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
             float neighborCellTotalCostFromCurrentCell = currentCell.getCost().totalCost() +
                                                          neighborCoordinates.getAbsDistanceTo(currentCoordinates);
-            if (neighborCoordinates == endCoordinates) {
-                grid.getEndCell()->setGCost(neighborCellTotalCostFromCurrentCell);
-                grid.setSolved();
-                grid.markPathByParentCells();
-                return;
-            } else if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
+            if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
                 neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
                 neighborCell.setHCost(neighborCoordinates.getAbsDistanceTo(endCoordinates));
                 neighborCell.setParent(&grid(currentCoordinates));
@@ -47,6 +45,11 @@ void Pathfinder::AStarSolve::markShortestPath() {
                 }
             }
         }
+        currentCell.markClosed();
+    }
+    if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
+        grid.setSolved();
+    }else{
         grid.setUnsolvable();
     }
 

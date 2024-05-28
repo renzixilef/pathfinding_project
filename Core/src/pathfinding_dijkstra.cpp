@@ -9,7 +9,6 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
     std::vector<GridGenerator::GridCoordinates> neighbors;
 
     grid(currentCoordinates).setGCost(0);
-    grid(currentCoordinates).markPath();
 
     std::priority_queue<GridGenerator::GridCoordinates, std::vector<GridGenerator::GridCoordinates>,
             decltype(grid.compareCells())> nextCellQueue(grid.compareCells());
@@ -17,6 +16,10 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
 
     while (!nextCellQueue.empty()) {
         currentCoordinates = nextCellQueue.top();
+        if(currentCoordinates == endCoordinates){
+            grid.markPathByParentCells();
+            break;
+        }
         nextCellQueue.pop();
         currentCell = grid(currentCoordinates);
 
@@ -26,12 +29,7 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
             GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
             float neighborCellTotalCostFromCurrentCell = currentCell.getCost().totalCost() +
                                                          neighborCoordinates.getAbsDistanceTo(currentCoordinates);
-            if (neighborCoordinates == endCoordinates) {
-                grid.getEndCell()->setGCost(neighborCellTotalCostFromCurrentCell);
-                grid.setSolved();
-                grid.markPathByParentCells();
-                return;
-            } else if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
+            if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
                 neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
                 neighborCell.setParent(&grid(currentCoordinates));
                 neighborCell.markVisited();
@@ -44,7 +42,11 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
                 }
             }
         }
+        currentCell.markClosed();
+    }
+    if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
+        grid.setSolved();
+    }else{
         grid.setUnsolvable();
     }
-
 }
