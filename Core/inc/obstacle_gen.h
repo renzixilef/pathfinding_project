@@ -16,6 +16,7 @@ namespace GridGenerator{
         OBSTACLE_PERLIN_NOISE
     };
 
+
     class ObstacleGenerator {
     public:
         ObstacleGenerator():gen(rd()){}
@@ -27,15 +28,15 @@ namespace GridGenerator{
 
     class RandomObstacleGenerator: public ObstacleGenerator {
     public:
-        void generateObstacles(Grid& grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity) override;
     };
     class RandomWallLikeGenerator: public ObstacleGenerator {
     public:
-        void generateObstacles(Grid& grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity) override;
     };
     class PerlinNoise: public ObstacleGenerator {
     public:
-        void generateObstacles(Grid& grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity) override;
     private:
         double noise(double x, double y);
         static inline double fade(double t){return t*t*t*(t*(t*6-15)+10);}

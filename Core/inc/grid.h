@@ -3,9 +3,9 @@
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
+#include <cmath>
 
 #include "cell.h"
-#include "obstacle_gen.h"
 
 //TODO: documentation
 
@@ -25,6 +25,9 @@ namespace GridGenerator {
             return std::hash<uint32_t>()(c.x) ^ std::hash<uint32_t>()(c.y);
         }
     };
+
+    //forward declaration to avoid compile time errors
+    class ObstacleGenerator;
 
     enum GridSolvedStatus{
         GRID_SOLVED,

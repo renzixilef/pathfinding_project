@@ -1,5 +1,7 @@
 #include "../inc/grid.h"
 
+#include "../inc/obstacle_gen.h"
+
 #include <functional>
 
 
@@ -63,7 +65,7 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity,
         startCoordinates(GridCoordinate{}),
         endCoordinates(GridCoordinate{}),
         exitStatus(GridSolvedStatus::GRID_UNSOLVED){
-    generator.generateObstacles(this, obstacleDensity);
+    generator.generateObstacles((*this), obstacleDensity);
 }
 
 void GridGenerator::Grid::markPathByParentCells() {

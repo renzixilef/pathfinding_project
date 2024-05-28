@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
-#include "../inc/grid.h"
+#include "../inc/obstacle_gen.h"
+
 
 int main() {
     std::cout << "Hello world" << std::endl;
