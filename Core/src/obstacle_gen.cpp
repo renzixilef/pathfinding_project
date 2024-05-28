@@ -1,34 +1,41 @@
 #include <cstdint>
 #include <algorithm>
 #include <cmath>
+#include <unordered_set>
+
 #include "../inc/obstacle_gen.h"
 
 //TODO: documentation
 //TODO: implement always solvable grid generation via vector slicing and std::vector<Cell>.isblocked method
+//TODO: set start and end cell in init or in generateObstacles
 
-
-void GridGenerator::RandomObstacleGenerator::generateObstacles(std::vector<std::vector<Cell>> &cells,
-                                                               float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+void GridGenerator::RandomObstacleGenerator::generateObstacles(GridGenerator::Grid &grid, float obstacleDensity) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate,
+            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
     std::random_device rd;
     std::mt19937 gen(rd());
     for (uint32_t i = 0; i < (uint32_t) obstacleDensity * (sizeX * sizeY); ++i) {
-        uint32_t x = distrX(gen);
-        uint32_t y = distrY(gen);
-        if (cells[x][y].getState() != GridGenerator::CellState::CELL_OBSTACLE)
-            cells[x][y].markObstacle();
-        else
+        GridCoordinate thisCoord{distrX(gen), distrY(gen)};
+        if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
+            grid(thisCoord).markObstacle();
+            allObstacleSet.insert(thisCoord);
+        } else {
             --i;
+        }
     }
 }
 
-void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::vector<Cell>> &cells,
-                                                               float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float obstacleDensity) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate,
+            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
 
@@ -48,15 +55,19 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::
         for (uint32_t j = 0; j < wallLength; j++) {
             if (isVertical) {
                 if (startX + j < sizeX) {
-                    if (cells[startX + j][startY].getState() != GridGenerator::CellState::CELL_OBSTACLE) {
-                        cells[startX + j][startY].markObstacle();
+                    GridCoordinate thisCoord{startX+j, startY};
+                    if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
+                        grid(thisCoord).markObstacle();
+                        allObstacleSet.insert(thisCoord);
                         i++;
                     }
                 }
             } else {
                 if (startY + j < sizeY) {
-                    if (cells[startX][startY + j].getState() != GridGenerator::CellState::CELL_OBSTACLE) {
-                        cells[startX][startY + j].markObstacle();
+                    GridCoordinate thisCoord{startX, startY+j};
+                    if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
+                        grid(thisCoord).markObstacle();
+                        allObstacleSet.insert(thisCoord);
                         i++;
                     }
                 }
@@ -65,16 +76,21 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::
     }
 }
 
-void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) {
+void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDensity) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate,
+            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
 
     // mark all cells in the array as unwalkable
-    for (auto &row: cells)
-        for (auto &cell: row)
-            cell.markObstacle();
+    for (uint32_t i = 0; i<sizeX; i++)
+        for (uint32_t j= 0; j<sizeY; j++)
+            grid(GridCoordinate(i, j)).markObstacle();
 
     // carve out paths using the DrunkenWalk algorithm
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
 
@@ -84,8 +100,10 @@ void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>
 
     // if obstacleDensity is close to 1 this will take exponentially longer
     for (uint64_t i = 0; i < numObstacles; i++) {
-        if (cells[currentX][currentY].getState() == CellState::CELL_OBSTACLE) {
-            cells[currentX][currentY].markOpen();
+        GridCoordinate thisCoord{currentX, currentY};
+        if (grid(thisCoord).getState() == CellState::CELL_OBSTACLE) {
+            grid(thisCoord).markOpen();
+            allObstacleSet.erase(thisCoord);
         } else {
             i--;
         }
@@ -97,9 +115,13 @@ void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>
     }
 }
 
-void GridGenerator::PerlinNoise::generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDensity) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate,
+            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
 
     for (uint32_t i = 0; i < sizeX; i++) {
         for (uint32_t j = 0; j < sizeY; j++) {
@@ -108,7 +130,9 @@ void GridGenerator::PerlinNoise::generateObstacles(std::vector<std::vector<Cell>
 
             double cellNoise = noise(x, y);
             if (cellNoise < obstacleDensity) {
-                cells[i][j].markObstacle();
+                GridCoordinate thisCoord{i, j};
+                grid(thisCoord).markObstacle();
+                allObstacleSet.insert(thisCoord);
             }
         }
     }

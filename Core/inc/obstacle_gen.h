@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cell.h"
+#include "grid.h"
 #include <vector>
 #include <random>
 
@@ -19,7 +19,7 @@ namespace GridGenerator{
     class ObstacleGenerator {
     public:
         ObstacleGenerator():gen(rd()){}
-        virtual void generateObstacles(std::vector<std::vector<Cell>>& cells, float obstacleDensity) = 0;
+        virtual void generateObstacles(Grid& grid, float obstacleDensity) = 0;
     protected:
         std::random_device rd;
         std::mt19937 gen;
@@ -27,15 +27,15 @@ namespace GridGenerator{
 
     class RandomObstacleGenerator: public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>>& cells, float obstacleDensity) override;
+        void generateObstacles(Grid& grid, float obstacleDensity) override;
     };
     class RandomWallLikeGenerator: public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>>& cells, float obstacleDensity) override;
+        void generateObstacles(Grid& grid, float obstacleDensity) override;
     };
     class PerlinNoise: public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>>& cells, float obstacleDensity) override;
+        void generateObstacles(Grid& grid, float obstacleDensity) override;
     private:
         double noise(double x, double y);
         static inline double fade(double t){return t*t*t*(t*(t*6-15)+10);}
@@ -43,6 +43,6 @@ namespace GridGenerator{
     };
     class DrunkenWalk: public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>>& cells, float obstacleDensity) override;
+        void generateObstacles(Grid& grid, float obstacleDensity) override;
     };
 }
