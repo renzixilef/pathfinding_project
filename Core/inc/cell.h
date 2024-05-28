@@ -11,26 +11,39 @@ namespace GridGenerator {
         CELL_PATH = 0x3
     };
 
-    struct CellCost{
+    struct CellCost {
         float gCost;
         float hCost;
+
+        [[nodiscard]] inline float totalCost() const { return gCost + hCost; }
     };
 
 
     class Cell {
     public:
-        Cell(): state(CellState::CELL_OPEN), cost(CellCost{}){}
-        inline void markObstacle(){state = CellState::CELL_OBSTACLE;}
-        inline void markOpen(){state = CellState::CELL_OPEN;}
-        inline void markVisited(){state = CellState::CELL_VISITED;}
-        inline void markPATH(){state = CellState::CELL_PATH;}
-        inline void setGCost(float gCost){cost.gCost = gCost;}
-        inline void setHCost(float hCost){cost.hCost = hCost;}
-        inline CellState getState(){return state;}
-        inline CellCost getCost(){return cost;}
+        Cell() : state(CellState::CELL_OPEN), cost(CellCost{}), parent(nullptr) {}
+
+        inline void markObstacle() { state = CellState::CELL_OBSTACLE; }
+
+        inline void markOpen() { state = CellState::CELL_OPEN; }
+
+        inline void markVisited() { state = CellState::CELL_VISITED; }
+
+        inline void markPath() { state = CellState::CELL_PATH; }
+
+        inline void setGCost(float gCost) { cost.gCost = gCost; }
+
+        inline void setHCost(float hCost) { cost.hCost = hCost; }
+
+        inline void setParent(Cell *parentCell) { parent = parentCell; }
+
+        [[nodiscard]] inline CellState getState() const { return state; }
+
+        [[nodiscard]] inline CellCost getCost() const { return cost; }
 
     private:
         CellState state;
         CellCost cost;
+        Cell *parent;
     };
 }

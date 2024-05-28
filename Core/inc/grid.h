@@ -13,6 +13,20 @@ namespace GridGenerator {
     struct GridCoordinates {
         uint32_t x;
         uint32_t y;
+
+        [[nodiscard]] inline float getAbsDistanceTo(const GridCoordinates &point) const {
+            return static_cast<float>(sqrt(pow(x - point.x, 2) + pow(y - point.y, 2)));
+        }
+
+        [[nodiscard]] inline bool operator==(const GridCoordinates &other) const {
+            return x == other.x && y == other.y;
+        }
+    };
+
+    enum GridSolvedStatus{
+        GRID_SOLVED,
+        GRID_UNSOLVABLE,
+        GRID_UNSOLVED
     };
 
 
@@ -35,7 +49,7 @@ namespace GridGenerator {
 
         std::vector<std::reference_wrapper<Cell>> getNeighborsCells(GridCoordinates coords);
 
-        [[nodiscard]] std::vector<GridCoordinates> getNeighborsCoordinates(GridCoordinates coords) const;
+        [[nodiscard]] std::vector<GridCoordinates> getNeighborsCoordinates(const GridCoordinates &coords) const;
 
 
         [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
@@ -46,6 +60,14 @@ namespace GridGenerator {
 
         [[nodiscard]] inline GridCoordinates getEndCoordinates() const { return endCoordinates; }
 
+        auto compareCells() {
+            return [this](const GridCoordinates &a, const GridCoordinates &b) {
+                return (*this)(a).getCost().totalCost() < (*this)(b).getCost().totalCost();
+            };
+        }
+
+        inline void setSolved(){exitStatus = GridSolvedStatus::GRID_SOLVED;}
+        inline void setUnsolvable(){exitStatus = GridSolvedStatus::GRID_UNSOLVABLE;}
 
     private:
         void init();
@@ -59,6 +81,8 @@ namespace GridGenerator {
 
         GridCoordinates startCoordinates;
         GridCoordinates endCoordinates;
+
+        GridSolvedStatus exitStatus;
     };
 
 

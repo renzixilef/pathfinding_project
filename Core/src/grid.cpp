@@ -29,7 +29,7 @@ GridGenerator::Grid::getNeighborsCells(GridCoordinates coords) {
 }
 
 std::vector<GridGenerator::GridCoordinates>
-GridGenerator::Grid::getNeighborsCoordinates(GridGenerator::GridCoordinates coords) const{
+GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinates& coords) const{
     std::vector<GridCoordinates> neighbors;
 
     std::vector<std::pair<uint8_t, uint8_t>> offsets = {
@@ -61,7 +61,8 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity,
         startCell(nullptr),
         endCell(nullptr),
         startCoordinates(GridCoordinates{}),
-        endCoordinates(GridCoordinates{}) {
+        endCoordinates(GridCoordinates{}),
+        exitStatus(GridSolvedStatus::GRID_UNSOLVED){
     generator.generateObstacles(cells, obstacleDensity);
     //TODO: set start and end cell in init or in generateObstacles
     init();
