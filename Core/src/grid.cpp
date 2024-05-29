@@ -56,7 +56,8 @@ GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate
     return neighbors;
 }
 
-GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity, ObstacleGenerator &generator) :
+GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &generator, float obstacleDensity,
+                          float minStartEndDistance):
         sizeX(sizeX),
         sizeY(sizeY),
         cells(sizeX, std::vector<Cell>(sizeY)),
@@ -65,7 +66,7 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity,
         startCoordinates(GridCoordinate{}),
         endCoordinates(GridCoordinate{}),
         exitStatus(GridSolvedStatus::GRID_UNSOLVED){
-    generator.generateObstacles((*this), obstacleDensity);
+    generator.generateObstacles((*this), obstacleDensity, minStartEndDistance);
 }
 
 void GridGenerator::Grid::markPathByParentCells() {

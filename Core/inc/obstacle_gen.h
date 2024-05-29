@@ -21,33 +21,26 @@ namespace GridGenerator {
     public:
         ObstacleGenerator() : gen(rd()) {}
 
-        virtual void generateObstacles(Grid &grid, float obstacleDensity) = 0;
+        virtual void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) = 0;
 
     protected:
-        static std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)>
-        generateAllCellCoordinateSet(const uint32_t &sizeX, const uint32_t &sizeY);
-
-        static std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> getUnorderedSetDifference(
-                const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set1,
-                const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set2);
-
         std::random_device rd;
         std::mt19937 gen;
     };
 
     class RandomObstacleGenerator : public ObstacleGenerator {
     public:
-        void generateObstacles(Grid &grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class RandomWallLikeGenerator : public ObstacleGenerator {
     public:
-        void generateObstacles(Grid &grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class PerlinNoise : public ObstacleGenerator {
     public:
-        void generateObstacles(Grid &grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
 
     private:
         double noise(double x, double y);
@@ -59,6 +52,6 @@ namespace GridGenerator {
 
     class DrunkenWalk : public ObstacleGenerator {
     public:
-        void generateObstacles(Grid &grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 }
