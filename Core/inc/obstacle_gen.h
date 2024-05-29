@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cell.h"
-
 #include <map>
 #include <string>
 #include <vector>
 #include <random>
+
+#include "grid.h"
 
 #define WALL_LENGTH_EXPONENTIAL_LAMBDA 15
 
@@ -25,11 +25,12 @@ namespace GridGenerator {
                                                     {ObstacleGenStrategy::OBSTACLE_DRUNKEN_WALK, "Drunken Walk"},
                                                     {ObstacleGenStrategy::OBSTACLE_PERLIN_NOISE, "Perlin Noise"}};
 
+
     class ObstacleGenerator {
     public:
         ObstacleGenerator() : gen(rd()) {}
 
-        virtual void generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) = 0;
+        virtual void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) = 0;
 
     protected:
         std::random_device rd;
@@ -38,17 +39,17 @@ namespace GridGenerator {
 
     class RandomObstacleGenerator : public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class RandomWallLikeGenerator : public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class PerlinNoise : public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
 
     private:
         double noise(double x, double y);
@@ -60,6 +61,6 @@ namespace GridGenerator {
 
     class DrunkenWalk : public ObstacleGenerator {
     public:
-        void generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 }

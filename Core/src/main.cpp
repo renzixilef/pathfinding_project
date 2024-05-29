@@ -1,11 +1,12 @@
 #include <cstdlib>
 #include <iostream>
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QDebug>
 
-#include "../inc/grid.h"
+#include "../inc/obstacle_gen.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication pathfindingApp(argc, argv);
