@@ -1,8 +1,11 @@
 #pragma once
 
-#include "grid.h"
+#include <map>
+#include <string>
 #include <vector>
 #include <random>
+
+#include "grid.h"
 
 #define WALL_LENGTH_EXPONENTIAL_LAMBDA 15
 
@@ -10,11 +13,17 @@
 
 namespace GridGenerator {
     enum class ObstacleGenStrategy {
-        OBSTACLE_RANDOM,
-        OBSTACLE_WALL_LIKE,
-        OBSTACLE_DRUNKEN_WALK,
-        OBSTACLE_PERLIN_NOISE
+        OBSTACLE_RANDOM = 1,
+        OBSTACLE_WALL_LIKE = 2,
+        OBSTACLE_DRUNKEN_WALK = 3,
+        OBSTACLE_PERLIN_NOISE = 4
     };
+
+    static const std::map<ObstacleGenStrategy, std::string>
+            obstacleGenStrategyToDisplayableText = {{ObstacleGenStrategy::OBSTACLE_RANDOM,       "Random"},
+                                                    {ObstacleGenStrategy::OBSTACLE_WALL_LIKE,    "Wall like"},
+                                                    {ObstacleGenStrategy::OBSTACLE_DRUNKEN_WALK, "Drunken Walk"},
+                                                    {ObstacleGenStrategy::OBSTACLE_PERLIN_NOISE, "Perlin Noise"}};
 
 
     class ObstacleGenerator {
