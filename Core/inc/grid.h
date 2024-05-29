@@ -22,7 +22,7 @@ namespace GridGenerator {
             return x == other.x && y == other.y;
         }
         static std::size_t getHash(const GridCoordinate& c) {
-            return std::hash<uint32_t>()(c.x) ^ std::hash<uint32_t>()(c.y);
+            return std::hash<uint32_t>()(c.x) ^ (std::hash<uint32_t>()(c.y)<<1);
         }
     };
 
