@@ -1,36 +1,63 @@
 #include <cstdint>
 #include <algorithm>
 #include <cmath>
+#include <unordered_set>
+
 #include "../inc/obstacle_gen.h"
 
 //TODO: documentation
 //TODO: implement always solvable grid generation via vector slicing and std::vector<Cell>.isblocked method
 
+void GridGenerator::RandomObstacleGenerator::generateObstacles(GridGenerator::Grid &grid, float obstacleDensity,
+                                                               float minStartEndDistance) {
+    using GridGenerator::GridCoordinate;
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
 
-void GridGenerator::RandomObstacleGenerator::generateObstacles(std::vector<std::vector<Cell>> &cells,
-                                                               float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
     std::random_device rd;
     std::mt19937 gen(rd());
+
+    minStartEndDistance = minStartEndDistance*std::min(sizeX,sizeY);
+    GridCoordinate startCoord{distrX(gen), distrY(gen)};
+    grid.setStart(startCoord);
+    GridCoordinate endCoord{};
+    do{
+        endCoord = GridCoordinate{distrX(gen), distrY(gen)};
+    }while(startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
+    grid.setEnd(endCoord);
+
     for (uint32_t i = 0; i < (uint32_t) obstacleDensity * (sizeX * sizeY); ++i) {
-        uint32_t x = distrX(gen);
-        uint32_t y = distrY(gen);
-        if (cells[x][y].getState() != GridGenerator::CellState::CELL_OBSTACLE)
-            cells[x][y].markObstacle();
-        else
+        GridCoordinate thisCoord{distrX(gen), distrY(gen)};
+        if ((grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) &&
+                (thisCoord != startCoord) &&
+                (thisCoord != endCoord)) {
+            grid(thisCoord).markObstacle();
+        } else {
             --i;
+        }
     }
+
 }
 
-void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::vector<Cell>> &cells,
-                                                               float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float obstacleDensity,
+                                                               float minStartEndDistance) {
+    using GridGenerator::GridCoordinate;
+
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
+
+    minStartEndDistance = minStartEndDistance*std::min(sizeX,sizeY);
+    GridCoordinate startCoord{distrX(gen), distrY(gen)};
+    grid.setStart(startCoord);
+    GridCoordinate endCoord{};
+    do{
+        endCoord = GridCoordinate{distrX(gen), distrY(gen)};
+    }while(startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
+    grid.setEnd(endCoord);
 
     uint64_t numberOfObstacleCells = (uint64_t) (sizeX * sizeY * obstacleDensity);
     for (uint64_t i = 0; i < numberOfObstacleCells;) {
@@ -48,15 +75,21 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::
         for (uint32_t j = 0; j < wallLength; j++) {
             if (isVertical) {
                 if (startX + j < sizeX) {
-                    if (cells[startX + j][startY].getState() != GridGenerator::CellState::CELL_OBSTACLE) {
-                        cells[startX + j][startY].markObstacle();
+                    GridCoordinate thisCoord{startX + j, startY};
+                    if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE&&
+                        (thisCoord != startCoord) &&
+                        (thisCoord != endCoord)) {
+                        grid(thisCoord).markObstacle();
                         i++;
                     }
                 }
             } else {
                 if (startY + j < sizeY) {
-                    if (cells[startX][startY + j].getState() != GridGenerator::CellState::CELL_OBSTACLE) {
-                        cells[startX][startY + j].markObstacle();
+                    GridCoordinate thisCoord{startX, startY + j};
+                    if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE&&
+                        (thisCoord != startCoord) &&
+                        (thisCoord != endCoord)) {
+                        grid(thisCoord).markObstacle();
                         i++;
                     }
                 }
@@ -65,16 +98,21 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(std::vector<std::
     }
 }
 
-void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) {
+void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate,
+            decltype(&GridCoordinate::getHash)> allWalkableCoordinateSet(0, GridCoordinate::getHash);
+
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
 
     // mark all cells in the array as unwalkable
-    for (auto &row: cells)
-        for (auto &cell: row)
-            cell.markObstacle();
+    for (uint32_t i = 0; i < sizeX; i++)
+        for (uint32_t j = 0; j < sizeY; j++)
+            grid(GridCoordinate(i, j)).markObstacle();
 
     // carve out paths using the DrunkenWalk algorithm
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
 
@@ -84,8 +122,10 @@ void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>
 
     // if obstacleDensity is close to 1 this will take exponentially longer
     for (uint64_t i = 0; i < numObstacles; i++) {
-        if (cells[currentX][currentY].getState() == CellState::CELL_OBSTACLE) {
-            cells[currentX][currentY].markOpen();
+        GridCoordinate thisCoord{currentX, currentY};
+        if (grid(thisCoord).getState() == CellState::CELL_OBSTACLE) {
+            grid(thisCoord).markOpen();
+            allWalkableCoordinateSet.insert(thisCoord);
         } else {
             i--;
         }
@@ -95,11 +135,45 @@ void GridGenerator::DrunkenWalk::generateObstacles(std::vector<std::vector<Cell>
         currentX = (currentX + dx + sizeX) % sizeX;
         currentY = (currentY + dy + sizeY) % sizeY;
     }
+
+    minStartEndDistance = minStartEndDistance*std::min(sizeX,sizeY);
+    std::uniform_int_distribution<uint32_t> distrWalkableSet(0, allWalkableCoordinateSet.size()-1);
+    GridCoordinate startCoord{};
+    GridCoordinate endCoord{};
+    do{
+        uint32_t randomIndexStart = distrWalkableSet(gen);
+        auto iteratorStart = allWalkableCoordinateSet.begin();
+        std::advance(iteratorStart, randomIndexStart);
+        startCoord = *iteratorStart;
+        for(uint32_t i = 0; i<=allWalkableCoordinateSet.size()/5; i++){
+            uint32_t randomIndexEnd = distrWalkableSet(gen);
+            auto iteratorEnd = allWalkableCoordinateSet.begin();
+            std::advance(iteratorEnd, randomIndexEnd);
+            endCoord = *iteratorEnd;
+            if(startCoord.getAbsDistanceTo(endCoord)<minStartEndDistance) break;
+        }
+    }while(startCoord.getAbsDistanceTo(endCoord)<minStartEndDistance);
+    grid.setStart(startCoord);
+    grid.setEnd(endCoord);
 }
 
-void GridGenerator::PerlinNoise::generateObstacles(std::vector<std::vector<Cell>> &cells, float obstacleDensity) {
-    uint32_t sizeX = cells.size();
-    uint32_t sizeY = cells[0].size();
+void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) {
+    using GridGenerator::GridCoordinate;
+
+    uint32_t sizeX = grid.getSizeX();
+    uint32_t sizeY = grid.getSizeY();
+
+    std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
+    std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
+
+    minStartEndDistance = minStartEndDistance*std::min(sizeX,sizeY);
+    GridCoordinate startCoord{distrX(gen), distrY(gen)};
+    grid.setStart(startCoord);
+    GridCoordinate endCoord{};
+    do{
+        endCoord = GridCoordinate{distrX(gen), distrY(gen)};
+    }while(startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
+    grid.setEnd(endCoord);
 
     for (uint32_t i = 0; i < sizeX; i++) {
         for (uint32_t j = 0; j < sizeY; j++) {
@@ -108,7 +182,10 @@ void GridGenerator::PerlinNoise::generateObstacles(std::vector<std::vector<Cell>
 
             double cellNoise = noise(x, y);
             if (cellNoise < obstacleDensity) {
-                cells[i][j].markObstacle();
+                GridCoordinate thisCoord{i, j};
+                if(thisCoord != startCoord && thisCoord !=endCoord) {
+                    grid(thisCoord).markObstacle();
+                }
             }
         }
     }
@@ -145,3 +222,4 @@ double GridGenerator::PerlinNoise::grad(uint32_t hash, double x, double y) {
     double v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
     return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
+

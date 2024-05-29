@@ -3,14 +3,14 @@
 #include <queue>
 
 void Pathfinder::DijkstraSolve::markShortestPath() {
-    GridGenerator::GridCoordinates currentCoordinates = grid.getStartCoordinates();
+    GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
-    GridGenerator::GridCoordinates endCoordinates = grid.getEndCoordinates();
-    std::vector<GridGenerator::GridCoordinates> neighbors;
+    GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
+    std::vector<GridGenerator::GridCoordinate> neighbors;
 
     grid(currentCoordinates).setGCost(0);
 
-    std::priority_queue<GridGenerator::GridCoordinates, std::vector<GridGenerator::GridCoordinates>,
+    std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
             decltype(grid.compareCells())> nextCellQueue(grid.compareCells());
     nextCellQueue.push(currentCoordinates);
 

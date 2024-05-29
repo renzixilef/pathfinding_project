@@ -1,10 +1,12 @@
 #include "../inc/grid.h"
 
+#include "../inc/obstacle_gen.h"
+
 #include <functional>
 
 
 std::vector<std::reference_wrapper<GridGenerator::Cell>>
-GridGenerator::Grid::getNeighborsCells(GridCoordinates coords) {
+GridGenerator::Grid::getNeighborsCells(GridCoordinate coords) {
     std::vector<std::reference_wrapper<Cell>> neighbors;
 
     std::vector<std::pair<uint8_t, uint8_t>> offsets = {
@@ -28,9 +30,9 @@ GridGenerator::Grid::getNeighborsCells(GridCoordinates coords) {
     return neighbors;
 }
 
-std::vector<GridGenerator::GridCoordinates>
-GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinates& coords) const{
-    std::vector<GridCoordinates> neighbors;
+std::vector<GridGenerator::GridCoordinate>
+GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate& coords) const{
+    std::vector<GridCoordinate> neighbors;
 
     std::vector<std::pair<uint8_t, uint8_t>> offsets = {
             {-1, 0},
@@ -48,24 +50,23 @@ GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate
         int64_t neighborCol = coords.y + offset.second;
         if (neighborRow >= 0 && neighborRow < sizeX && neighborCol >= 0 && neighborCol < sizeY) {
             neighbors.push_back(
-                    GridCoordinates{static_cast<uint32_t>(neighborRow), static_cast<uint32_t>(neighborCol)});
+                    GridCoordinate{static_cast<uint32_t>(neighborRow), static_cast<uint32_t>(neighborCol)});
         }
     }
     return neighbors;
 }
 
-GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, float obstacleDensity, ObstacleGenerator &generator) :
+GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &generator, float obstacleDensity,
+                          float minStartEndDistance):
         sizeX(sizeX),
         sizeY(sizeY),
         cells(sizeX, std::vector<Cell>(sizeY)),
         startCell(nullptr),
         endCell(nullptr),
-        startCoordinates(GridCoordinates{}),
-        endCoordinates(GridCoordinates{}),
+        startCoordinates(GridCoordinate{}),
+        endCoordinates(GridCoordinate{}),
         exitStatus(GridSolvedStatus::GRID_UNSOLVED){
-    generator.generateObstacles(cells, obstacleDensity);
-    //TODO: set start and end cell in init or in generateObstacles
-    init();
+    generator.generateObstacles((*this), obstacleDensity, minStartEndDistance);
 }
 
 void GridGenerator::Grid::markPathByParentCells() {
