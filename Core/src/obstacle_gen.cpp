@@ -12,9 +12,10 @@
 void GridGenerator::RandomObstacleGenerator::generateObstacles(GridGenerator::Grid &grid, float obstacleDensity) {
     using GridGenerator::GridCoordinate;
     std::unordered_set<GridCoordinate,
-            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+            decltype(&GridCoordinate::getHash)> allObstacleCoordinateSet(0, GridCoordinate::getHash);
     uint32_t sizeX = grid.getSizeX();
     uint32_t sizeY = grid.getSizeY();
+    auto allCellCoordinateSet = generateAllCellCoordinateSet(sizeX, sizeY);
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
     std::random_device rd;
@@ -23,17 +24,20 @@ void GridGenerator::RandomObstacleGenerator::generateObstacles(GridGenerator::Gr
         GridCoordinate thisCoord{distrX(gen), distrY(gen)};
         if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
             grid(thisCoord).markObstacle();
-            allObstacleSet.insert(thisCoord);
+            allObstacleCoordinateSet.insert(thisCoord);
         } else {
             --i;
         }
     }
+    auto noObstacleCells =
+            getUnorderedSetDifference(allCellCoordinateSet, allObstacleCoordinateSet);
+
 }
 
 void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float obstacleDensity) {
     using GridGenerator::GridCoordinate;
     std::unordered_set<GridCoordinate,
-            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+            decltype(&GridCoordinate::getHash)> allObstacleCoordinateSet(0, GridCoordinate::getHash);
     uint32_t sizeX = grid.getSizeX();
     uint32_t sizeY = grid.getSizeY();
     std::uniform_int_distribution<uint32_t> distrX(0, sizeX - 1);
@@ -55,19 +59,19 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float
         for (uint32_t j = 0; j < wallLength; j++) {
             if (isVertical) {
                 if (startX + j < sizeX) {
-                    GridCoordinate thisCoord{startX+j, startY};
+                    GridCoordinate thisCoord{startX + j, startY};
                     if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
                         grid(thisCoord).markObstacle();
-                        allObstacleSet.insert(thisCoord);
+                        allObstacleCoordinateSet.insert(thisCoord);
                         i++;
                     }
                 }
             } else {
                 if (startY + j < sizeY) {
-                    GridCoordinate thisCoord{startX, startY+j};
+                    GridCoordinate thisCoord{startX, startY + j};
                     if (grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
                         grid(thisCoord).markObstacle();
-                        allObstacleSet.insert(thisCoord);
+                        allObstacleCoordinateSet.insert(thisCoord);
                         i++;
                     }
                 }
@@ -79,14 +83,14 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float
 void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDensity) {
     using GridGenerator::GridCoordinate;
     std::unordered_set<GridCoordinate,
-            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+            decltype(&GridCoordinate::getHash)> allObstacleCoordinateSet(0, GridCoordinate::getHash);
 
     uint32_t sizeX = grid.getSizeX();
     uint32_t sizeY = grid.getSizeY();
 
     // mark all cells in the array as unwalkable
-    for (uint32_t i = 0; i<sizeX; i++)
-        for (uint32_t j= 0; j<sizeY; j++)
+    for (uint32_t i = 0; i < sizeX; i++)
+        for (uint32_t j = 0; j < sizeY; j++)
             grid(GridCoordinate(i, j)).markObstacle();
 
     // carve out paths using the DrunkenWalk algorithm
@@ -103,7 +107,7 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
         GridCoordinate thisCoord{currentX, currentY};
         if (grid(thisCoord).getState() == CellState::CELL_OBSTACLE) {
             grid(thisCoord).markOpen();
-            allObstacleSet.erase(thisCoord);
+            allObstacleCoordinateSet.erase(thisCoord);
         } else {
             i--;
         }
@@ -118,7 +122,7 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
 void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDensity) {
     using GridGenerator::GridCoordinate;
     std::unordered_set<GridCoordinate,
-            decltype(&GridCoordinate::getHash)> allObstacleSet(0, GridCoordinate::getHash);
+            decltype(&GridCoordinate::getHash)> allObstacleCoordinateSet(0, GridCoordinate::getHash);
 
     uint32_t sizeX = grid.getSizeX();
     uint32_t sizeY = grid.getSizeY();
@@ -132,7 +136,7 @@ void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDen
             if (cellNoise < obstacleDensity) {
                 GridCoordinate thisCoord{i, j};
                 grid(thisCoord).markObstacle();
-                allObstacleSet.insert(thisCoord);
+                allObstacleCoordinateSet.insert(thisCoord);
             }
         }
     }
@@ -168,4 +172,31 @@ double GridGenerator::PerlinNoise::grad(uint32_t hash, double x, double y) {
     double u = h < 8 ? x : y;
     double v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
     return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+}
+
+std::unordered_set<GridGenerator::GridCoordinate, decltype(&GridGenerator::GridCoordinate::getHash)>
+GridGenerator::ObstacleGenerator::generateAllCellCoordinateSet(const uint32_t &sizeX, const uint32_t &sizeY) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)>
+            allCellCoordinateSet(0, GridCoordinate::getHash);
+    for (uint32_t i = 0; i < sizeX; i++) {
+        for (uint32_t j = 0; j < sizeY; j++) {
+            GridCoordinate coord{i, j};
+            allCellCoordinateSet.insert(coord);
+        }
+    }
+    return allCellCoordinateSet;
+}
+
+std::unordered_set<GridGenerator::GridCoordinate, decltype(&GridGenerator::GridCoordinate::getHash)>
+GridGenerator::ObstacleGenerator::getUnorderedSetDifference(
+        const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set1,
+        const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set2) {
+    using GridGenerator::GridCoordinate;
+    std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> setDiff(0, GridCoordinate::getHash);
+    std::copy_if(set1.begin(),
+                 set1.end(),
+                 std::inserter(setDiff, setDiff.begin()),
+                 [&](GridCoordinate elem){return set2.find(elem)==set2.end();});
+    return setDiff;
 }

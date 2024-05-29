@@ -8,8 +8,8 @@
 
 //TODO: documentation
 
-namespace GridGenerator{
-    enum class ObstacleGenStrategy{
+namespace GridGenerator {
+    enum class ObstacleGenStrategy {
         OBSTACLE_RANDOM,
         OBSTACLE_WALL_LIKE,
         OBSTACLE_DRUNKEN_WALK,
@@ -19,31 +19,46 @@ namespace GridGenerator{
 
     class ObstacleGenerator {
     public:
-        ObstacleGenerator():gen(rd()){}
-        virtual void generateObstacles(Grid& grid, float obstacleDensity) = 0;
+        ObstacleGenerator() : gen(rd()) {}
+
+        virtual void generateObstacles(Grid &grid, float obstacleDensity) = 0;
+
     protected:
+        static std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)>
+        generateAllCellCoordinateSet(const uint32_t &sizeX, const uint32_t &sizeY);
+
+        static std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> getUnorderedSetDifference(
+                const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set1,
+                const std::unordered_set<GridCoordinate, decltype(&GridCoordinate::getHash)> &set2);
+
         std::random_device rd;
         std::mt19937 gen;
     };
 
-    class RandomObstacleGenerator: public ObstacleGenerator {
+    class RandomObstacleGenerator : public ObstacleGenerator {
     public:
         void generateObstacles(Grid &grid, float obstacleDensity) override;
     };
-    class RandomWallLikeGenerator: public ObstacleGenerator {
+
+    class RandomWallLikeGenerator : public ObstacleGenerator {
     public:
         void generateObstacles(Grid &grid, float obstacleDensity) override;
     };
-    class PerlinNoise: public ObstacleGenerator {
+
+    class PerlinNoise : public ObstacleGenerator {
     public:
         void generateObstacles(Grid &grid, float obstacleDensity) override;
+
     private:
         double noise(double x, double y);
-        static inline double fade(double t){return t*t*t*(t*(t*6-15)+10);}
+
+        static inline double fade(double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+
         static double grad(uint32_t hash, double x, double y);
     };
-    class DrunkenWalk: public ObstacleGenerator {
+
+    class DrunkenWalk : public ObstacleGenerator {
     public:
-        void generateObstacles(Grid& grid, float obstacleDensity) override;
+        void generateObstacles(Grid &grid, float obstacleDensity) override;
     };
 }
