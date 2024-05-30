@@ -1,4 +1,6 @@
 #include "../inc/gui_tab_single_run.h"
+#include "../inc/pathfinding.h"
+#include "obstacle_gen.h"
 
 
 GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
@@ -19,7 +21,9 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
     for(const auto& [k, v]: GridGenerator::obstacleGenStrategyToDisplayableText){
         gridGeneratorAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
     }
-    //TODO: same code for pathfindingAlgorithmComboBox
+    for(const auto& [k,v]: Pathfinder::pathfindingStrategyToDisplayableText){
+        pathfindingAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
+    }
 
     connect(startRunButton, &QPushButton::clicked, this, &SingleRunTab::startRun);
 
