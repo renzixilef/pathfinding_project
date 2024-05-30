@@ -1,4 +1,4 @@
-#include "../inc/pathfinding.h"
+#include "Pathfinder/pathfinding.h"
 
 #include <queue>
 

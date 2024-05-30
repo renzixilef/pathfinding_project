@@ -5,8 +5,6 @@
 #include <QFormLayout>
 #include <QPushButton>
 
-#include "obstacle_gen.h"
-
 namespace GUI {
 
     class SingleRunTab : public QWidget{

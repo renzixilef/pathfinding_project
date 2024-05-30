@@ -3,7 +3,7 @@
 #include <cmath>
 #include <unordered_set>
 
-#include "../inc/obstacle_gen.h"
+#include "GridGenerator/obstacle_gen.h"
 
 //TODO: documentation
 //TODO: implement always solvable grid generation via vector slicing and std::vector<Cell>.isblocked method
