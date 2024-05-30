@@ -1,6 +1,6 @@
-#include "../inc/grid.h"
+#include "GridGenerator/grid.h"
 
-#include "../inc/obstacle_gen.h"
+#include "GridGenerator/obstacle_gen.h"
 
 #include <functional>
 

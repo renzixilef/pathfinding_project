@@ -6,7 +6,7 @@
 #include <QCommandLineOption>
 #include <QDebug>
 
-#include "../inc/obstacle_gen.h"
+#include "GridGenerator/obstacle_gen.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication pathfindingApp(argc, argv);

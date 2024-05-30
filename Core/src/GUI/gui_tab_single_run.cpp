@@ -1,6 +1,6 @@
-#include "../inc/gui_tab_single_run.h"
-#include "../inc/pathfinding.h"
-#include "obstacle_gen.h"
+#include "GUI/gui_tab_single_run.h"
+#include "Pathfinder/pathfinding.h"
+#include "GridGenerator/obstacle_gen.h"
 
 
 GUI::SingleRunTab::SingleRunTab(QWidget *parent) :

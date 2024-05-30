@@ -1,4 +1,4 @@
-#include "../inc/gui_main_window.h"
+#include "GUI/gui_main_window.h"
 
 GUI::MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), tabWidget(new QTabWidget(this)) {
     setCentralWidget(tabWidget);

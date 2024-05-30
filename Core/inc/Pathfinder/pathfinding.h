@@ -1,6 +1,6 @@
 #pragma once
 
-#include "grid.h"
+#include "GridGenerator/grid.h"
 #include <vector>
 #include <map>
 
