@@ -3,6 +3,10 @@
 #include "GridGenerator/grid.h"
 #include <vector>
 #include <map>
+#include <memory>
+
+//TODO: implement functionality to get private grid information
+//TODO: implement gridReset to solve nextGrid
 
 namespace Pathfinder {
 
@@ -11,14 +15,20 @@ namespace Pathfinder {
         PATHFINDER_A_STAR = 2,
     };
 
-    static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText =
-            {{PathfinderStrategy::PATHFINDER_DIJKSTRA, "Dijkstra's Algorithm"},
-             {PathfinderStrategy::PATHFINDER_A_STAR,   "A* Algorithm"}};
+    class pathfindingParent;
+
+    struct PathfinderStrategyParser {
+        static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
+
+        static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
+                                                                   GridGenerator::Grid &grid);
+    };
+
 
     class pathfindingParent {
     public:
         explicit pathfindingParent(GridGenerator::Grid &grid) : grid(grid) {}
-
+        virtual ~pathfindingParent() = default;
         virtual void markShortestPath() = 0;
 
         virtual inline std::map<GridGenerator::Cell *, GridGenerator::Cell *>
@@ -26,19 +36,21 @@ namespace Pathfinder {
 
     protected:
         std::map<GridGenerator::Cell *, GridGenerator::Cell *> shortestPath;
-        GridGenerator::Grid &grid;
+        GridGenerator::Grid grid;
 
     };
 
     class DijkstraSolve : public pathfindingParent {
     public:
         explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+
         void markShortestPath() override;
     };
 
     class AStarSolve : public pathfindingParent {
     public:
         explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+
         void markShortestPath() override;
     };
 

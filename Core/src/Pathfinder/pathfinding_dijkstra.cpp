@@ -50,3 +50,5 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
         grid.setUnsolvable();
     }
 }
+
+

@@ -20,6 +20,8 @@ namespace GridGenerator {
         OBSTACLE_PERLIN_NOISE = 4
     };
 
+    class ObstacleGenerator;
+
     struct ObstacleGenStrategyParser{
         static const std::map<ObstacleGenStrategy, std::string> obstacleGenStrategyToDisplayableText;
         static std::unique_ptr<ObstacleGenerator> parseObstacleGenStrategy(ObstacleGenStrategy strat);

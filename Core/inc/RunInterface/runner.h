@@ -6,6 +6,10 @@
 #include "../GridGenerator/obstacle_gen.h"
 #include "../Pathfinder/pathfinding.h"
 
+
+//TODO: implement register Callback functionality
+//TODO: implement iterative solving for multiSolver
+
 namespace RunInterface {
 
     struct RunGridConfig {
@@ -38,6 +42,7 @@ namespace RunInterface {
 
     private:
         Pathfinder::PathfinderStrategy strat;
+        std::unique_ptr<Pathfinder::pathfindingParent> solver;
     };
 
     class MultiRun : public RunnerParent {
@@ -51,5 +56,6 @@ namespace RunInterface {
     private:
         std::list<Pathfinder::PathfinderStrategy> strats;
         uint32_t iterations;
+        std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
     };
 }

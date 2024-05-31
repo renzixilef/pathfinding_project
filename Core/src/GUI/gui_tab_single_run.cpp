@@ -13,6 +13,7 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
         layout(new QFormLayout(this)),
         startRunButton(new QPushButton("Run", this)) {
     using GridGenerator::ObstacleGenStrategyParser;
+    using Pathfinder::PathfinderStrategyParser;
     gridHeightSpinBox->setRange(50, UINT32_MAX);
     gridWidthSpinBox->setRange(50, UINT32_MAX);
     obstacleDensitySpinBox->setRange(0.0, 1.0);
@@ -22,7 +23,8 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
             ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText) {
         gridGeneratorAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
     }
-    for (const auto &[k, v]: Pathfinder::pathfindingStrategyToDisplayableText) {
+    for (const auto &[k, v]:
+            PathfinderStrategyParser::pathfindingStrategyToDisplayableText) {
         pathfindingAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
     }
 

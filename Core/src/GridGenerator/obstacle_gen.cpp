@@ -22,17 +22,14 @@ std::unique_ptr<GridGenerator::ObstacleGenerator> GridGenerator::ObstacleGenStra
     switch (strat) {
         case ObstacleGenStrategy::OBSTACLE_RANDOM:
             return std::make_unique<GridGenerator::RandomObstacleGenerator>();
-            break;
         case ObstacleGenStrategy::OBSTACLE_WALL_LIKE:
             return std::make_unique<GridGenerator::RandomWallLikeGenerator>();
-            break;
         case ObstacleGenStrategy::OBSTACLE_DRUNKEN_WALK:
             return std::make_unique<GridGenerator::DrunkenWalk>();
-            break;
         case ObstacleGenStrategy::OBSTACLE_PERLIN_NOISE:
             return std::make_unique<GridGenerator::PerlinNoise>();
-            break;
     }
+    return nullptr;
 }
 
 

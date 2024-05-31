@@ -1,11 +1,14 @@
 #include "../../inc/RunInterface/runner.h"
 
 RunInterface::MultiRun::MultiRun(const RunInterface::RunGridConfig &thisConfig,
-                                 const std::list<Pathfinder::PathfinderStrategy>& thisStrats,
+                                 const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
                                  uint32_t thisIterations) :
-                                 RunnerParent(thisConfig),
-                                 strats(thisStrats),
-                                 iterations(thisIterations){
+        RunnerParent(thisConfig),
+        strats(thisStrats),
+        iterations(thisIterations) {
+    for (const auto &strat: thisStrats) {
+        solvers.push_back(Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid));
+    }
 
 }
 
