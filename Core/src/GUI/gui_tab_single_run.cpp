@@ -46,7 +46,7 @@ void GUI::SingleRunTab::startRun() {
         static_cast<uint32_t>(gridWidthSpinBox->value()),
         static_cast<uint32_t>(gridHeightSpinBox->value()),
         static_cast<float>(obstacleDensitySpinBox->value()),
-        5,
+        0.5,
         static_cast<GridGenerator::ObstacleGenStrategy>(gridGeneratorAlgorithmComboBox->currentData().toUInt())},
                                                        static_cast<Pathfinder::PathfinderStrategy>(pathfindingAlgorithmComboBox->currentData().toUInt()));
     singleRunDialog->exec();

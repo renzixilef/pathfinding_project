@@ -34,7 +34,7 @@ std::vector<GridGenerator::GridCoordinate>
 GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate& coords) const{
     std::vector<GridCoordinate> neighbors;
 
-    std::vector<std::pair<uint8_t, uint8_t>> offsets = {
+    std::vector<std::pair<int8_t, int8_t>> offsets = {
             {-1, 0},
             {1,  0},
             {0,  -1},

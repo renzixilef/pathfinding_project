@@ -16,27 +16,27 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
 
     while (!nextCellQueue.empty()) {
         currentCoordinates = nextCellQueue.top();
+        nextCellQueue.pop();
+        GridGenerator::Cell &currentCell = grid(currentCoordinates);
         if(currentCoordinates == endCoordinates){
             grid.markPathByParentCells();
             break;
         }
-        nextCellQueue.pop();
-        currentCell = grid(currentCoordinates);
 
         neighbors = grid.getNeighborsCoordinates(currentCoordinates);
 
         for (const auto &neighborCoordinates: neighbors) {
             GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
-            float neighborCellTotalCostFromCurrentCell = currentCell.getCost().totalCost() +
+            double neighborCellGCostFromCurrentCell = currentCell.getCost().gCost +
                                                          neighborCoordinates.getAbsDistanceTo(currentCoordinates);
             if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
-                neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
+                neighborCell.setGCost(neighborCellGCostFromCurrentCell);
                 neighborCell.setParent(&grid(currentCoordinates));
                 neighborCell.markVisited();
                 nextCellQueue.push(neighborCoordinates);
             } else if (neighborCell.getState() == GridGenerator::CellState::CELL_VISITED) {
-                if (neighborCell.getCost().totalCost() > neighborCellTotalCostFromCurrentCell) {
-                    neighborCell.setGCost(neighborCellTotalCostFromCurrentCell);
+                if (neighborCell.getCost().gCost > neighborCellGCostFromCurrentCell) {
+                    neighborCell.setGCost(neighborCellGCostFromCurrentCell);
                     neighborCell.setParent(&grid(currentCoordinates));
                     nextCellQueue.push(neighborCoordinates);
                 }

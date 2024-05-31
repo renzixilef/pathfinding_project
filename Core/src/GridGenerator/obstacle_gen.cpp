@@ -84,7 +84,7 @@ void GridGenerator::RandomWallLikeGenerator::generateObstacles(Grid &grid, float
     } while (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
     grid.setEnd(endCoord);
 
-    uint64_t numberOfObstacleCells = (uint64_t) (sizeX * sizeY * obstacleDensity);
+    uint64_t numberOfObstacleCells = (sizeX * sizeY * obstacleDensity);
     for (uint64_t i = 0; i < numberOfObstacleCells;) {
         uint32_t startX = distrX(gen);
         uint32_t startY = distrY(gen);
@@ -202,8 +202,8 @@ void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDen
 
     for (uint32_t i = 0; i < sizeX; i++) {
         for (uint32_t j = 0; j < sizeY; j++) {
-            double x = (double) (i / sizeX);
-            double y = (double) (j / sizeY);
+            double x = static_cast<double>(i / sizeX);
+            double y = static_cast<double> (j / sizeY);
 
             double cellNoise = noise(x, y);
             if (cellNoise < obstacleDensity) {

@@ -17,8 +17,8 @@ namespace GridGenerator {
         uint32_t x;
         uint32_t y;
 
-        [[nodiscard]] inline float getAbsDistanceTo(const GridCoordinate &point) const {
-            return static_cast<float>(sqrt(pow(x - point.x, 2) + pow(y - point.y, 2)));
+        [[nodiscard]] inline double getAbsDistanceTo(const GridCoordinate &point) const {
+            return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
         }
 
         [[nodiscard]] inline bool operator==(const GridCoordinate &other) const {

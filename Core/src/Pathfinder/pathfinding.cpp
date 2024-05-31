@@ -10,9 +10,9 @@ std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyPar
         GridGenerator::Grid &grid) {
     switch(strat){
         case PathfinderStrategy::PATHFINDER_A_STAR:
-            return std::make_unique<DijkstraSolve>(grid);
-        case PathfinderStrategy::PATHFINDER_DIJKSTRA:
             return std::make_unique<AStarSolve>(grid);
+        case PathfinderStrategy::PATHFINDER_DIJKSTRA:
+            return std::make_unique<DijkstraSolve>(grid);
     }
     return nullptr;
 }

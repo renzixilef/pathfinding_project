@@ -36,7 +36,7 @@ namespace Pathfinder {
 
     protected:
         std::map<GridGenerator::Cell *, GridGenerator::Cell *> shortestPath;
-        GridGenerator::Grid grid;
+        GridGenerator::Grid& grid;
 
     };
 
