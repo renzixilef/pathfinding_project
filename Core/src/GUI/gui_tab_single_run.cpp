@@ -1,6 +1,7 @@
 #include "GUI/gui_tab_single_run.h"
 #include "Pathfinder/pathfinding.h"
 #include "GridGenerator/obstacle_gen.h"
+#include "../../inc/GUI/gui_dialog_single_run.h"
 
 
 GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
@@ -41,6 +42,14 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
 }
 
 void GUI::SingleRunTab::startRun() {
+    QDialog* singleRunDialog = new GUI::SingleRunDialog(RunInterface::RunGridConfig{
+        static_cast<uint32_t>(gridWidthSpinBox->value()),
+        static_cast<uint32_t>(gridHeightSpinBox->value()),
+        static_cast<float>(obstacleDensitySpinBox->value()),
+        5,
+        static_cast<GridGenerator::ObstacleGenStrategy>(gridGeneratorAlgorithmComboBox->currentData().toUInt())},
+                                                       static_cast<Pathfinder::PathfinderStrategy>(pathfindingAlgorithmComboBox->currentData().toUInt()));
+    singleRunDialog->exec();
 
     //TODO: implement this functionality
 

@@ -1,5 +1,6 @@
 #include "Pathfinder/pathfinding.h"
 
+#include <iostream>
 #include <queue>
 
 void Pathfinder::AStarSolve::markShortestPath() {
@@ -44,11 +45,13 @@ void Pathfinder::AStarSolve::markShortestPath() {
                     nextCellQueue.push(neighborCoordinates);
                 }
             }
+            std::cout << "Step done" << std::endl;
         }
         currentCell.markClosed();
     }
     if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
         grid.setSolved();
+        std::cout << "Done! Solved" << std::endl;
     }else{
         grid.setUnsolvable();
     }
