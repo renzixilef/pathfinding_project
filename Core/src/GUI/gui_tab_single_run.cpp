@@ -12,16 +12,17 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
         pathfindingAlgorithmComboBox(new QComboBox(this)),
         layout(new QFormLayout(this)),
         startRunButton(new QPushButton("Run", this)) {
-
+    using GridGenerator::ObstacleGenStrategyParser;
     gridHeightSpinBox->setRange(50, UINT32_MAX);
     gridWidthSpinBox->setRange(50, UINT32_MAX);
     obstacleDensitySpinBox->setRange(0.0, 1.0);
     obstacleDensitySpinBox->setSingleStep(0.05);
 
-    for(const auto& [k, v]: GridGenerator::obstacleGenStrategyToDisplayableText){
+    for (const auto &[k, v]:
+            ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText) {
         gridGeneratorAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
     }
-    for(const auto& [k,v]: Pathfinder::pathfindingStrategyToDisplayableText){
+    for (const auto &[k, v]: Pathfinder::pathfindingStrategyToDisplayableText) {
         pathfindingAlgorithmComboBox->addItem(QString::fromStdString(v), static_cast<uint8_t>(k));
     }
 

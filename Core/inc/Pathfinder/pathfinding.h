@@ -32,11 +32,13 @@ namespace Pathfinder {
 
     class DijkstraSolve : public pathfindingParent {
     public:
+        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
         void markShortestPath() override;
     };
 
     class AStarSolve : public pathfindingParent {
     public:
+        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
         void markShortestPath() override;
     };
 

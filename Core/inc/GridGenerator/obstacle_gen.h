@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <memory>
 
 #include "grid.h"
 
@@ -19,17 +20,16 @@ namespace GridGenerator {
         OBSTACLE_PERLIN_NOISE = 4
     };
 
-    static const std::map<ObstacleGenStrategy, std::string>
-            obstacleGenStrategyToDisplayableText = {{ObstacleGenStrategy::OBSTACLE_RANDOM,       "Random"},
-                                                    {ObstacleGenStrategy::OBSTACLE_WALL_LIKE,    "Wall like"},
-                                                    {ObstacleGenStrategy::OBSTACLE_DRUNKEN_WALK, "Drunken Walk"},
-                                                    {ObstacleGenStrategy::OBSTACLE_PERLIN_NOISE, "Perlin Noise"}};
+    struct ObstacleGenStrategyParser{
+        static const std::map<ObstacleGenStrategy, std::string> obstacleGenStrategyToDisplayableText;
+        static std::unique_ptr<ObstacleGenerator> parseObstacleGenStrategy(ObstacleGenStrategy strat);
+    };
 
 
     class ObstacleGenerator {
     public:
         ObstacleGenerator() : gen(rd()) {}
-
+        virtual ~ObstacleGenerator() = default;
         virtual void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) = 0;
 
     protected:
@@ -39,16 +39,19 @@ namespace GridGenerator {
 
     class RandomObstacleGenerator : public ObstacleGenerator {
     public:
+        explicit RandomObstacleGenerator():ObstacleGenerator(){}
         void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class RandomWallLikeGenerator : public ObstacleGenerator {
     public:
+        explicit RandomWallLikeGenerator():ObstacleGenerator(){}
         void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 
     class PerlinNoise : public ObstacleGenerator {
     public:
+        explicit PerlinNoise():ObstacleGenerator(){}
         void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
 
     private:
@@ -61,6 +64,7 @@ namespace GridGenerator {
 
     class DrunkenWalk : public ObstacleGenerator {
     public:
+        explicit DrunkenWalk():ObstacleGenerator(){}
         void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
     };
 }
