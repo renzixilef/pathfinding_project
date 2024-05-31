@@ -8,3 +8,4 @@ RunInterface::RunnerParent::RunnerParent(const RunInterface::RunGridConfig &this
                                            config.obstacleGenStrategy),
                                    config.obstacleDensity, config.minStartEndDistance)) {
 }
+

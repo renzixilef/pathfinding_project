@@ -1,10 +1,14 @@
 #pragma once
+
 #include <cstdint>
+#include <list>
+
 #include "../GridGenerator/obstacle_gen.h"
+#include "../Pathfinder/pathfinding.h"
 
-namespace RunInterface{
+namespace RunInterface {
 
-    struct RunGridConfig{
+    struct RunGridConfig {
         uint32_t gridWith;
         uint32_t gridHeight;
         float obstacleDensity;
@@ -14,13 +18,38 @@ namespace RunInterface{
     };
 
 
-    class RunnerParent{
+    class RunnerParent {
     public:
-        explicit RunnerParent(const RunGridConfig& thisConfig);
-        virtual void start()=0;
+        explicit RunnerParent(const RunGridConfig &thisConfig);
+
+        virtual void start() = 0;
+
     protected:
         RunGridConfig config;
         GridGenerator::Grid grid;
 
+    };
+
+    class SingleRun : public RunnerParent {
+    public:
+        explicit SingleRun(const RunGridConfig &thisConfig, const Pathfinder::PathfinderStrategy &thisStrat);
+
+        void start() override;
+
+    private:
+        Pathfinder::PathfinderStrategy strat;
+    };
+
+    class MultiRun : public RunnerParent {
+    public:
+        explicit MultiRun(const RunGridConfig &thisConfig,
+                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
+                          uint32_t thisIterations);
+
+        void start() override;
+
+    private:
+        std::list<Pathfinder::PathfinderStrategy> strats;
+        uint32_t iterations;
     };
 }
