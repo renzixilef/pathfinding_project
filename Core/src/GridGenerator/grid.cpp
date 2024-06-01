@@ -77,4 +77,14 @@ void GridGenerator::Grid::markPathByParentCells() {
     }
 }
 
+void GridGenerator::Grid::resetGrid() {
+    for(auto& row: cells){
+        for(auto& cell:row){
+            if(cell.getState() != CellState::CELL_OBSTACLE){
+                cell = GridGenerator::Cell();
+            }
+        }
+    }
+}
+
 

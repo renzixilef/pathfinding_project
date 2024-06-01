@@ -98,6 +98,8 @@ namespace GridGenerator {
 
         inline void setUnsolvable() { exitStatus = GridSolvedStatus::GRID_UNSOLVABLE; }
 
+        void resetGrid();
+
     private:
 
         uint32_t sizeX;

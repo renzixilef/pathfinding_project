@@ -13,5 +13,10 @@ RunInterface::MultiRun::MultiRun(const RunInterface::RunGridConfig &thisConfig,
 }
 
 void RunInterface::MultiRun::start() {
-
+    for(uint32_t i = 0; i<iterations;i++){
+        for(auto& solver: solvers){
+            solver->markShortestPath();
+            grid.resetGrid();
+        }
+    }
 }
