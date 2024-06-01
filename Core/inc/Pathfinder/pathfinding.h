@@ -4,11 +4,19 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <functional>
 
 //TODO: implement functionality to get private grid information
 //TODO: implement gridReset to solve nextGrid
 
 namespace Pathfinder {
+
+    enum class CallbackType{
+        CALLBACK_AFTER_STEP,
+        CALLBACK_AFTER_RUN,
+        CALLBACK_BEFORE_STEP,
+        CALLBACK_BEFORE_RUN
+    };
 
     enum class PathfinderStrategy {
         PATHFINDER_DIJKSTRA = 1,
@@ -24,16 +32,19 @@ namespace Pathfinder {
                                                                    GridGenerator::Grid &grid);
     };
 
-
     class pathfindingParent {
     public:
         explicit pathfindingParent(GridGenerator::Grid &grid) : grid(grid) {}
         virtual ~pathfindingParent() = default;
         virtual void markShortestPath() = 0;
-
+        void registerCallback(CallbackType callbackType, const std::function<void()>& callback);
+        void triggerCallbacks(CallbackType callbackType);
     protected:
         GridGenerator::Grid& grid;
-
+        std::vector<std::function<void()>> afterStepCallback;
+        std::vector<std::function<void()>> afterRunCallback;
+        std::vector<std::function<void()>> beforeStepCallback;
+        std::vector<std::function<void()>> beforeRunCallback;
     };
 
     class DijkstraSolve : public pathfindingParent {
