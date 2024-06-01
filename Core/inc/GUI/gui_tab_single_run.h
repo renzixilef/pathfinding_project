@@ -21,6 +21,7 @@ namespace GUI {
         QSpinBox* gridHeightSpinBox;
         QSpinBox* gridWidthSpinBox;
         QDoubleSpinBox* obstacleDensitySpinBox;
+        QDoubleSpinBox* minStartEndDistanceSpinBox;
         QComboBox* gridGeneratorAlgorithmComboBox;
         QComboBox* pathfindingAlgorithmComboBox;
         QFormLayout* layout;

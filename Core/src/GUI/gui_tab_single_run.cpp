@@ -9,6 +9,7 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
         gridHeightSpinBox(new QSpinBox(this)),
         gridWidthSpinBox(new QSpinBox(this)),
         obstacleDensitySpinBox(new QDoubleSpinBox(this)),
+        minStartEndDistanceSpinBox(new QDoubleSpinBox(this)),
         gridGeneratorAlgorithmComboBox(new QComboBox(this)),
         pathfindingAlgorithmComboBox(new QComboBox(this)),
         layout(new QFormLayout(this)),
@@ -19,6 +20,8 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
     gridWidthSpinBox->setRange(50, UINT32_MAX);
     obstacleDensitySpinBox->setRange(0.0, 1.0);
     obstacleDensitySpinBox->setSingleStep(0.05);
+    minStartEndDistanceSpinBox->setRange(0.0, 1.0);
+    minStartEndDistanceSpinBox->setSingleStep(0.05);
 
     for (const auto &[k, v]:
             ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText) {
@@ -34,6 +37,7 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
     layout->addRow("Grid Height", gridHeightSpinBox);
     layout->addRow("Grid Width", gridWidthSpinBox);
     layout->addRow("Obstacle Density", obstacleDensitySpinBox);
+    layout->addRow("Min. Distance Start/End [% short grid side]", minStartEndDistanceSpinBox);
     layout->addRow("Grid Generator Algorithm", gridGeneratorAlgorithmComboBox);
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmComboBox);
     layout->addRow(startRunButton);
@@ -46,7 +50,7 @@ void GUI::SingleRunTab::startRun() {
         static_cast<uint32_t>(gridWidthSpinBox->value()),
         static_cast<uint32_t>(gridHeightSpinBox->value()),
         static_cast<float>(obstacleDensitySpinBox->value()),
-        0.5,
+        static_cast<float>(minStartEndDistanceSpinBox->value()),
         static_cast<GridGenerator::ObstacleGenStrategy>(gridGeneratorAlgorithmComboBox->currentData().toUInt())},
                                                        static_cast<Pathfinder::PathfinderStrategy>(pathfindingAlgorithmComboBox->currentData().toUInt()));
     singleRunDialog->exec();
