@@ -34,7 +34,7 @@ std::vector<GridGenerator::GridCoordinate>
 GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate& coords) const{
     std::vector<GridCoordinate> neighbors;
 
-    std::vector<std::pair<uint8_t, uint8_t>> offsets = {
+    std::vector<std::pair<int8_t, int8_t>> offsets = {
             {-1, 0},
             {1,  0},
             {0,  -1},
@@ -72,8 +72,19 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &gen
 void GridGenerator::Grid::markPathByParentCells() {
     Cell* nextCell = endCell;
     while(nextCell != nullptr) {
+        pathCellCount++;
         nextCell->markPath();
         nextCell = nextCell->getParent();
+    }
+}
+
+void GridGenerator::Grid::resetGrid() {
+    for(auto& row: cells){
+        for(auto& cell:row){
+            if(cell.getState() != CellState::CELL_OBSTACLE){
+                cell = GridGenerator::Cell();
+            }
+        }
     }
 }
 

@@ -17,8 +17,8 @@ namespace GridGenerator {
         uint32_t x;
         uint32_t y;
 
-        [[nodiscard]] inline float getAbsDistanceTo(const GridCoordinate &point) const {
-            return static_cast<float>(sqrt(pow(x - point.x, 2) + pow(y - point.y, 2)));
+        [[nodiscard]] inline double getAbsDistanceTo(const GridCoordinate &point) const {
+            return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
         }
 
         [[nodiscard]] inline bool operator==(const GridCoordinate &other) const {
@@ -66,9 +66,9 @@ namespace GridGenerator {
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
 
 
-        [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
+        [[nodiscard]] inline Cell *getStartCell() const { return startCell;}
 
-        [[nodiscard]] inline Cell *getEndCell() const { return endCell; }
+        [[nodiscard]] inline Cell *getEndCell() const { return endCell;}
 
         [[nodiscard]] inline uint32_t getSizeX() const { return cells.size(); }
 
@@ -77,6 +77,9 @@ namespace GridGenerator {
         [[nodiscard]] inline GridCoordinate getStartCoordinates() const { return startCoordinates; }
 
         [[nodiscard]] inline GridCoordinate getEndCoordinates() const { return endCoordinates; }
+
+        inline void incrementClosedCellCount(){closedCellCount++;}
+        inline void incrementVisitCount(){visitCount++;}
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -98,6 +101,8 @@ namespace GridGenerator {
 
         inline void setUnsolvable() { exitStatus = GridSolvedStatus::GRID_UNSOLVABLE; }
 
+        void resetGrid();
+
     private:
 
         uint32_t sizeX;
@@ -111,6 +116,10 @@ namespace GridGenerator {
         GridCoordinate endCoordinates;
 
         GridSolvedStatus exitStatus;
+
+        uint32_t pathCellCount = 1;
+        uint32_t closedCellCount = 0;
+        uint32_t visitCount = 0;
     };
 
 

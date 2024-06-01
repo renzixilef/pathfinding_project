@@ -7,9 +7,10 @@
 #include <QDebug>
 
 #include "GridGenerator/obstacle_gen.h"
+#include "GUI/gui_main_window.h"
 
 int main(int argc, char *argv[]) {
-    QCoreApplication pathfindingApp(argc, argv);
+    QApplication pathfindingApp(argc, argv);
 
     QCommandLineParser pathfindingParser;
     pathfindingParser.setApplicationDescription(
@@ -24,7 +25,8 @@ int main(int argc, char *argv[]) {
     pathfindingParser.process(pathfindingApp);
     bool guiMode = pathfindingParser.isSet(guiOption);
     if(guiMode){
-
+        QMainWindow* mainWindow = new GUI::MainWindow();
+        mainWindow->show();
     }else{
         //TODO: implement this case
     }

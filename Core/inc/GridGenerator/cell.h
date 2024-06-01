@@ -13,10 +13,10 @@ namespace GridGenerator {
     };
 
     struct CellCost {
-        float gCost;
-        float hCost;
+        double gCost;
+        double hCost;
 
-        [[nodiscard]] inline float totalCost() const { return gCost + hCost; }
+        [[nodiscard]] inline double totalCost() const { return gCost + hCost; }
     };
 
 
@@ -34,9 +34,9 @@ namespace GridGenerator {
 
         inline void markPath() { state = CellState::CELL_PATH; }
 
-        inline void setGCost(float gCost) { cost.gCost = gCost; }
+        inline void setGCost(double gCost) { cost.gCost = gCost; }
 
-        inline void setHCost(float hCost) { cost.hCost = hCost; }
+        inline void setHCost(double hCost) { cost.hCost = hCost; }
 
         inline void setParent(Cell *parentCell) { parent = parentCell; }
 
