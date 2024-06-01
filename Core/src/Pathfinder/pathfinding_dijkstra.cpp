@@ -3,6 +3,7 @@
 #include <queue>
 
 void Pathfinder::DijkstraSolve::markShortestPath() {
+    triggerCallbacks(Pathfinder::CallbackType::CALLBACK_BEFORE_RUN);
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
@@ -15,6 +16,7 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
     nextCellQueue.push(currentCoordinates);
 
     while (!nextCellQueue.empty()) {
+        triggerCallbacks(Pathfinder::CallbackType::CALLBACK_BEFORE_STEP);
         currentCoordinates = nextCellQueue.top();
         nextCellQueue.pop();
         GridGenerator::Cell &currentCell = grid(currentCoordinates);
@@ -46,12 +48,14 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
         }
         currentCell.markClosed();
         grid.incrementClosedCellCount();
+        triggerCallbacks(Pathfinder::CallbackType::CALLBACK_AFTER_STEP);
     }
     if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
         grid.setSolved();
     }else{
         grid.setUnsolvable();
     }
+    triggerCallbacks(Pathfinder::CallbackType::CALLBACK_AFTER_RUN);
 }
 
 
