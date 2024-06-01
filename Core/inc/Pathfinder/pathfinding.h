@@ -38,8 +38,8 @@ namespace Pathfinder {
         virtual ~pathfindingParent() = default;
         virtual void markShortestPath() = 0;
         void registerCallback(CallbackType callbackType, const std::function<void()>& callback);
-        void triggerCallbacks(CallbackType callbackType);
     protected:
+        void triggerCallbacks(CallbackType callbackType);
         GridGenerator::Grid& grid;
         std::vector<std::function<void()>> afterStepCallback;
         std::vector<std::function<void()>> afterRunCallback;

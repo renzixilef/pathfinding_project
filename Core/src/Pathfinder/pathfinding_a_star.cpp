@@ -4,6 +4,7 @@
 #include <queue>
 
 void Pathfinder::AStarSolve::markShortestPath() {
+    triggerCallbacks(Pathfinder::CallbackType::CALLBACK_BEFORE_RUN);
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
@@ -18,6 +19,7 @@ void Pathfinder::AStarSolve::markShortestPath() {
     nextCellQueue.push(currentCoordinates);
 
     while (!nextCellQueue.empty()) {
+        triggerCallbacks(Pathfinder::CallbackType::CALLBACK_BEFORE_STEP);
         currentCoordinates = nextCellQueue.top();
         nextCellQueue.pop();
         //TODO: this line modifies the grid, why?
@@ -56,6 +58,7 @@ void Pathfinder::AStarSolve::markShortestPath() {
         }
         currentCell.markClosed();
         grid.incrementClosedCellCount();
+        triggerCallbacks(Pathfinder::CallbackType::CALLBACK_AFTER_STEP);
     }
     if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
         grid.setSolved();
@@ -63,5 +66,5 @@ void Pathfinder::AStarSolve::markShortestPath() {
     }else{
         grid.setUnsolvable();
     }
-
+    triggerCallbacks(Pathfinder::CallbackType::CALLBACK_AFTER_RUN);
 }
