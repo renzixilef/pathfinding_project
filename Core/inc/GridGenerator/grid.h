@@ -66,9 +66,9 @@ namespace GridGenerator {
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
 
 
-        [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
+        [[nodiscard]] inline Cell *getStartCell() const { return startCell;}
 
-        [[nodiscard]] inline Cell *getEndCell() const { return endCell; }
+        [[nodiscard]] inline Cell *getEndCell() const { return endCell;}
 
         [[nodiscard]] inline uint32_t getSizeX() const { return cells.size(); }
 
@@ -77,6 +77,9 @@ namespace GridGenerator {
         [[nodiscard]] inline GridCoordinate getStartCoordinates() const { return startCoordinates; }
 
         [[nodiscard]] inline GridCoordinate getEndCoordinates() const { return endCoordinates; }
+
+        inline void incrementClosedCellCount(){closedCellCount++;}
+        inline void incrementVisitCount(){visitCount++;}
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -113,6 +116,10 @@ namespace GridGenerator {
         GridCoordinate endCoordinates;
 
         GridSolvedStatus exitStatus;
+
+        uint32_t pathCellCount = 1;
+        uint32_t closedCellCount = 0;
+        uint32_t visitCount = 0;
     };
 
 

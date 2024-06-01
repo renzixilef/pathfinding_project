@@ -34,15 +34,18 @@ void Pathfinder::DijkstraSolve::markShortestPath() {
                 neighborCell.setParent(&grid(currentCoordinates));
                 neighborCell.markVisited();
                 nextCellQueue.push(neighborCoordinates);
+                grid.incrementVisitCount();
             } else if (neighborCell.getState() == GridGenerator::CellState::CELL_VISITED) {
                 if (neighborCell.getCost().gCost > neighborCellGCostFromCurrentCell) {
                     neighborCell.setGCost(neighborCellGCostFromCurrentCell);
                     neighborCell.setParent(&grid(currentCoordinates));
                     nextCellQueue.push(neighborCoordinates);
+                    grid.incrementVisitCount();
                 }
             }
         }
         currentCell.markClosed();
+        grid.incrementClosedCellCount();
     }
     if(grid(endCoordinates).getState() == GridGenerator::CellState::CELL_PATH){
         grid.setSolved();

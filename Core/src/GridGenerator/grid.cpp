@@ -72,6 +72,7 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &gen
 void GridGenerator::Grid::markPathByParentCells() {
     Cell* nextCell = endCell;
     while(nextCell != nullptr) {
+        pathCellCount++;
         nextCell->markPath();
         nextCell = nextCell->getParent();
     }
