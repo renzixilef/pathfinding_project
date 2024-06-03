@@ -26,6 +26,7 @@ namespace GUI {
     signals:
 
         void nextStep();
+        void resetRun();
 
     public slots:
         void onGridFinished();
@@ -38,6 +39,7 @@ namespace GUI {
         void nextStepButtonHandler();
 
         bool runPaused = true;
+        bool runFinished = false;
 
         RunInterface::SingleRun *runInterface;
         QThread *singleRunThread;

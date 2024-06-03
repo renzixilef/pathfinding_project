@@ -140,9 +140,10 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
     std::uniform_int_distribution<uint8_t> distrDir(1, 10);
 
-    uint32_t currentX, oldX = distrX(gen);
-    uint32_t currentY, oldY = distrY(gen);
-    uint64_t numObstacles = (uint64_t) (sizeX * sizeY * (1 - obstacleDensity));
+    uint32_t currentX = distrX(gen);
+    uint32_t currentY = distrY(gen);
+
+    uint64_t numObstacles = static_cast<uint64_t>(sizeX * sizeY *static_cast<double>(1 - obstacleDensity));
 
     // if obstacleDensity is close to 1 this will take exponentially longer
     for (uint64_t i = 0; i < numObstacles; i++) {
@@ -152,13 +153,16 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
             allWalkableCoordinateSet.insert(thisCoord);
         } else {
             i--;
-            currentX = oldX;
-            currentY = oldY;
+            std::uniform_int_distribution<uint32_t> distrWalkable(0, allWalkableCoordinateSet.size()-1);
+            auto iterator = allWalkableCoordinateSet.begin();
+            std::advance(iterator, distrWalkable(gen));
+            currentX = iterator->x;
+            currentY = iterator->y;
         }
         uint8_t direction = distrDir(gen);
 
-        oldX = currentX;
-        oldY = currentY;
+        uint32_t oldX = currentX;
+        uint32_t oldY = currentY;
 
         int8_t dx = distrX(gen) > (sizeX / 2) ? 1 : -1;
         int8_t dy = distrY(gen) > (sizeY / 2) ? 1 : -1;
@@ -191,7 +195,7 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
             auto iteratorEnd = allWalkableCoordinateSet.begin();
             std::advance(iteratorEnd, randomIndexEnd);
             endCoord = *iteratorEnd;
-            if (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance) break;
+            if (startCoord.getAbsDistanceTo(endCoord) > minStartEndDistance) break;
         }
     } while (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
     grid.setStart(startCoord);

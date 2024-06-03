@@ -23,9 +23,11 @@ GUI::SingleRunDialog::SingleRunDialog(RunInterface::RunGridConfig config,
     showMaximized();
     runInterface->moveToThread(singleRunThread);
     connect(this, SIGNAL(nextStep()), runInterface, SLOT(nextStep()));
+    connect(this, SIGNAL(resetRun()), runInterface, SLOT(onRunReset()));
     connect(runInterface, SIGNAL(stepFinished()), this, SLOT(onStepFinished()));
     connect(runInterface, SIGNAL(gridFinished()), this, SLOT(onGridFinished()));
     connect(singleRunThread, SIGNAL(finished()), runInterface, SLOT(deleteLater()));
+
     singleRunThread->start();
 
     connect(nextStepButton, &QPushButton::clicked, this,
@@ -46,7 +48,7 @@ void GUI::SingleRunDialog::onStepFinished() {
     gridWidget->update();
     if(!runPaused){
         nextStepTimer->setSingleShot(true);
-        nextStepTimer->start(500);
+        nextStepTimer->start(50);
     }else{
         nextStepButton->setEnabled(true);
         toggleRunButton->setEnabled(true);
@@ -56,6 +58,12 @@ void GUI::SingleRunDialog::onStepFinished() {
 }
 
 void GUI::SingleRunDialog::toggleRunButtonHandler() {
+    if(runFinished){
+        emit resetRun();
+        toggleRunButton->setText("Play");
+        toggleRunButton->setStyleSheet("background-color: green");
+        toggleRunButton->setEnabled(false);
+    }
     if(runPaused) {
         nextStepButton->setEnabled(false);
         toggleRunButton->setText("Pause");
@@ -76,5 +84,9 @@ void GUI::SingleRunDialog::nextStepButtonHandler() {
 void GUI::SingleRunDialog::onGridFinished() {
     gridWidget->update();
     nextStepButton->setEnabled(false);
-    toggleRunButton->setEnabled(false);
+    toggleRunButton->setEnabled(true);
+    toggleRunButton->setText("New Run");
+    toggleRunButton->setStyleSheet("background-color: blue");
+    runFinished = true;
+    runPaused = true;
 }
