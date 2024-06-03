@@ -217,11 +217,13 @@ void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDen
     } while (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
     grid.setEnd(endCoord);
 
+    std::vector<std::vector<double>> gridNoiseValues(sizeX, std::vector<double>(sizeY));
     std::vector<double> noiseValues;
     for (uint32_t x = 0; x < sizeX; x++) {
         for (uint32_t y = 0; y < sizeY; y++) {
             double cellNoise = noise(x / PERLIN_NOISE_SCALE + offsetX, y / PERLIN_NOISE_SCALE + offsetY);
             noiseValues.push_back(cellNoise);
+            gridNoiseValues.at(x).at(y)=cellNoise;
         }
     }
 
@@ -232,9 +234,7 @@ void GridGenerator::PerlinNoise::generateObstacles(Grid &grid, float obstacleDen
 
     for (uint32_t x = 0; x < sizeX; x++) {
         for (uint32_t y = 0; y < sizeY; y++) {
-
-            double cellNoise = noise(x / PERLIN_NOISE_SCALE + offsetX, y / PERLIN_NOISE_SCALE + offsetY);
-            if (cellNoise>obstacleDensityThreshold) {
+            if (gridNoiseValues.at(x).at(y)>obstacleDensityThreshold) {
                 GridCoordinate thisCoord{x, y};
                 if (thisCoord != startCoord && thisCoord != endCoord) {
                     grid(thisCoord).markObstacle();
