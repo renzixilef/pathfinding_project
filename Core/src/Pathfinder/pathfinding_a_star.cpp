@@ -39,7 +39,6 @@ void Pathfinder::AStarSolve::nextStep() {
                 grid.incrementVisitCount();
             }
         }
-        std::cout << "Step done" << std::endl;
     }
     currentCell.markClosed();
     grid.incrementClosedCellCount();

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QTimer>
 
 #include "RunInterface/runner.h"
 #include "GUI/gui_grid.h"
@@ -27,6 +28,7 @@ namespace GUI {
         void nextStep();
 
     public slots:
+        void onGridFinished();
 
         void onStepFinished();
 
@@ -35,6 +37,7 @@ namespace GUI {
 
         void nextStepButtonHandler();
 
+        bool runPaused = true;
 
         RunInterface::SingleRun *runInterface;
         QThread *singleRunThread;
@@ -48,6 +51,7 @@ namespace GUI {
         QHBoxLayout* gridWidgetLayout;
         QHBoxLayout *buttonLayout;
 
+        QTimer* nextStepTimer;
 
     };
 }
