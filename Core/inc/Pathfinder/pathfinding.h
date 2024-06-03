@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <optional>
 
 //TODO: implement functionality to get private grid information
 //TODO: implement gridReset to solve nextGrid
@@ -48,6 +49,17 @@ namespace Pathfinder {
         explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
         void markShortestPath() override;
+    };
+
+    class JumpPointSolve : public pathfindingParent{
+    public:
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid){}
+
+        void markShortestPath() override;
+    private:
+        std::optional<GridGenerator::GridCoordinate> getJumpPoint(GridGenerator::GridCoordinate currentCoord,
+                                                   GridGenerator::GridCoordinate neighborCoord);
+
     };
 
 }

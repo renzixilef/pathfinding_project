@@ -3,7 +3,7 @@
 #include <iostream>
 #include <queue>
 
-void Pathfinder::AStarSolve::markShortestPath() {
+void Pathfinder::JumpPointSolve::markShortestPath() {
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
@@ -28,11 +28,11 @@ void Pathfinder::AStarSolve::markShortestPath() {
             break;
         }
 
-
-
         neighbors = grid.getNeighborsCoordinates(currentCoordinates);
 
         for (const auto &neighborCoordinates: neighbors) {
+                GridGenerator::GridCoordinate jumpPointInNeighborCoordDirection = getJumpPoint(currentCoordinates, neighborCoordinates)
+
             GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
             double neighborCellGCostFromCurrentCell = currentCell.getCost().gCost +
                                                       neighborCoordinates.getAbsDistanceTo(currentCoordinates);
@@ -64,4 +64,9 @@ void Pathfinder::AStarSolve::markShortestPath() {
         grid.setUnsolvable();
     }
 
+}
+
+std::optional<GridGenerator::GridCoordinate> Pathfinder::JumpPointSolve::getJumpPoint(GridGenerator::GridCoordinate currentCoord,
+                                                                       GridGenerator::GridCoordinate neighborCoord) {
+return std::nullopt;
 }
