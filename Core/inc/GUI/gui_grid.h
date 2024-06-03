@@ -13,7 +13,6 @@ namespace GUI {
         explicit GridDrawerWidget(const GridGenerator::Grid &grid, QWidget *parent = nullptr) :
                 QWidget(parent), grid(grid) {}
 
-
     private:
         const GridGenerator::Grid &grid;
         void paintEvent(QPaintEvent*) override;

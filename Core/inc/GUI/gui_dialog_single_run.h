@@ -5,7 +5,8 @@
 #include <QGridLayout>
 #include <QPushButton>
 
-#include "../RunInterface/runner.h"
+#include "RunInterface/runner.h"
+#include "GUI/gui_grid.h"
 
 namespace GUI {
     class SingleRunDialog : public QDialog {
@@ -26,18 +27,26 @@ namespace GUI {
         void nextStep();
 
     public slots:
+
         void onStepFinished();
 
     private:
         void toggleRunButtonHandler();
+
         void nextStepButtonHandler();
 
 
         RunInterface::SingleRun *runInterface;
-
         QThread *singleRunThread;
+
+        GridDrawerWidget *gridWidget;
+
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
+
+        QVBoxLayout *mainLayout;
+        QHBoxLayout* gridWidgetLayout;
+        QHBoxLayout *buttonLayout;
 
 
     };

@@ -27,12 +27,13 @@ namespace RunInterface {
     Q_OBJECT
     public:
         explicit RunnerParent(const RunGridConfig &thisConfig);
+        [[nodiscard]] const inline GridGenerator::Grid& getGridRef() const {return grid;}
     signals:
         void stepFinished();
         void gridFinished();
 
     public slots:
-        virtual void startNext() = 0;
+        virtual void nextStep() = 0;
     protected:
         RunGridConfig config;
         GridGenerator::Grid grid;
@@ -44,7 +45,7 @@ namespace RunInterface {
     public:
         explicit SingleRun(const RunGridConfig &thisConfig, const Pathfinder::PathfinderStrategy &thisStrat);
 
-        void startNext() override;
+        void nextStep() override;
 
     private:
         Pathfinder::PathfinderStrategy strat;

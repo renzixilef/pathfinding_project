@@ -10,7 +10,7 @@ RunInterface::SingleRun::SingleRun(const RunInterface::RunGridConfig &thisConfig
 
 }
 
-void RunInterface::SingleRun::startNext() {
+void RunInterface::SingleRun::nextStep() {
     if (!solver->queueEmpty()) {
         solver->nextStep();
     } else {

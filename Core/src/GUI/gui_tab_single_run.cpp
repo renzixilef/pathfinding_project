@@ -41,7 +41,6 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
     layout->addRow("Grid Generator Algorithm", gridGeneratorAlgorithmComboBox);
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmComboBox);
     layout->addRow(startRunButton);
-
     setLayout(layout);
 }
 
