@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <list>
+#include <QObject>
 
 #include "../GridGenerator/obstacle_gen.h"
 #include "../Pathfinder/pathfinding.h"
@@ -22,15 +23,19 @@ namespace RunInterface {
     };
 
 
-    class RunnerParent {
+    class RunnerParent: public QObject {
+    Q_OBJECT
     public:
         explicit RunnerParent(const RunGridConfig &thisConfig);
 
         virtual void start() = 0;
+    signals:
+        void stepFinished();
 
     protected:
         RunGridConfig config;
         GridGenerator::Grid grid;
+
 
     };
 

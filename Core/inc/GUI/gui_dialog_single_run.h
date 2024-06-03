@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QThread>
 #include <QDialog>
 #include <QGridLayout>
 #include <QPushButton>
@@ -14,9 +15,24 @@ namespace GUI {
         SingleRunDialog(RunInterface::RunGridConfig config,
                         Pathfinder::PathfinderStrategy strat,
                         QWidget *parent = nullptr);
+        ~SingleRunDialog() override {
+            singleRunThread->quit();
+            singleRunThread->wait();
+        }
+
+    signals:
+
+        void nextStep();
+
+    public slots:
+        void onStepFinished();
 
     private:
-        RunInterface::SingleRun runInterface;
+        RunInterface::SingleRun *runInterface;
+
+        QThread *singleRunThread;
+        QPushButton *nextStepButton;
+        QPushButton *startRunNoWaitButton;
 
 
     };
