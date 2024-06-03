@@ -142,7 +142,8 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
 
     uint32_t currentX = distrX(gen);
     uint32_t currentY = distrY(gen);
-    uint64_t numObstacles = (uint64_t) (sizeX * sizeY * (1 - obstacleDensity));
+
+    uint64_t numObstacles = static_cast<uint64_t>(sizeX * sizeY *static_cast<double>(1 - obstacleDensity));
 
     // if obstacleDensity is close to 1 this will take exponentially longer
     for (uint64_t i = 0; i < numObstacles; i++) {
@@ -152,6 +153,11 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
             allWalkableCoordinateSet.insert(thisCoord);
         } else {
             i--;
+            std::uniform_int_distribution<uint32_t> distrWalkable(0, allWalkableCoordinateSet.size()-1);
+            auto iterator = allWalkableCoordinateSet.begin();
+            std::advance(iterator, distrWalkable(gen));
+            currentX = iterator->x;
+            currentY = iterator->y;
         }
         uint8_t direction = distrDir(gen);
 
@@ -189,7 +195,7 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
             auto iteratorEnd = allWalkableCoordinateSet.begin();
             std::advance(iteratorEnd, randomIndexEnd);
             endCoord = *iteratorEnd;
-            if (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance) break;
+            if (startCoord.getAbsDistanceTo(endCoord) > minStartEndDistance) break;
         }
     } while (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
     grid.setStart(startCoord);

@@ -23,3 +23,13 @@ void RunInterface::SingleRun::nextStep() {
         emit stepFinished();
     }
 }
+
+void RunInterface::SingleRun::onRunReset() {
+    grid = GridGenerator::Grid(config.gridWith,
+                               config.gridHeight,
+                               *GridGenerator::ObstacleGenStrategyParser::parseObstacleGenStrategy(
+                                       config.obstacleGenStrategy),
+                               config.obstacleDensity, config.minStartEndDistance);
+    solver = Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid);
+    emit stepFinished();
+}

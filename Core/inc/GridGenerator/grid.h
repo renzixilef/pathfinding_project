@@ -93,7 +93,7 @@ namespace GridGenerator {
 
         auto compareCells() {
             return [this](const GridCoordinate &a, const GridCoordinate &b) {
-                return (*this)(a).getCost().totalCost() < (*this)(b).getCost().totalCost();
+                return (*this)(a).getCost().totalCost() > (*this)(b).getCost().totalCost();
             };
         }
 

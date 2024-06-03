@@ -23,19 +23,25 @@ namespace Pathfinder {
         static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
 
         static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
-                                                                   GridGenerator::Grid &grid);
+                                                                          GridGenerator::Grid &grid);
     };
 
     class pathfindingParent {
     public:
-        explicit pathfindingParent(GridGenerator::Grid &grid) : grid(grid), nextCellQueue(grid.compareCells()) {
+        explicit pathfindingParent(GridGenerator::Grid &grid) :
+                grid(grid),
+                nextCellQueue(grid.compareCells()) {
             initSolver();
         }
+
         virtual ~pathfindingParent() = default;
-        inline bool queueEmpty(){return nextCellQueue.empty();}
+
+        inline bool queueEmpty() { return nextCellQueue.empty(); }
+
         virtual void nextStep() = 0;
+
     protected:
-        GridGenerator::Grid& grid;
+        GridGenerator::Grid &grid;
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
                 decltype(grid.compareCells())> nextCellQueue;
     private:
