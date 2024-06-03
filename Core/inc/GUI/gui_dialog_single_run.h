@@ -1,10 +1,12 @@
 #pragma once
 
+#include <QThread>
 #include <QDialog>
 #include <QGridLayout>
 #include <QPushButton>
 
-#include "../RunInterface/runner.h"
+#include "RunInterface/runner.h"
+#include "GUI/gui_grid.h"
 
 namespace GUI {
     class SingleRunDialog : public QDialog {
@@ -15,8 +17,36 @@ namespace GUI {
                         Pathfinder::PathfinderStrategy strat,
                         QWidget *parent = nullptr);
 
+        ~SingleRunDialog() override {
+            singleRunThread->quit();
+            singleRunThread->wait();
+        }
+
+    signals:
+
+        void nextStep();
+
+    public slots:
+
+        void onStepFinished();
+
     private:
-        RunInterface::SingleRun runInterface;
+        void toggleRunButtonHandler();
+
+        void nextStepButtonHandler();
+
+
+        RunInterface::SingleRun *runInterface;
+        QThread *singleRunThread;
+
+        GridDrawerWidget *gridWidget;
+
+        QPushButton *nextStepButton;
+        QPushButton *toggleRunButton;
+
+        QVBoxLayout *mainLayout;
+        QHBoxLayout* gridWidgetLayout;
+        QHBoxLayout *buttonLayout;
 
 
     };

@@ -10,6 +10,16 @@ RunInterface::SingleRun::SingleRun(const RunInterface::RunGridConfig &thisConfig
 
 }
 
-void RunInterface::SingleRun::start() {
-    solver->markShortestPath();
+void RunInterface::SingleRun::nextStep() {
+    if (!solver->queueEmpty()) {
+        solver->nextStep();
+    } else {
+        grid.setUnsolvable();
+    }
+    if (grid.getEndCell()->getState() == GridGenerator::CellState::CELL_PATH) {
+        grid.setSolved();
+        emit gridFinished();
+    } else {
+        emit stepFinished();
+    }
 }

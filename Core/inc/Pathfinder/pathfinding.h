@@ -5,18 +5,12 @@
 #include <map>
 #include <memory>
 #include <functional>
+#include <queue>
 
 //TODO: implement functionality to get private grid information
 //TODO: implement gridReset to solve nextGrid
 
 namespace Pathfinder {
-
-    enum class CallbackType{
-        CALLBACK_AFTER_STEP,
-        CALLBACK_AFTER_RUN,
-        CALLBACK_BEFORE_STEP,
-        CALLBACK_BEFORE_RUN
-    };
 
     enum class PathfinderStrategy {
         PATHFINDER_DIJKSTRA = 1,
@@ -34,31 +28,32 @@ namespace Pathfinder {
 
     class pathfindingParent {
     public:
-        explicit pathfindingParent(GridGenerator::Grid &grid) : grid(grid) {}
+        explicit pathfindingParent(GridGenerator::Grid &grid) : grid(grid), nextCellQueue(grid.compareCells()) {
+            initSolver();
+        }
         virtual ~pathfindingParent() = default;
-        virtual void markShortestPath() = 0;
-        void registerCallback(CallbackType callbackType, const std::function<void()>& callback);
+        inline bool queueEmpty(){return nextCellQueue.empty();}
+        virtual void nextStep() = 0;
     protected:
-        void triggerCallbacks(CallbackType callbackType);
         GridGenerator::Grid& grid;
-        std::vector<std::function<void()>> afterStepCallback;
-        std::vector<std::function<void()>> afterRunCallback;
-        std::vector<std::function<void()>> beforeStepCallback;
-        std::vector<std::function<void()>> beforeRunCallback;
+        std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
+                decltype(grid.compareCells())> nextCellQueue;
+    private:
+        void initSolver();
     };
 
     class DijkstraSolve : public pathfindingParent {
     public:
         explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
-        void markShortestPath() override;
+        void nextStep() override;
     };
 
     class AStarSolve : public pathfindingParent {
     public:
         explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
-        void markShortestPath() override;
+        void nextStep() override;
     };
 
 }

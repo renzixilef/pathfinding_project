@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <list>
+#include <QObject>
 
 #include "../GridGenerator/obstacle_gen.h"
 #include "../Pathfinder/pathfinding.h"
@@ -22,15 +23,21 @@ namespace RunInterface {
     };
 
 
-    class RunnerParent {
+    class RunnerParent: public QObject {
+    Q_OBJECT
     public:
         explicit RunnerParent(const RunGridConfig &thisConfig);
+        [[nodiscard]] const inline GridGenerator::Grid& getGridRef() const {return grid;}
+    signals:
+        void stepFinished();
+        void gridFinished();
 
-        virtual void start() = 0;
-
+    public slots:
+        virtual void nextStep() = 0;
     protected:
         RunGridConfig config;
         GridGenerator::Grid grid;
+
 
     };
 
@@ -38,7 +45,7 @@ namespace RunInterface {
     public:
         explicit SingleRun(const RunGridConfig &thisConfig, const Pathfinder::PathfinderStrategy &thisStrat);
 
-        void start() override;
+        void nextStep() override;
 
     private:
         Pathfinder::PathfinderStrategy strat;
@@ -51,7 +58,7 @@ namespace RunInterface {
                           const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
                           uint32_t thisIterations);
 
-        void start() override;
+        void startNext();
 
     private:
         std::list<Pathfinder::PathfinderStrategy> strats;
