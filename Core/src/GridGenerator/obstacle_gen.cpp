@@ -140,8 +140,8 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
     std::uniform_int_distribution<uint32_t> distrY(0, sizeY - 1);
     std::uniform_int_distribution<uint8_t> distrDir(1, 10);
 
-    uint32_t currentX = distrX(gen);
-    uint32_t currentY = distrY(gen);
+    uint32_t currentX, oldX = distrX(gen);
+    uint32_t currentY, oldY = distrY(gen);
     uint64_t numObstacles = (uint64_t) (sizeX * sizeY * (1 - obstacleDensity));
 
     // if obstacleDensity is close to 1 this will take exponentially longer
@@ -152,11 +152,13 @@ void GridGenerator::DrunkenWalk::generateObstacles(Grid &grid, float obstacleDen
             allWalkableCoordinateSet.insert(thisCoord);
         } else {
             i--;
+            currentX = oldX;
+            currentY = oldY;
         }
         uint8_t direction = distrDir(gen);
 
-        uint32_t oldX = currentX;
-        uint32_t oldY = currentY;
+        oldX = currentX;
+        oldY = currentY;
 
         int8_t dx = distrX(gen) > (sizeX / 2) ? 1 : -1;
         int8_t dy = distrY(gen) > (sizeY / 2) ? 1 : -1;
