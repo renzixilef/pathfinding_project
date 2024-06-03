@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <queue>
+#include <optional>
 
 //TODO: implement functionality to get private grid information
 //TODO: implement gridReset to solve nextGrid
@@ -23,8 +24,9 @@ namespace Pathfinder {
         static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
 
         static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
-                                                                          GridGenerator::Grid &grid);
+                                                                   GridGenerator::Grid &grid);
     };
+
 
     class pathfindingParent {
     public:
@@ -60,6 +62,17 @@ namespace Pathfinder {
         explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
         void nextStep() override;
+    };
+
+    class JumpPointSolve : public pathfindingParent{
+    public:
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid){}
+
+        void nextStep() override;
+    private:
+        std::optional<GridGenerator::GridCoordinate> getJumpPoint(GridGenerator::GridCoordinate currentCoord,
+                                                   GridGenerator::GridCoordinate neighborCoord);
+
     };
 
 }
