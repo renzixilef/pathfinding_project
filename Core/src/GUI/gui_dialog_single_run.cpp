@@ -7,7 +7,7 @@ GUI::SingleRunDialog::SingleRunDialog(RunInterface::RunGridConfig config,
                                       QWidget *parent) :
         runInterface(new RunInterface::SingleRun(config, strat)),
         nextStepButton(new QPushButton(this)),
-        startRunNoWaitButton(new QPushButton(this)),
+        toggleRunButton(new QPushButton(this)),
         singleRunThread(new QThread(this)){
 
     runInterface->moveToThread(singleRunThread);
@@ -16,7 +16,23 @@ GUI::SingleRunDialog::SingleRunDialog(RunInterface::RunGridConfig config,
     connect(singleRunThread,SIGNAL(finished()), runInterface, SLOT(deleteLater()));
     singleRunThread->start();
 
+    connect(nextStepButton, &QPushButton::clicked, this,
+            &SingleRunDialog::nextStepButtonHandler);
+    connect(toggleRunButton, &QPushButton::clicked, this,
+            &SingleRunDialog::toggleRunButtonHandler);
 
 
     //runInterface.start();
+}
+
+void GUI::SingleRunDialog::onStepFinished() {
+
+}
+
+void GUI::SingleRunDialog::toggleRunButtonHandler() {
+
+}
+
+void GUI::SingleRunDialog::nextStepButtonHandler() {
+
 }

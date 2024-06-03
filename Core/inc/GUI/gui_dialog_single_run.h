@@ -15,6 +15,7 @@ namespace GUI {
         SingleRunDialog(RunInterface::RunGridConfig config,
                         Pathfinder::PathfinderStrategy strat,
                         QWidget *parent = nullptr);
+
         ~SingleRunDialog() override {
             singleRunThread->quit();
             singleRunThread->wait();
@@ -28,11 +29,15 @@ namespace GUI {
         void onStepFinished();
 
     private:
+        void toggleRunButtonHandler();
+        void nextStepButtonHandler();
+
+
         RunInterface::SingleRun *runInterface;
 
         QThread *singleRunThread;
         QPushButton *nextStepButton;
-        QPushButton *startRunNoWaitButton;
+        QPushButton *toggleRunButton;
 
 
     };

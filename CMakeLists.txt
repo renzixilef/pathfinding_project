@@ -16,7 +16,8 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 
 file(GLOB_RECURSE MOC_HEADERS
-    Core/inc/gui_*.h
+        Core/inc/gui_*.h
+        Core/inc/RunInterface/runner.h
 )
 
 qt5_wrap_cpp(MOC_SRCS ${MOC_HEADERS})

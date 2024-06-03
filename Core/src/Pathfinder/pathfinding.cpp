@@ -17,41 +17,14 @@ std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyPar
     return nullptr;
 }
 
-void Pathfinder::pathfindingParent::registerCallback(Pathfinder::CallbackType callbackType,
-                                                     const std::function<void()> &callback) {
-    switch (callbackType) {
-        case CallbackType::CALLBACK_AFTER_STEP:
-            afterStepCallback.push_back(callback);
-            break;
-        case CallbackType::CALLBACK_AFTER_RUN:
-            afterRunCallback.push_back(callback);
-            break;
-        case CallbackType::CALLBACK_BEFORE_STEP:
-            beforeStepCallback.push_back(callback);
-            break;
-        case CallbackType::CALLBACK_BEFORE_RUN:
-            beforeRunCallback.push_back(callback);
-            break;
-    }
-}
+void Pathfinder::pathfindingParent::initSolver() {
+    GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
+    GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 
-void Pathfinder::pathfindingParent::triggerCallbacks(Pathfinder::CallbackType callbackType) {
-    std::vector<std::function<void()>>* callbacks;
-    switch (callbackType) {
-        case CallbackType::CALLBACK_AFTER_STEP:
-            callbacks = &afterStepCallback;
-            break;
-        case CallbackType::CALLBACK_AFTER_RUN:
-            callbacks = &afterRunCallback;
-            break;
-        case CallbackType::CALLBACK_BEFORE_STEP:
-            callbacks = &beforeStepCallback;
-            break;
-        case CallbackType::CALLBACK_BEFORE_RUN:
-            callbacks = &beforeRunCallback;
-            break;
-    }
-    for(const auto& callback:*callbacks){
-        callback();
-    }
+    grid(currentCoordinates).setGCost(0);
+    grid(currentCoordinates).setHCost(currentCoordinates.getAbsDistanceTo(endCoordinates));
+    grid(endCoordinates).setHCost(0);
+
+    nextCellQueue.push(currentCoordinates);
+
 }
