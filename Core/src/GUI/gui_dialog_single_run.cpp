@@ -59,19 +59,22 @@ void GUI::SingleRunDialog::onStepFinished() {
 
 void GUI::SingleRunDialog::toggleRunButtonHandler() {
     if(runFinished){
-        emit resetRun();
+        runPaused = true;
+        runFinished = false;
         toggleRunButton->setText("Play");
         toggleRunButton->setStyleSheet("background-color: green");
         toggleRunButton->setEnabled(false);
-    }
-    if(runPaused) {
-        nextStepButton->setEnabled(false);
-        toggleRunButton->setText("Pause");
-        toggleRunButton->setStyleSheet("background-color: red");
-        runPaused = false;
-        emit nextStep();
-    }else{
-        runPaused = true;
+        emit resetRun();
+    }else {
+        if (runPaused) {
+            nextStepButton->setEnabled(false);
+            toggleRunButton->setText("Pause");
+            toggleRunButton->setStyleSheet("background-color: red");
+            runPaused = false;
+            emit nextStep();
+        } else {
+            runPaused = true;
+        }
     }
 }
 
@@ -88,5 +91,4 @@ void GUI::SingleRunDialog::onGridFinished() {
     toggleRunButton->setText("New Run");
     toggleRunButton->setStyleSheet("background-color: blue");
     runFinished = true;
-    runPaused = true;
 }
