@@ -9,6 +9,7 @@
 #include "grid.h"
 
 #define WALL_LENGTH_EXPONENTIAL_LAMBDA 15
+#define PERLIN_NOISE_SCALE 10.0
 
 //TODO: documentation
 
@@ -53,7 +54,12 @@ namespace GridGenerator {
 
     class PerlinNoise : public ObstacleGenerator {
     public:
-        explicit PerlinNoise():ObstacleGenerator(){}
+        explicit PerlinNoise():ObstacleGenerator(){
+            permutation.resize(256);
+            std::iota(permutation.begin(), permutation.end(), 0);
+            std::shuffle(permutation.begin(), permutation.end(), gen);
+            permutation.insert(permutation.end(), permutation.begin(), permutation.end());
+        }
         void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) override;
 
     private:
@@ -62,6 +68,8 @@ namespace GridGenerator {
         static inline double fade(double t) { return t * t * t * (t * (t * 6 - 15) + 10); }
 
         static double grad(uint32_t hash, double x, double y);
+
+        std::vector<uint8_t> permutation;
     };
 
     class DrunkenWalk : public ObstacleGenerator {
