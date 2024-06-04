@@ -17,7 +17,7 @@ std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyPar
     return nullptr;
 }
 
-void Pathfinder::pathfindingParent::initSolver() {
+void Pathfinder::pathfindingParent::initGenericSolver() {
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 

@@ -24,16 +24,15 @@ namespace Pathfinder {
         static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
 
         static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
-                                                                   GridGenerator::Grid &grid);
+                                                                          GridGenerator::Grid &grid);
     };
 
 
     class pathfindingParent {
     public:
         explicit pathfindingParent(GridGenerator::Grid &grid) :
-                grid(grid),
-                nextCellQueue(grid.compareCells()) {
-            initSolver();
+                grid(grid){
+            initGenericSolver();
         }
 
         virtual ~pathfindingParent() = default;
@@ -45,9 +44,9 @@ namespace Pathfinder {
     protected:
         GridGenerator::Grid &grid;
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
-                decltype(grid.compareCells())> nextCellQueue;
+                decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
     private:
-        void initSolver();
+        void initGenericSolver();
     };
 
     class DijkstraSolve : public pathfindingParent {
@@ -64,14 +63,23 @@ namespace Pathfinder {
         void nextStep() override;
     };
 
-    class JumpPointSolve : public pathfindingParent{
+    class JumpPointSolve : public pathfindingParent {
     public:
-        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid){}
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {
+            initJPSSolver();
+        }
 
         void nextStep() override;
+
     private:
         std::optional<GridGenerator::GridCoordinate> getJumpPoint(GridGenerator::GridCoordinate currentCoord,
-                                                   GridGenerator::GridCoordinate neighborCoord);
+                                                                  GridGenerator::GridCoordinate neighborCoord);
+
+        std::unordered_map<GridGenerator::GridCoordinate,
+                std::vector<std::pair<int8_t, int8_t>>, decltype(&GridGenerator::GridCoordinate::getHash)>
+                directionMap{0, GridGenerator::GridCoordinate::getHash};
+
+        void initJPSSolver();
 
     };
 

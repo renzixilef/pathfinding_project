@@ -3,7 +3,7 @@
 #include <iostream>
 #include <queue>
 
-void Pathfinder::JumpPointSolve::markShortestPath() {
+void Pathfinder::JumpPointSolve::nextStep() {
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
@@ -69,4 +69,19 @@ void Pathfinder::JumpPointSolve::markShortestPath() {
 std::optional<GridGenerator::GridCoordinate> Pathfinder::JumpPointSolve::getJumpPoint(GridGenerator::GridCoordinate currentCoord,
                                                                        GridGenerator::GridCoordinate neighborCoord) {
 return std::nullopt;
+}
+
+void Pathfinder::JumpPointSolve::initJPSSolver() {
+    std::vector<std::pair<int8_t, int8_t>> offsets = {
+            {-1, 0},
+            {1,  0},
+            {0,  -1},
+            {0,  1},  // Top, Bottom, Left, Right
+            {-1, -1},
+            {-1, 1},
+            {1,  -1},
+            {1,  1}  // Diagonals
+    };
+    GridGenerator::GridCoordinate startCoord = grid.getStartCoordinates();
+    directionMap[startCoord].insert(directionMap[startCoord].end(), offsets.begin(), offsets.end());
 }
