@@ -4,106 +4,126 @@
 #include <queue>
 
 void Pathfinder::JumpPointSolve::nextStep() {
-    GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
-    GridGenerator::GridCoordinate currentCoordinates = nextCellQueue.top();
+    using GridGenerator::GridCoordinate;
+    GridCoordinate endCoordinates = grid.getEndCoordinates();
+    GridCoordinate currentCoordinates = nextCellQueue.top();
     nextCellQueue.pop();
+    if (currentCoordinates == endCoordinates) {
+        //TODO: mark Path etc.
+        grid.setSolved();
+        return;
+    }
+    grid(currentCoordinates).markClosed();
+    grid.incrementClosedCellCount();
 
-    GridGenerator::Cell &currentCell = grid(currentCoordinates);
-    if (currentCell.getState() == GridGenerator::CellState::CELL_CLOSED) return;
-    auto nextDist = directionMap[currentCoordinates].back();
-    directionMap[currentCoordinates].pop_back();
-    addJumpPointsToQueue(currentCoordinates, nextDist, currentCoordinates, false);
+    for (const auto &direction: GridGenerator::Grid::offsets) {
+        std::optional<GridCoordinate> jumpPoint = jump(currentCoordinates, direction);
+        if (jumpPoint != std::nullopt) {
+            GridCoordinate jumpPointCoord = jumpPoint.value();
+            GridGenerator::Cell &jumpPointCell = grid(jumpPointCoord);
+            double gCostFromCurrent = (grid(currentCoordinates).getCost().gCost +
+                    currentCoordinates.getOctileDistanceTo(jumpPointCoord));
+            if (jumpPointCell.getState() == GridGenerator::CellState::CELL_CLOSED)
+                continue;
+            if (jumpPointCell.getState() == GridGenerator::CellState::CELL_VISITED) {
+                if (jumpPointCell.getCost().gCost > gCostFromCurrent) {
+                    nextCellQueue.push(jumpPointCoord);
+                    jumpPointCell.setParent(&grid(currentCoordinates));
+                    jumpPointCell.setGCost(gCostFromCurrent);
+                    grid.incrementVisitedCellCount();
+                }
+                continue;
+            }
+            if (jumpPointCell.getState() == GridGenerator::CellState::CELL_OPEN) {
+                nextCellQueue.push(jumpPointCoord);
+                jumpPointCell.setParent(&grid(currentCoordinates));
+                jumpPointCell.setGCost(gCostFromCurrent);
+                jumpPointCell.setHCost(jumpPointCoord.getAbsDistanceTo(endCoordinates));
+                jumpPointCell.markVisited();
+                grid.incrementVisitedCellCount();
+            }
+        }
+    }
 }
 
-void Pathfinder::JumpPointSolve::addJumpPointsToQueue(GridGenerator::GridCoordinate currentCoord,
-                                                      std::pair<int8_t, int8_t> direction,
-                                                      GridGenerator::GridCoordinate basePoint,
-                                                      bool recursed) {
+std::optional<GridGenerator::GridCoordinate> Pathfinder::JumpPointSolve::jump(
+        GridGenerator::GridCoordinate currentCoord, std::pair<int8_t, int8_t> direction) {
     using GridGenerator::GridCoordinate;
-    // TODO: CALCULATE G AND H COST SOMEWHERE?
-    std::vector<std::pair<int8_t, int8_t>> insertionDirs;
 
-    if (!(0 <= currentCoord.x + direction.first < grid.getSizeX() &&
-          0 <= currentCoord.y + direction.second < grid.getSizeY())) {
-        if (!recursed) grid(currentCoord).markClosed();
-        return;
+    if (isCellBlockedOrOutOfBounds(currentCoord.x + direction.first, currentCoord.y + direction.second)) {
+        return std::nullopt;
     }
     GridCoordinate nextPos(currentCoord.x + direction.first,
                            currentCoord.y + direction.second);
-    if (grid(nextPos).getState() == GridGenerator::CellState::CELL_OBSTACLE) {
-        if (!recursed) grid(currentCoord).markClosed();
-        grid.markPathByParentCells();
-        return;
-    }
-    grid(nextPos).setGCost(grid(currentCoord).getCost().gCost +
-                           currentCoord.getAbsDistanceTo(nextPos));
+
     if (nextPos == grid.getEndCoordinates()) {
-        grid(nextPos).setParent(&grid(basePoint));
-        return;
+        return nextPos;
     }
     // diagonal move
-    if (std::abs(direction.first) == std::abs(direction.second)) {
-        addJumpPointsToQueue(nextPos, std::make_pair(direction.first, 0),
-                             basePoint, true);
-        addJumpPointsToQueue(nextPos, std::make_pair(0, direction.second),
-                             basePoint, true);
-        addJumpPointsToQueue(nextPos, direction, basePoint, true);
-        if (!recursed) grid(currentCoord).markClosed();
-    } else { //horizontal/vertical move
-        if (0 <= currentCoord.x + 2 * direction.first < grid.getSizeX() &&
-            0 <= currentCoord.y + 2 * direction.second < grid.getSizeY()) {
-            GridCoordinate nextNextPos(currentCoord.x + 2 * direction.first,
-                                       currentCoord.y + 2 * direction.second);
-            GridCoordinate nextFirstPerp{nextPos.x + direction.second,
-                                         nextPos.y + direction.first};
-            GridCoordinate nextNextFirstPerp{nextNextPos.x + direction.second,
-                                             nextNextPos.y + direction.first};
-            std::pair<int8_t, int8_t> firstPerpDir = GridCoordinate::getDirection(nextPos,
-                                                                                  nextNextFirstPerp);
-            GridCoordinate nextSecondPerp{nextPos.x - direction.second,
-                                          nextPos.y - direction.first};
-            GridCoordinate nextNextSecondPerp{nextNextPos.x - direction.second,
-                                              nextNextPos.y - direction.first};
-            std::pair<int8_t, int8_t> secondPerpDir = GridCoordinate::getDirection(nextPos,
-                                                                                   nextNextSecondPerp);
-            std::pair<int8_t, int8_t> secondPerpendicularDir{};
-            if ((grid(nextFirstPerp).getState() == GridGenerator::CellState::CELL_OBSTACLE) &&
-                (grid(nextNextFirstPerp).getState() != GridGenerator::CellState::CELL_OBSTACLE)) {
-                insertionDirs.push_back(firstPerpDir);
+    if (direction.first != 0 && direction.second != 0) {
+        while (true) {
+            if ((!isCellBlockedOrOutOfBounds(nextPos.x - direction.first, nextPos.y + direction.second) &&
+                 isCellBlockedOrOutOfBounds(nextPos.x - direction.first, nextPos.y)) ||
+                (!isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y - direction.second) &&
+                 isCellBlockedOrOutOfBounds(nextPos.x, nextPos.y - direction.second))) {
+                return nextPos;
             }
-            if ((grid(nextSecondPerp).getState() == GridGenerator::CellState::CELL_OBSTACLE) &&
-                (grid(nextNextSecondPerp).getState() != GridGenerator::CellState::CELL_OBSTACLE)) {
-                insertionDirs.push_back(secondPerpDir);
+
+            if (jump(nextPos, std::make_pair(direction.first, 0)) != std::nullopt ||
+                jump(nextPos, std::make_pair(0, direction.second)) != std::nullopt) {
+                return nextPos;
+            }
+
+            if (isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y + direction.second)) {
+                return std::nullopt;
+            }
+            nextPos = {nextPos.x + direction.first, nextPos.y + direction.second};
+            if (nextPos == grid.getEndCoordinates()) {
+                return nextPos;
             }
         }
-        if (insertionDirs.size() >= 0) {
-            insertionDirs.insert(insertionDirs.begin(), direction);
-            grid(nextPos).setHCost(grid.getEndCoordinates().getAbsDistanceTo(nextPos));
-            grid(nextPos).setParent(&grid(basePoint));
-            nextCellQueue.push(nextPos);
-            directionMap[nextPos].insert(directionMap[nextPos].end(),
-                                         insertionDirs.begin(),
-                                         insertionDirs.end());
-            return;
-        } else {
-            addJumpPointsToQueue(nextPos, direction, basePoint, true);
-            if (!recursed) grid(currentCoord).markClosed();
+    } else {
+        if (direction.first != 0) {
+            while (true) {
+                if ((!isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y + 1) &&
+                     isCellBlockedOrOutOfBounds(nextPos.x, nextPos.y + 1)) ||
+                    (!isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y - 1) &&
+                     isCellBlockedOrOutOfBounds(nextPos.x, nextPos.y - 1))) {
+                    return nextPos;
+                }
+                if (isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y + direction.second)) {
+                    return std::nullopt;
+                }
+                nextPos = {nextPos.x + direction.first, nextPos.y + direction.second};
+                if (nextPos == grid.getEndCoordinates()) {
+                    return nextPos;
+                }
+            }
+        }
+        if (direction.second != 0) {
+            while (true) {
+                if ((!isCellBlockedOrOutOfBounds(nextPos.x + 1, nextPos.y + direction.second) &&
+                     isCellBlockedOrOutOfBounds(nextPos.x + 1, nextPos.y)) ||
+                    (!isCellBlockedOrOutOfBounds(nextPos.x - 1, nextPos.y + direction.second) &&
+                     isCellBlockedOrOutOfBounds(nextPos.x - 1, nextPos.y))) {
+                    return nextPos;
+                }
+                if (isCellBlockedOrOutOfBounds(nextPos.x + direction.first, nextPos.y + direction.second)) {
+                    return std::nullopt;
+                }
+                nextPos = {nextPos.x + direction.first, nextPos.y + direction.second};
+                if (nextPos == grid.getEndCoordinates()) {
+                    return nextPos;
+                }
+            }
         }
     }
-
+    return std::nullopt;
 }
 
 void Pathfinder::JumpPointSolve::initJPSSolver() {
-    std::vector<std::pair<int8_t, int8_t>> offsets = {
-            {-1, 0},
-            {1,  0},
-            {0,  -1},
-            {0,  1},  // Top, Bottom, Left, Right
-            {-1, -1},
-            {-1, 1},
-            {1,  -1},
-            {1,  1}  // Diagonals
-    };
     GridGenerator::GridCoordinate startCoord = grid.getStartCoordinates();
-    directionMap[startCoord].insert(directionMap[startCoord].end(), offsets.begin(), offsets.end());
+    directionMap[startCoord].insert(directionMap[startCoord].end(),
+                                    GridGenerator::Grid::offsets.begin(),
+                                    GridGenerator::Grid::offsets.end());
 }

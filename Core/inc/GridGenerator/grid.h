@@ -12,6 +12,7 @@
 #define STANDARD_OBSTACLE_DENSITY 0.3
 #define STANDARD_START_END_DISTANCE 0.5
 
+
 namespace GridGenerator {
     struct GridCoordinate {
         uint32_t x;
@@ -20,6 +21,16 @@ namespace GridGenerator {
         [[nodiscard]] inline double getAbsDistanceTo(const GridCoordinate &point) const {
             return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
         }
+
+        [[nodiscard]] inline double getOctileDistanceTo(const GridCoordinate &point) const {
+            uint32_t xDistAbs = std::abs(static_cast<int64_t>(x)-static_cast<int64_t>(point.x));
+            uint32_t yDistAbs = std::abs(static_cast<int64_t>(y)-static_cast<int64_t>(point.y));
+            if (xDistAbs > yDistAbs)
+                return sqrt(2) * yDistAbs + 1 * (xDistAbs-yDistAbs);
+            else
+                return sqrt(2) * xDistAbs + 1 * (yDistAbs-xDistAbs);
+        }
+
 
         [[nodiscard]] inline bool operator==(const GridCoordinate &other) const {
             return x == other.x && y == other.y;
@@ -75,7 +86,7 @@ namespace GridGenerator {
 
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
 
-        [[nodiscard]] inline bool isInBounds(int64_t x, int64_t y) const {return x>0 && x<sizeX && y>0 && y<sizeY;}
+        [[nodiscard]] inline bool isInBounds(int64_t x, int64_t y) const {return x>=0 && x<sizeX && y>=0 && y<sizeY;}
 
         [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
 
@@ -91,7 +102,7 @@ namespace GridGenerator {
 
         inline void incrementClosedCellCount() { closedCellCount++; }
 
-        inline void incrementVisitCount() { visitCount++; }
+        inline void incrementVisitedCellCount() { visitCount++; }
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -115,6 +126,7 @@ namespace GridGenerator {
 
         void resetGrid();
 
+        static const std::vector<std::pair<int8_t, int8_t>> offsets;
     private:
 
         uint32_t sizeX;

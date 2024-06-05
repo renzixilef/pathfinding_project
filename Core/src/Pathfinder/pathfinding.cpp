@@ -31,3 +31,13 @@ void Pathfinder::pathfindingParent::initGenericSolver() {
     nextCellQueue.push(currentCoordinates);
 
 }
+
+bool Pathfinder::pathfindingParent::isCellBlockedOrOutOfBounds(int64_t x, int64_t y) {
+    if(grid.isInBounds(x,y)){
+        auto castX = static_cast<uint32_t>(x);
+        auto castY = static_cast<uint32_t>(y);
+        GridGenerator::CellState cellState = grid(GridGenerator::GridCoordinate{castX,castY}).getState();
+        return cellState == GridGenerator::CellState::CELL_OBSTACLE;
+    }
+    return true;
+}

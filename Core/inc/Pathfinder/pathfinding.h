@@ -28,7 +28,6 @@ namespace Pathfinder {
                                                                           GridGenerator::Grid &grid);
     };
 
-
     class pathfindingParent {
     public:
         explicit pathfindingParent(GridGenerator::Grid &grid) :
@@ -46,6 +45,9 @@ namespace Pathfinder {
         GridGenerator::Grid &grid;
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
                 decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
+
+        bool isCellBlockedOrOutOfBounds(int64_t x, int64_t y);
+
     private:
         void initGenericSolver();
     };
@@ -73,10 +75,8 @@ namespace Pathfinder {
         void nextStep() override;
 
     private:
-        void addJumpPointsToQueue(GridGenerator::GridCoordinate currentCoord,
-                                  std::pair<int8_t, int8_t> direction,
-                                  GridGenerator::GridCoordinate basePoint,
-                                  bool recursed = false);
+        std::optional<GridGenerator::GridCoordinate> jump(GridGenerator::GridCoordinate currentCoord,
+                                                          std::pair<int8_t, int8_t> direction);
 
         std::unordered_map<GridGenerator::GridCoordinate,
                 std::vector<std::pair<int8_t, int8_t>>, decltype(&GridGenerator::GridCoordinate::getHash)>
