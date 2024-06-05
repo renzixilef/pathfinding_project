@@ -8,11 +8,7 @@ void Pathfinder::JumpPointSolve::nextStep() {
     GridCoordinate endCoordinates = grid.getEndCoordinates();
     GridCoordinate currentCoordinates = nextCellQueue.top();
     nextCellQueue.pop();
-    if (currentCoordinates == endCoordinates) {
-        //TODO: mark Path etc.
-        grid.setSolved();
-        return;
-    }
+
     grid(currentCoordinates).markClosed();
     grid.incrementClosedCellCount();
 
@@ -22,7 +18,14 @@ void Pathfinder::JumpPointSolve::nextStep() {
             GridCoordinate jumpPointCoord = jumpPoint.value();
             GridGenerator::Cell &jumpPointCell = grid(jumpPointCoord);
             double gCostFromCurrent = (grid(currentCoordinates).getCost().gCost +
-                    currentCoordinates.getOctileDistanceTo(jumpPointCoord));
+                                       currentCoordinates.getOctileDistanceTo(jumpPointCoord));
+            if (jumpPointCoord == endCoordinates) {
+                jumpPointCell.setParent(&grid(currentCoordinates));
+                jumpPointCell.setGCost(gCostFromCurrent);
+                jumpPointCell.setHCost(jumpPointCoord.getAbsDistanceTo(endCoordinates));
+                grid.markPathByParentCells();
+                return;
+            }
             if (jumpPointCell.getState() == GridGenerator::CellState::CELL_CLOSED)
                 continue;
             if (jumpPointCell.getState() == GridGenerator::CellState::CELL_VISITED) {
