@@ -16,6 +16,7 @@ namespace Pathfinder {
     enum class PathfinderStrategy {
         PATHFINDER_DIJKSTRA = 1,
         PATHFINDER_A_STAR = 2,
+        PATHFINDER_JUMP_POINT_SEARCH = 3
     };
 
     class pathfindingParent;
@@ -31,7 +32,7 @@ namespace Pathfinder {
     class pathfindingParent {
     public:
         explicit pathfindingParent(GridGenerator::Grid &grid) :
-                grid(grid){
+                grid(grid) {
             initGenericSolver();
         }
 
@@ -72,8 +73,10 @@ namespace Pathfinder {
         void nextStep() override;
 
     private:
-        std::optional<GridGenerator::GridCoordinate> getJumpPoint(GridGenerator::GridCoordinate currentCoord,
-                                                                  GridGenerator::GridCoordinate neighborCoord);
+        void addJumpPointsToQueue(GridGenerator::GridCoordinate currentCoord,
+                                  std::pair<int8_t, int8_t> direction,
+                                  GridGenerator::GridCoordinate basePoint,
+                                  bool recursed = false);
 
         std::unordered_map<GridGenerator::GridCoordinate,
                 std::vector<std::pair<int8_t, int8_t>>, decltype(&GridGenerator::GridCoordinate::getHash)>

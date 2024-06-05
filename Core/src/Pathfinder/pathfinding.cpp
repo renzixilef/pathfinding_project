@@ -3,7 +3,8 @@
 const std::map<Pathfinder::PathfinderStrategy, std::string>
         Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText =
         {{PathfinderStrategy::PATHFINDER_DIJKSTRA, "Dijkstra's Algorithm"},
-         {PathfinderStrategy::PATHFINDER_A_STAR,   "A* Algorithm"}};
+         {PathfinderStrategy::PATHFINDER_A_STAR,   "A* Algorithm"},
+         {PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH, "Jump Point Search"}};
 
 std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(
         PathfinderStrategy strat,
@@ -13,6 +14,8 @@ std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyPar
             return std::make_unique<AStarSolve>(grid);
         case PathfinderStrategy::PATHFINDER_DIJKSTRA:
             return std::make_unique<DijkstraSolve>(grid);
+        case PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH:
+            return std::make_unique<JumpPointSolve>(grid);
     }
     return nullptr;
 }
