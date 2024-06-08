@@ -12,6 +12,7 @@
 #define STANDARD_OBSTACLE_DENSITY 0.3
 #define STANDARD_START_END_DISTANCE 0.5
 
+
 namespace GridGenerator {
     struct GridCoordinate {
         uint32_t x;
@@ -21,12 +22,32 @@ namespace GridGenerator {
             return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
         }
 
+        [[nodiscard]] inline double getOctileDistanceTo(const GridCoordinate &point) const {
+            uint32_t xDistAbs = std::abs(static_cast<int64_t>(x)-static_cast<int64_t>(point.x));
+            uint32_t yDistAbs = std::abs(static_cast<int64_t>(y)-static_cast<int64_t>(point.y));
+            if (xDistAbs > yDistAbs)
+                return sqrt(2) * yDistAbs + 1 * (xDistAbs-yDistAbs);
+            else
+                return sqrt(2) * xDistAbs + 1 * (yDistAbs-xDistAbs);
+        }
+
+
         [[nodiscard]] inline bool operator==(const GridCoordinate &other) const {
             return x == other.x && y == other.y;
         }
 
+        [[nodiscard]] inline GridCoordinate operator+(const GridCoordinate &other) const {
+            return GridCoordinate(x + other.x, y + other.y);
+        }
+
         static std::size_t getHash(const GridCoordinate &c) {
             return std::hash<uint32_t>()(c.x) ^ (std::hash<uint32_t>()(c.y) << 1);
+        }
+
+        static std::pair<int8_t, int8_t> getDirection(const GridCoordinate &first, const GridCoordinate &second) {
+            int64_t x = first.x - second.x;
+            int64_t y = first.y - second.y;
+            return std::make_pair(x == 0 ? 0 : x > 0 ? 1 : -1, y == 0 ? 0 : y > 0 ? 1 : -1);
         }
     };
 
@@ -58,17 +79,18 @@ namespace GridGenerator {
             return cells[coords.x][coords.y];
         }
 
-        void markPathByParentCells();
+        void markPathByParentCells(bool markByCellPointer);
 
 
         std::vector<std::reference_wrapper<Cell>> getNeighborsCells(GridCoordinate coords);
 
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
 
+        [[nodiscard]] inline bool isInBounds(int64_t x, int64_t y) const {return x>=0 && x<sizeX && y>=0 && y<sizeY;}
 
-        [[nodiscard]] inline Cell *getStartCell() const { return startCell;}
+        [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
 
-        [[nodiscard]] inline Cell *getEndCell() const { return endCell;}
+        [[nodiscard]] inline Cell *getEndCell() const { return endCell; }
 
         [[nodiscard]] inline uint32_t getSizeX() const { return cells.size(); }
 
@@ -78,8 +100,9 @@ namespace GridGenerator {
 
         [[nodiscard]] inline GridCoordinate getEndCoordinates() const { return endCoordinates; }
 
-        inline void incrementClosedCellCount(){closedCellCount++;}
-        inline void incrementVisitCount(){visitCount++;}
+        inline void incrementClosedCellCount() { closedCellCount++; }
+
+        inline void incrementVisitedCellCount() { visitCount++; }
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -103,6 +126,7 @@ namespace GridGenerator {
 
         void resetGrid();
 
+        static const std::vector<std::pair<int8_t, int8_t>> offsets;
     private:
 
         uint32_t sizeX;

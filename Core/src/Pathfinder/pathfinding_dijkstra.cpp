@@ -9,7 +9,7 @@ void Pathfinder::DijkstraSolve::nextStep() {
     nextCellQueue.pop();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     if (currentCoordinates == endCoordinates) {
-        grid.markPathByParentCells();
+        grid.markPathByParentCells(true);
         return;
     }
 
@@ -18,19 +18,19 @@ void Pathfinder::DijkstraSolve::nextStep() {
     for (const auto &neighborCoordinates: neighbors) {
         GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
         double neighborCellGCostFromCurrentCell = currentCell.getCost().gCost +
-                                                  neighborCoordinates.getAbsDistanceTo(currentCoordinates);
+                                                  neighborCoordinates.getOctileDistanceTo(currentCoordinates);
         if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
             neighborCell.setGCost(neighborCellGCostFromCurrentCell);
-            neighborCell.setParent(&grid(currentCoordinates));
+            neighborCell.setParentCellPointer(&grid(currentCoordinates));
             neighborCell.markVisited();
             nextCellQueue.push(neighborCoordinates);
-            grid.incrementVisitCount();
+            grid.incrementVisitedCellCount();
         } else if (neighborCell.getState() == GridGenerator::CellState::CELL_VISITED) {
             if (neighborCell.getCost().gCost > neighborCellGCostFromCurrentCell) {
                 neighborCell.setGCost(neighborCellGCostFromCurrentCell);
-                neighborCell.setParent(&grid(currentCoordinates));
+                neighborCell.setParentCellPointer(&grid(currentCoordinates));
                 nextCellQueue.push(neighborCoordinates);
-                grid.incrementVisitCount();
+                grid.incrementVisitedCellCount();
             }
         }
     }
