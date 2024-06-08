@@ -79,7 +79,7 @@ namespace GridGenerator {
             return cells[coords.x][coords.y];
         }
 
-        void markPathByParentCells();
+        void markPathByParentCells(bool markByCellPointer);
 
 
         std::vector<std::reference_wrapper<Cell>> getNeighborsCells(GridCoordinate coords);

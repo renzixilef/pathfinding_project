@@ -20,10 +20,10 @@ void Pathfinder::JumpPointSolve::nextStep() {
             double gCostFromCurrent = (grid(currentCoordinates).getCost().gCost +
                                        currentCoordinates.getOctileDistanceTo(jumpPointCoord));
             if (jumpPointCoord == endCoordinates) {
-                jumpPointCell.setParent(&grid(currentCoordinates));
+                jumpPointCell.setParentDirPair(std::make_pair(-direction.first, -direction.second));
                 jumpPointCell.setGCost(gCostFromCurrent);
                 jumpPointCell.setHCost(jumpPointCoord.getAbsDistanceTo(endCoordinates));
-                grid.markPathByParentCells();
+                grid.markPathByParentCells(false);
                 return;
             }
             if (jumpPointCell.getState() == GridGenerator::CellState::CELL_CLOSED)
@@ -31,7 +31,7 @@ void Pathfinder::JumpPointSolve::nextStep() {
             if (jumpPointCell.getState() == GridGenerator::CellState::CELL_VISITED) {
                 if (jumpPointCell.getCost().gCost > gCostFromCurrent) {
                     nextCellQueue.push(jumpPointCoord);
-                    jumpPointCell.setParent(&grid(currentCoordinates));
+                    jumpPointCell.setParentDirPair(std::make_pair(-direction.first, -direction.second));
                     jumpPointCell.setGCost(gCostFromCurrent);
                     grid.incrementVisitedCellCount();
                 }
@@ -39,7 +39,7 @@ void Pathfinder::JumpPointSolve::nextStep() {
             }
             if (jumpPointCell.getState() == GridGenerator::CellState::CELL_OPEN) {
                 nextCellQueue.push(jumpPointCoord);
-                jumpPointCell.setParent(&grid(currentCoordinates));
+                jumpPointCell.setParentDirPair(std::make_pair(-direction.first, -direction.second));
                 jumpPointCell.setGCost(gCostFromCurrent);
                 jumpPointCell.setHCost(jumpPointCoord.getAbsDistanceTo(endCoordinates));
                 jumpPointCell.markVisited();

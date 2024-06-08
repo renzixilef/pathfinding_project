@@ -70,12 +70,28 @@ GridGenerator::Grid::Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &gen
     generator.generateObstacles((*this), obstacleDensity, minStartEndDistance);
 }
 
-void GridGenerator::Grid::markPathByParentCells() {
-    Cell *nextCell = endCell;
-    while (nextCell != nullptr) {
-        pathCellCount++;
-        nextCell->markPath();
-        nextCell = nextCell->getParent();
+void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
+    if (markByCellPointer) {
+        Cell *nextCell = endCell;
+        while (nextCell != nullptr) {
+            pathCellCount++;
+            nextCell->markPath();
+            nextCell = *nextCell->getParentIfCellPointer();
+        }
+    } else {
+        std::pair<int8_t, int8_t> *nextDir = endCell->getParentIfDirPair();
+        GridCoordinate nextCoordinate = endCoordinates;
+        getEndCell()->markPath();
+        while (true) {
+            nextCoordinate = {static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.x) + nextDir->first),
+                              static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.y) + nextDir->second)};
+            Cell &thisCell = (*this)(nextCoordinate);
+            thisCell.markPath();
+            if (nextCoordinate == startCoordinates) break;
+            if (thisCell.getParentIfDirPair() != nullptr) {
+                nextDir = thisCell.getParentIfDirPair();
+            }
+        }
     }
 }
 

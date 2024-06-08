@@ -1,5 +1,7 @@
 #pragma once
 #include <QColor>
+#include <variant>
+
 
 //TODO: documentation
 
@@ -25,7 +27,9 @@ namespace GridGenerator {
     };
 
 
+
     class Cell {
+        using CellParentType = std::variant<Cell*, std::pair<int8_t, int8_t>>;
     public:
         Cell() : state(CellState::CELL_OPEN), cost(CellCost{}), parent(nullptr) {}
 
@@ -43,9 +47,14 @@ namespace GridGenerator {
 
         inline void setHCost(double hCost) { cost.hCost = hCost; }
 
-        inline void setParent(Cell *parentCell) { parent = parentCell; }
+        inline void setParentCellPointer(Cell *parentCell) { parent = parentCell; }
+        inline void setParentDirPair(std::pair<int8_t, int8_t> parentDir) { parent = parentDir; }
 
-        inline Cell *getParent() { return parent; }
+        inline Cell **getParentIfCellPointer() { return std::get_if<Cell*>(&parent); }
+
+        inline std::pair<int8_t, int8_t>* getParentIfDirPair() {
+            return std::get_if<std::pair<int8_t, int8_t>>(&parent);
+        }
 
         [[nodiscard]] inline CellState getState() const { return state; }
 
@@ -54,6 +63,6 @@ namespace GridGenerator {
     private:
         CellState state;
         CellCost cost;
-        Cell *parent;
+        CellParentType parent;
     };
 }

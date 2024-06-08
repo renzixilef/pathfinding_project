@@ -12,7 +12,7 @@ void Pathfinder::AStarSolve::nextStep() {
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     if (currentCell.getState() == GridGenerator::CellState::CELL_CLOSED) return;
     if (currentCoordinates == endCoordinates) {
-        grid.markPathByParentCells();
+        grid.markPathByParentCells(true);
         return;
     }
 
@@ -27,14 +27,14 @@ void Pathfinder::AStarSolve::nextStep() {
         if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
             neighborCell.setGCost(neighborCellGCostFromCurrentCell);
             neighborCell.setHCost(neighborCoordinates.getAbsDistanceTo(endCoordinates));
-            neighborCell.setParent(&grid(currentCoordinates));
+            neighborCell.setParentCellPointer(&grid(currentCoordinates));
             neighborCell.markVisited();
             nextCellQueue.push(neighborCoordinates);
             grid.incrementVisitedCellCount();
         } else if (neighborCell.getState() == GridGenerator::CellState::CELL_VISITED) {
             if (neighborCell.getCost().gCost > neighborCellGCostFromCurrentCell) {
                 neighborCell.setGCost(neighborCellGCostFromCurrentCell);
-                neighborCell.setParent(&grid(currentCoordinates));
+                neighborCell.setParentCellPointer(&grid(currentCoordinates));
                 nextCellQueue.push(neighborCoordinates);
                 grid.incrementVisitedCellCount();
             }
