@@ -7,6 +7,8 @@
 #include <QVBoxLayout>
 #include <QStandardItem>
 
+#include "gui_config_form.h"
+
 namespace GUI {
     class MultiRunTab : public QWidget {
     Q_OBJECT
@@ -25,13 +27,15 @@ namespace GUI {
 
         QStandardItemModel *itemModel;
         QTableView *configTable;
-        QLineEdit *configLine;
+
         QVBoxLayout *mainLayout;
 
 
         QPushButton *startButton;
         QPushButton *addConfigButton;
         QPushButton *removeConfigButton;
+
+        MultiConfigForm * configForm;
 
     };
 }

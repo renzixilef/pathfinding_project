@@ -58,6 +58,8 @@ namespace GUI {
     public:
         explicit MultiConfigForm(QWidget *parent = nullptr);
 
+        std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() override;
+
         void resetForm() override;
 
         void enable() override;

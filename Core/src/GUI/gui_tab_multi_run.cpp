@@ -6,7 +6,8 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
         QWidget(parent),
         configTable(new QTableView(this)),
     itemModel(new QStandardItemModel(this)),
-        mainLayout(new QVBoxLayout(this)) {
+        mainLayout(new QVBoxLayout(this)),
+        configForm(new MultiConfigForm(this)){
     configTable->setModel(itemModel);
 
     setupConnections();

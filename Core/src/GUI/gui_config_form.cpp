@@ -129,3 +129,23 @@ void GUI::MultiConfigForm::resetForm() {
     ConfigFormParent::resetForm();
     pathfindingAlgorithmListWidget->clearSelection();
 }
+
+std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
+GUI::MultiConfigForm::getFormParams() {
+    RunInterface::RunGridConfig thisGridConfig = {
+            static_cast<uint32_t>(gridWidthSpinBox->value()),
+            static_cast<uint32_t>(gridHeightSpinBox->value()),
+            static_cast<float>(obstacleDensitySpinBox->value()),
+            static_cast<float>(minStartEndDistanceSpinBox->value()),
+            static_cast<GridGenerator::ObstacleGenStrategy>(
+                    gridGeneratorAlgorithmComboBox->currentData().toUInt())
+    };
+
+    QList<QListWidgetItem*> selectedItems = pathfindingAlgorithmListWidget->selectedItems();
+    std::list<Pathfinder::PathfinderStrategy> thisPathfinderStratList;
+    for (auto *item: selectedItems) {
+        thisPathfinderStratList.push_back(
+                static_cast<Pathfinder::PathfinderStrategy>(item->data(Qt::UserRole).toUInt()));
+    }
+    return std::make_pair(thisGridConfig, thisPathfinderStratList);
+}
