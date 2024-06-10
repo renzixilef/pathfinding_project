@@ -19,7 +19,6 @@ namespace RunInterface {
         float obstacleDensity;
         float minStartEndDistance;
         GridGenerator::ObstacleGenStrategy obstacleGenStrategy;
-
     };
 
 
