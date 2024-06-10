@@ -5,12 +5,29 @@
 GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
         QWidget(parent),
         configTable(new QTableView(this)),
-    itemModel(new QStandardItemModel(this)),
+        itemModel(new QStandardItemModel(this)),
         mainLayout(new QVBoxLayout(this)),
-        configForm(new MultiConfigForm(this)){
+        configForm(new MultiConfigForm(this)),
+        configTableLayout(new QHBoxLayout()),
+        buttonLayout(new QVBoxLayout()),
+        addConfigButton(new QPushButton("+", this)),
+        removeConfigButton(new QPushButton("-", this)),
+        startButton(new QPushButton("Start", this)) {
     configTable->setModel(itemModel);
 
     setupConnections();
+
+    buttonLayout->addWidget(addConfigButton);
+    buttonLayout->addWidget(removeConfigButton);
+
+    configTableLayout->addWidget(configTable);
+    configTableLayout->addLayout(buttonLayout);
+
+    mainLayout->addLayout(configTableLayout);
+    mainLayout->addWidget(configForm);
+    mainLayout->addWidget(startButton);
+
+    setLayout(mainLayout);
 
 
 }
@@ -37,11 +54,11 @@ void GUI::MultiRunTab::setupConnections() {
 }
 
 void GUI::MultiRunTab::addOrSaveConfiguration() {
-    if(addConfigButton->text() == "+"){
+    if (addConfigButton->text() == "+") {
         addConfigButton->setText("Save");
         //formWidget.setEnabled()
         //formWidget.clear()
-    }else{
+    } else {
         addConfigButton->setText("+");
         //formWidget.setDisabled();
         //formWidget.getParams();
@@ -53,7 +70,7 @@ void GUI::MultiRunTab::addOrSaveConfiguration() {
 
 void GUI::MultiRunTab::removeSelectedConfiguration() {
     QItemSelectionModel *selected = configTable->selectionModel();
-    if(selected->hasSelection()){
+    if (selected->hasSelection()) {
         itemModel->removeRow(selected->selectedRows().first().row());
     }
 }

@@ -23,8 +23,6 @@ namespace GUI {
 
         virtual void disable();
 
-        virtual ~ConfigFormParent() = 0;
-
     protected:
         QSpinBox *gridHeightSpinBox;
         QSpinBox *gridWidthSpinBox;
@@ -47,7 +45,6 @@ namespace GUI {
 
         void disable() override;
 
-       ~SingleConfigForm() override = default;
 
     private:
         QComboBox *pathfindingAlgorithmComboBox;
@@ -66,7 +63,6 @@ namespace GUI {
 
         void disable() override;
 
-        ~MultiConfigForm() override = default;
 
     private:
         QListWidget * pathfindingAlgorithmListWidget;

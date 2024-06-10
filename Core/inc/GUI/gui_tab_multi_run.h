@@ -30,6 +30,8 @@ namespace GUI {
 
         QVBoxLayout *mainLayout;
 
+        QHBoxLayout *configTableLayout;
+        QVBoxLayout *buttonLayout;
 
         QPushButton *startButton;
         QPushButton *addConfigButton;
