@@ -3,6 +3,7 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QFormLayout>
+#include <QListWidget>
 
 #include "RunInterface/runner.h"
 #include "Pathfinder/pathfinding.h"
@@ -16,11 +17,13 @@ namespace GUI {
 
         virtual std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() = 0;
 
-        virtual void resetForm() = 0;
+        virtual void resetForm();
 
-        virtual void enable() = 0;
+        virtual void enable() ;
 
-        virtual void disable() = 0;
+        virtual void disable();
+
+        virtual ~ConfigFormParent() = 0;
 
     protected:
         QSpinBox *gridHeightSpinBox;
@@ -38,11 +41,13 @@ namespace GUI {
 
         std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() override;
 
-        void resetForm() override {};
+        void resetForm() override;
 
-        void enable() override {};
+        void enable() override;
 
-        void disable() override {};
+        void disable() override;
+
+       ~SingleConfigForm() override = default;
 
     private:
         QComboBox *pathfindingAlgorithmComboBox;
@@ -53,7 +58,16 @@ namespace GUI {
     public:
         explicit MultiConfigForm(QWidget *parent = nullptr);
 
+        void resetForm() override;
+
+        void enable() override;
+
+        void disable() override;
+
+        ~MultiConfigForm() override = default;
+
     private:
+        QListWidget * pathfindingAlgorithmListWidget;
     };
 
 }

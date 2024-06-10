@@ -18,6 +18,31 @@ GUI::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new
     layout->addRow("Grid Generator Algorithm", gridGeneratorAlgorithmComboBox);
 }
 
+void GUI::ConfigFormParent::resetForm() {
+    gridHeightSpinBox->setValue(20);
+    gridWidthSpinBox->setValue(20);
+    obstacleDensitySpinBox->setValue(0.0);
+    minStartEndDistanceSpinBox->setValue(0.0);
+
+    gridGeneratorAlgorithmComboBox->setCurrentIndex(0);
+}
+
+void GUI::ConfigFormParent::disable() {
+    gridHeightSpinBox->setDisabled(true);
+    gridWidthSpinBox->setDisabled(true);
+    obstacleDensitySpinBox->setDisabled(true);
+    minStartEndDistanceSpinBox->setDisabled(true);
+    gridGeneratorAlgorithmComboBox->setDisabled(true);
+}
+
+void GUI::ConfigFormParent::enable() {
+    gridHeightSpinBox->setDisabled(false);
+    gridWidthSpinBox->setDisabled(false);
+    obstacleDensitySpinBox->setDisabled(false);
+    minStartEndDistanceSpinBox->setDisabled(false);
+    gridGeneratorAlgorithmComboBox->setDisabled(false);
+}
+
 GUI::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this),
                                                            pathfindingAlgorithmComboBox(new QComboBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
@@ -52,4 +77,55 @@ GUI::SingleConfigForm::getFormParams() {
                                               pathfindingAlgorithmComboBox->currentData().toUInt()));
     return std::make_pair(thisGridConfig, thisPathfinderStratList);
 
+}
+
+void GUI::SingleConfigForm::resetForm() {
+    ConfigFormParent::resetForm();
+    pathfindingAlgorithmComboBox->setCurrentIndex(0);
+}
+
+void GUI::SingleConfigForm::enable() {
+    ConfigFormParent::enable();
+    pathfindingAlgorithmComboBox->setDisabled(false);
+}
+
+void GUI::SingleConfigForm::disable() {
+    ConfigFormParent::disable();
+    pathfindingAlgorithmComboBox->setDisabled(true);
+}
+
+GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
+                                                         pathfindingAlgorithmListWidget(new QListWidget(this)) {
+    using Pathfinder::PathfinderStrategyParser;
+    gridHeightSpinBox->setRange(20, 100);
+    gridWidthSpinBox->setRange(20, 100);
+    obstacleDensitySpinBox->setRange(0.0, 0.7);
+    obstacleDensitySpinBox->setSingleStep(0.05);
+    minStartEndDistanceSpinBox->setRange(0.0, 0.9);
+    minStartEndDistanceSpinBox->setSingleStep(0.05);
+
+    for (const auto &[k, v]:
+            PathfinderStrategyParser::pathfindingStrategyToDisplayableText) {
+        auto *item = new QListWidgetItem(QString::fromStdString(v));
+        item->setData(Qt::UserRole, static_cast<uint8_t>(k));
+        pathfindingAlgorithmListWidget->addItem(item);
+    }
+
+    layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmListWidget);
+    setLayout(layout);
+}
+
+void GUI::MultiConfigForm::enable() {
+    ConfigFormParent::enable();
+    pathfindingAlgorithmListWidget->setDisabled(false);
+}
+
+void GUI::MultiConfigForm::disable() {
+    ConfigFormParent::disable();
+    pathfindingAlgorithmListWidget->setDisabled(true);
+}
+
+void GUI::MultiConfigForm::resetForm() {
+    ConfigFormParent::resetForm();
+    pathfindingAlgorithmListWidget->clearSelection();
 }
