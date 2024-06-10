@@ -56,14 +56,20 @@ void GUI::MultiRunTab::setupConnections() {
 void GUI::MultiRunTab::addOrSaveConfiguration() {
     if (addConfigButton->text() == "+") {
         addConfigButton->setText("Save");
-        //formWidget.setEnabled()
-        //formWidget.clear()
+        configForm->enable();
+        configForm->resetForm();
     } else {
         addConfigButton->setText("+");
-        //formWidget.setDisabled();
-        //formWidget.getParams();
-        //formWidget.clear();
-        //model->appendRow(configRow);
+        configForm->disable();
+        auto params = configForm->getFormParams();
+        configForm->resetForm();
+        auto *item = new QStandardItem();
+        QString obstacleGenText = QString::fromStdString(
+                GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
+                        params.first.obstacleGenStrategy));
+        QString itemText = QString("%1").arg(obstacleGenText);
+        item->setText(itemText);
+        itemModel->appendRow(item);
         configTable->clearSelection();
     }
 }
