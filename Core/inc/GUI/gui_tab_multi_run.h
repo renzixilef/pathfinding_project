@@ -39,5 +39,7 @@ namespace GUI {
 
         MultiConfigForm * configForm;
 
+        int dummyRowIndex{-1};
+
     };
 }

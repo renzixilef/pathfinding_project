@@ -111,6 +111,8 @@ GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent
         pathfindingAlgorithmListWidget->addItem(item);
     }
 
+    pathfindingAlgorithmListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmListWidget);
     setLayout(layout);
 }
