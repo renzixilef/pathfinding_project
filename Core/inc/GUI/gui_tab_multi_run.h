@@ -22,7 +22,7 @@ namespace GUI {
         void removeSelectedConfiguration();
 
     private:
-
+        static const QRegularExpression lineDataRegex;
         void setupConnections();
 
         QStandardItemModel *itemModel;

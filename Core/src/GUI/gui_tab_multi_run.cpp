@@ -3,6 +3,9 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 
+const QRegularExpression GUI::MultiRunTab::lineDataRegex =
+        QRegularExpression(R"('(\d+)x(\d+)', '([^']+)', OD: '([^']+)\*, SE: '([^']+), '([^']+)')");
+
 GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
         QWidget(parent),
         configTable(new QTableView(this)),
@@ -24,6 +27,9 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
 
     setupConnections();
 
+    addConfigButton->setStyleSheet("background-color: green;");
+    removeConfigButton->setStyleSheet("background-color: red;");
+
     buttonLayout->addWidget(addConfigButton);
     buttonLayout->addWidget(removeConfigButton);
 
@@ -41,7 +47,32 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
 
 void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
-        const auto &index = selected.indexes().at(0);
+        const auto &row = selected.indexes().at(0).row();
+        QStandardItem *selectedItem = itemModel->item(row);
+        QString data = selectedItem->text();
+        QRegularExpressionMatch match = lineDataRegex.match(data);
+
+        if (match.hasMatch()) {
+            uint32_t gridWidth = match.captured(1).toUInt();
+            uint32_t gridHeight = match.captured(2).toUInt();
+            std::string obstacleGen = match.captured(3).toStdString();
+            float obstacleDensity = match.captured(4).toFloat()/100;
+            float minStartEndDistance = match.captured(5).toFloat()/100;
+            QStringList qPathfinders = match.captured(6).split(",");
+            std::list<std::string> pathfinders;
+            for (const QString &qPathfinder: qPathfinders) {
+                pathfinders.push_back(qPathfinder.toStdString());
+            }
+        }
+
+        addConfigButton->setText("Save");
+        addConfigButton->setStyleSheet("background-color: blue;");
+        configForm->enable();
+        //configForm.populate();
+        removeConfigButton->setEnabled(true);
+
+        dummyRowIndex = row;
+
     }
 }
 
@@ -63,14 +94,17 @@ void GUI::MultiRunTab::setupConnections() {
 void GUI::MultiRunTab::addOrSaveConfiguration() {
     if (addConfigButton->text() == "+") {
         addConfigButton->setText("Save");
-        addConfigButton->setStyleSheet("background-color: green;");
+        addConfigButton->setStyleSheet("background-color: blue;");
+
         configForm->enable();
         configForm->resetForm();
+        removeConfigButton->setEnabled(false);
+
         auto *dummyItem = new QStandardItem("Waiting for Input...");
         itemModel->appendRow(dummyItem);
-        dummyRowIndex = itemModel->rowCount() -1;
+        dummyRowIndex = itemModel->rowCount() - 1;
     } else {
-        addConfigButton->setStyleSheet("");
+        addConfigButton->setStyleSheet("background-color: green;");
         addConfigButton->setText("+");
         configForm->disable();
         auto params = configForm->getFormParams();
@@ -109,6 +143,7 @@ void GUI::MultiRunTab::addOrSaveConfiguration() {
         item->setText(itemText);
         itemModel->setItem(dummyRowIndex, item);
         configTable->clearSelection();
+        removeConfigButton->setEnabled(false);
     }
 }
 
