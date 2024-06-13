@@ -14,7 +14,7 @@
 namespace RunInterface {
 
     struct RunGridConfig {
-        uint32_t gridWith;
+        uint32_t gridWidth;
         uint32_t gridHeight;
         float obstacleDensity;
         float minStartEndDistance;

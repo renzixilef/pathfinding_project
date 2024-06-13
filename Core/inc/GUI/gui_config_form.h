@@ -63,6 +63,7 @@ namespace GUI {
 
         void disable() override;
 
+        void populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats);
 
     private:
         QListWidget * pathfindingAlgorithmListWidget;

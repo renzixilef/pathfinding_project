@@ -1,5 +1,7 @@
 #include "GUI/gui_config_form.h"
 
+#include <unordered_set>
+
 GUI::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new QSpinBox(this)),
                                                            gridWidthSpinBox(new QSpinBox(this)),
                                                            obstacleDensitySpinBox(new QDoubleSpinBox(this)),
@@ -143,11 +145,34 @@ GUI::MultiConfigForm::getFormParams() {
                     gridGeneratorAlgorithmComboBox->currentData().toUInt())
     };
 
-    QList<QListWidgetItem*> selectedItems = pathfindingAlgorithmListWidget->selectedItems();
+    QList<QListWidgetItem *> selectedItems = pathfindingAlgorithmListWidget->selectedItems();
     std::list<Pathfinder::PathfinderStrategy> thisPathfinderStratList;
     for (auto *item: selectedItems) {
         thisPathfinderStratList.push_back(
                 static_cast<Pathfinder::PathfinderStrategy>(item->data(Qt::UserRole).toUInt()));
     }
     return std::make_pair(thisGridConfig, thisPathfinderStratList);
+}
+
+void
+GUI::MultiConfigForm::populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats) {
+    gridHeightSpinBox->setValue(config.gridHeight);
+    gridWidthSpinBox->setValue(config.gridWidth);
+    obstacleDensitySpinBox->setValue(config.obstacleDensity);
+    minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
+    gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy));
+    QItemSelectionModel *selectionModel = pathfindingAlgorithmListWidget->selectionModel();
+    std::unordered_set<uint8_t> stratSet;
+    for (const auto &strat: strats) {
+        stratSet.insert(static_cast<uint8_t>(strat));
+    }
+    for (uint8_t i = 0; i < pathfindingAlgorithmListWidget->count(); i++) {
+        QListWidgetItem *item = pathfindingAlgorithmListWidget->item(i);
+        uint8_t itemValue = item->data(Qt::UserRole).toUInt();
+        if (stratSet.count(itemValue)) {
+            selectionModel->select(pathfindingAlgorithmListWidget->model()->index(i, 0),
+                                   QItemSelectionModel::Select);
+        }
+    }
+
 }

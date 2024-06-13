@@ -25,7 +25,7 @@ void RunInterface::SingleRun::nextStep() {
 }
 
 void RunInterface::SingleRun::onRunReset() {
-    grid = GridGenerator::Grid(config.gridWith,
+    grid = GridGenerator::Grid(config.gridWidth,
                                config.gridHeight,
                                *GridGenerator::ObstacleGenStrategyParser::parseObstacleGenStrategy(
                                        config.obstacleGenStrategy),

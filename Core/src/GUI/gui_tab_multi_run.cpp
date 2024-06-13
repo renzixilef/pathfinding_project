@@ -125,7 +125,7 @@ GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
 void GUI::MultiRunItem::setTextBasedOnParams() {
     QString gridWidthHeightString = QString("%1 x %2")
             .arg(itemConfig.gridHeight)
-            .arg(itemConfig.gridWith);
+            .arg(itemConfig.gridWidth);
     QString obstacleGenString = QString::fromStdString(
             GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
                     itemConfig.obstacleGenStrategy));
