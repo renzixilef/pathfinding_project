@@ -2,6 +2,7 @@
 
 #include <QStandardItemModel>
 #include <QHeaderView>
+#include <utility>
 
 const QRegularExpression GUI::MultiRunTab::lineDataRegex =
         QRegularExpression(R"('(\d+)x(\d+)', '([^']+)', OD: '([^']+)\*, SE: '([^']+), '([^']+)')");
@@ -48,29 +49,13 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
 void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
         const auto &row = selected.indexes().at(0).row();
-        QStandardItem *selectedItem = itemModel->item(row);
-        QString data = selectedItem->text();
-        QRegularExpressionMatch match = lineDataRegex.match(data);
-
-        if (match.hasMatch()) {
-            uint32_t gridWidth = match.captured(1).toUInt();
-            uint32_t gridHeight = match.captured(2).toUInt();
-            std::string obstacleGen = match.captured(3).toStdString();
-            float obstacleDensity = match.captured(4).toFloat()/100;
-            float minStartEndDistance = match.captured(5).toFloat()/100;
-            QStringList qPathfinders = match.captured(6).split(",");
-            std::list<std::string> pathfinders;
-            for (const QString &qPathfinder: qPathfinders) {
-                pathfinders.push_back(qPathfinder.toStdString());
-            }
-        }
+        auto selectedItem = dynamic_cast<MultiRunItem*>(itemModel->item(row));
 
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
         configForm->enable();
-        //configForm.populate();
+        configForm->populate(selectedItem->getGridConfig(), selectedItem->getPathfinderList());
         removeConfigButton->setEnabled(true);
-
         dummyRowIndex = row;
 
     }
@@ -109,38 +94,7 @@ void GUI::MultiRunTab::addOrSaveConfiguration() {
         configForm->disable();
         auto params = configForm->getFormParams();
         configForm->resetForm();
-        auto *item = new QStandardItem();
-        QString gridWidthHeightString = QString("%1 x %2")
-                .arg(params.first.gridHeight)
-                .arg(params.first.gridWith);
-        QString obstacleGenString = QString::fromStdString(
-                GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
-                        params.first.obstacleGenStrategy));
-        QString obstacleDensityString = QString("OD: %1%").arg(params.first.obstacleDensity * 100.0);
-        QString minStartEndDistanceString = QString("SE: %1%").arg(params.first.minStartEndDistance * 100.0);
-
-        QString pathfinderString = "[";
-        for (auto iter = params.second.begin();
-             iter != params.second.end();
-             iter++) {
-            if (iter != params.second.begin()) {
-                pathfinderString += ", ";
-            }
-            if (Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.find(*iter) !=
-                Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.end()) {
-                pathfinderString += QString::fromStdString(
-                        Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.at(*iter));
-            }
-        }
-        pathfinderString += "]";
-
-        QString itemText = QString("%1, %2, %3, %4, %5")
-                .arg(gridWidthHeightString,
-                     obstacleGenString,
-                     obstacleDensityString,
-                     minStartEndDistanceString,
-                     pathfinderString);
-        item->setText(itemText);
+        auto *item = new MultiRunItem(params.first, params.second);
         itemModel->setItem(dummyRowIndex, item);
         configTable->clearSelection();
         removeConfigButton->setEnabled(false);
@@ -152,4 +106,48 @@ void GUI::MultiRunTab::removeSelectedConfiguration() {
     if (selected->hasSelection()) {
         itemModel->removeRow(selected->selectedRows().first().row());
     }
+    configTable->clearSelection();
+    removeConfigButton->setEnabled(false);
+    addConfigButton->setStyleSheet("background-color: green;");
+    addConfigButton->setText("+");
+    configForm->disable();
+
+}
+
+GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
+                                std::list<Pathfinder::PathfinderStrategy> strats) :
+        QStandardItem(),
+        itemConfig(config),
+        itemStrats(std::move(strats)) {
+    setTextBasedOnParams();
+}
+
+void GUI::MultiRunItem::setTextBasedOnParams() {
+    QString gridWidthHeightString = QString("%1 x %2")
+            .arg(itemConfig.gridHeight)
+            .arg(itemConfig.gridWith);
+    QString obstacleGenString = QString::fromStdString(
+            GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
+                    itemConfig.obstacleGenStrategy));
+    QString obstacleDensityString = QString("OD: %1%").arg(itemConfig.obstacleDensity * 100.0);
+    QString minStartEndDistanceString = QString("SE: %1%").arg(itemConfig.minStartEndDistance * 100.0);
+    QString pathfinderString = "[";
+    for (auto iter = itemStrats.begin(); iter != itemStrats.end(); iter++) {
+        if (iter != itemStrats.begin()) {
+            pathfinderString += ", ";
+        }
+        if (Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.find(*iter) !=
+            Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.end()) {
+            pathfinderString += QString::fromStdString(
+                    Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.at(*iter));
+        }
+    }
+    pathfinderString += "]";
+    QString itemText = QString("%1, %2, %3, %4, %5")
+            .arg(gridWidthHeightString,
+                 obstacleGenString,
+                 obstacleDensityString,
+                 minStartEndDistanceString,
+                 pathfinderString);
+    setText(itemText);
 }
