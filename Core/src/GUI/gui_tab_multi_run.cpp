@@ -15,8 +15,8 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
         configForm(new MultiConfigForm(this)),
         configTableLayout(new QHBoxLayout()),
         buttonLayout(new QVBoxLayout()),
-        addConfigButton(new QPushButton("+", this)),
-        removeConfigButton(new QPushButton("-", this)),
+        addConfigButton(new QPushButton("Add", this)),
+        removeConfigButton(new QPushButton("Remove", this)),
         startButton(new QPushButton("Start", this)) {
     configTable->setModel(itemModel);
 
@@ -29,7 +29,8 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
     setupConnections();
 
     addConfigButton->setStyleSheet("background-color: green;");
-    removeConfigButton->setStyleSheet("background-color: red;");
+    removeConfigButton->setEnabled(false);
+    removeConfigButton->setStyleSheet("");
 
     buttonLayout->addWidget(addConfigButton);
     buttonLayout->addWidget(removeConfigButton);
@@ -56,7 +57,17 @@ void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const 
         configForm->enable();
         configForm->populate(selectedItem->getGridConfig(), selectedItem->getPathfinderList());
         removeConfigButton->setEnabled(true);
+        removeConfigButton->setStyleSheet("background-color: red;");
         dummyRowIndex = row;
+    }else{
+        addConfigButton->setText("Add");
+        addConfigButton->setStyleSheet("background-color: green;");
+        configForm->disable();
+        configForm->resetForm();
+        removeConfigButton->setEnabled(false);
+        removeConfigButton->setStyleSheet("");
+        dummyRowIndex = -1;
+
     }
 }
 
@@ -76,20 +87,21 @@ void GUI::MultiRunTab::setupConnections() {
 }
 
 void GUI::MultiRunTab::addOrSaveConfiguration() {
-    if (addConfigButton->text() == "+") {
+    if (addConfigButton->text() == "Add") {
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
 
         configForm->enable();
         configForm->resetForm();
         removeConfigButton->setEnabled(false);
+        removeConfigButton->setStyleSheet("");
 
         auto *dummyItem = new QStandardItem("Waiting for Input...");
         itemModel->appendRow(dummyItem);
         dummyRowIndex = itemModel->rowCount() - 1;
     } else {
         addConfigButton->setStyleSheet("background-color: green;");
-        addConfigButton->setText("+");
+        addConfigButton->setText("Add");
         configForm->disable();
         auto params = configForm->getFormParams();
         configForm->resetForm();
@@ -97,6 +109,7 @@ void GUI::MultiRunTab::addOrSaveConfiguration() {
         itemModel->setItem(dummyRowIndex, item);
         configTable->clearSelection();
         removeConfigButton->setEnabled(false);
+        removeConfigButton->setStyleSheet("");
     }
 }
 
@@ -107,8 +120,9 @@ void GUI::MultiRunTab::removeSelectedConfiguration() {
     }
     configTable->clearSelection();
     removeConfigButton->setEnabled(false);
+    removeConfigButton->setStyleSheet("");
     addConfigButton->setStyleSheet("background-color: green;");
-    addConfigButton->setText("+");
+    addConfigButton->setText("Add");
     configForm->disable();
 
 }
