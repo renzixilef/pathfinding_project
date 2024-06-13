@@ -57,7 +57,6 @@ void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const 
         configForm->populate(selectedItem->getGridConfig(), selectedItem->getPathfinderList());
         removeConfigButton->setEnabled(true);
         dummyRowIndex = row;
-
     }
 }
 

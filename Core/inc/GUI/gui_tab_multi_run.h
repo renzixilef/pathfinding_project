@@ -11,7 +11,6 @@
 
 namespace GUI {
     class MultiRunItem : public QStandardItem {
-    Q_OBJECT
     public:
         explicit MultiRunItem(RunInterface::RunGridConfig config,
                               std::list<Pathfinder::PathfinderStrategy> strats);
