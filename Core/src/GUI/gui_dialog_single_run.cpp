@@ -5,8 +5,8 @@
 #include <QDebug>
 #include <algorithm>
 
-GUI::SingleRunDialog::SingleRunDialog(RunInterface::RunGridConfig config,
-                                      Pathfinder::PathfinderStrategy strat,
+GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig& config,
+                                      const Pathfinder::PathfinderStrategy& strat,
                                       QWidget *parent) :
         QDialog(parent),
         runInterface(new RunInterface::SingleRun(config, strat)),

@@ -3,9 +3,7 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <utility>
-
-const QRegularExpression GUI::MultiRunTab::lineDataRegex =
-        QRegularExpression(R"('(\d+)x(\d+)', '([^']+)', OD: '([^']+)\*, SE: '([^']+), '([^']+)')");
+#include "GUI/gui_dialog_multi_run.h"
 
 GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
         QWidget(parent),
@@ -50,7 +48,7 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
 void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
         const auto &row = selected.indexes().at(0).row();
-        auto selectedItem = dynamic_cast<MultiRunItem*>(itemModel->item(row));
+        auto selectedItem = dynamic_cast<MultiRunItem *>(itemModel->item(row));
 
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
@@ -59,7 +57,7 @@ void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const 
         removeConfigButton->setEnabled(true);
         removeConfigButton->setStyleSheet("background-color: red;");
         dummyRowIndex = row;
-    }else{
+    } else {
         addConfigButton->setText("Add");
         addConfigButton->setStyleSheet("background-color: green;");
         configForm->disable();
@@ -83,6 +81,10 @@ void GUI::MultiRunTab::setupConnections() {
     connect(removeConfigButton,
             &QPushButton::clicked,
             this, &MultiRunTab::removeSelectedConfiguration);
+
+    connect(startButton,
+            &QPushButton::clicked,
+            this, &MultiRunTab::startRuns);
 
 }
 
@@ -127,6 +129,13 @@ void GUI::MultiRunTab::removeSelectedConfiguration() {
 
 }
 
+void GUI::MultiRunTab::startRuns() {
+    auto configParams = configForm->getFormParams();
+
+    QDialog *singleRunDialog = new GUI::MultiRunDialog(configParams.first, configParams.second);
+    singleRunDialog->exec();
+}
+
 GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
                                 std::list<Pathfinder::PathfinderStrategy> strats) :
         QStandardItem(),
@@ -156,11 +165,14 @@ void GUI::MultiRunItem::setTextBasedOnParams() {
         }
     }
     pathfinderString += "]";
-    QString itemText = QString("%1, %2, %3, %4, %5")
+
+    QString iterationsString = QString("IT: %1").arg(itemConfig.iterations.value());
+    QString itemText = QString("%1, %2, %3, %4, %5, %6")
             .arg(gridWidthHeightString,
                  obstacleGenString,
                  obstacleDensityString,
                  minStartEndDistanceString,
-                 pathfinderString);
+                 pathfinderString,
+                 iterationsString);
     setText(itemText);
 }

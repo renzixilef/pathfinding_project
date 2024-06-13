@@ -19,7 +19,7 @@ namespace GUI {
 
         virtual void resetForm();
 
-        virtual void enable() ;
+        virtual void enable();
 
         virtual void disable();
 
@@ -66,7 +66,8 @@ namespace GUI {
         void populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats);
 
     private:
-        QListWidget * pathfindingAlgorithmListWidget;
+        QListWidget *pathfindingAlgorithmListWidget;
+        QSpinBox *iterationsSpinBox;
     };
 
 }

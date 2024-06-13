@@ -37,8 +37,9 @@ namespace GUI {
 
         void removeSelectedConfiguration();
 
+        void startRuns();
+
     private:
-        static const QRegularExpression lineDataRegex;
 
         void setupConnections();
 

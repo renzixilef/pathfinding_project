@@ -14,8 +14,8 @@ namespace GUI {
     Q_OBJECT
 
     public:
-        SingleRunDialog(RunInterface::RunGridConfig config,
-                        Pathfinder::PathfinderStrategy strat,
+        SingleRunDialog(const RunInterface::RunGridConfig& config,
+                        const Pathfinder::PathfinderStrategy& strat,
                         QWidget *parent = nullptr);
 
         ~SingleRunDialog() override {

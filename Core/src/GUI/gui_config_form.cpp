@@ -38,11 +38,11 @@ void GUI::ConfigFormParent::disable() {
 }
 
 void GUI::ConfigFormParent::enable() {
-    gridHeightSpinBox->setDisabled(false);
-    gridWidthSpinBox->setDisabled(false);
-    obstacleDensitySpinBox->setDisabled(false);
-    minStartEndDistanceSpinBox->setDisabled(false);
-    gridGeneratorAlgorithmComboBox->setDisabled(false);
+    gridHeightSpinBox->setEnabled(true);
+    gridWidthSpinBox->setEnabled(true);
+    obstacleDensitySpinBox->setEnabled(true);
+    minStartEndDistanceSpinBox->setEnabled(true);
+    gridGeneratorAlgorithmComboBox->setEnabled(true);
 }
 
 GUI::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this),
@@ -88,7 +88,7 @@ void GUI::SingleConfigForm::resetForm() {
 
 void GUI::SingleConfigForm::enable() {
     ConfigFormParent::enable();
-    pathfindingAlgorithmComboBox->setDisabled(false);
+    pathfindingAlgorithmComboBox->setEnabled(true);
 }
 
 void GUI::SingleConfigForm::disable() {
@@ -97,7 +97,8 @@ void GUI::SingleConfigForm::disable() {
 }
 
 GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
-                                                         pathfindingAlgorithmListWidget(new QListWidget(this)) {
+                                                         pathfindingAlgorithmListWidget(new QListWidget(this)),
+                                                         iterationsSpinBox(new QSpinBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
     gridHeightSpinBox->setRange(20, 100);
     gridWidthSpinBox->setRange(20, 100);
@@ -105,6 +106,7 @@ GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent
     obstacleDensitySpinBox->setSingleStep(0.05);
     minStartEndDistanceSpinBox->setRange(0.0, 0.9);
     minStartEndDistanceSpinBox->setSingleStep(0.05);
+    iterationsSpinBox->setRange(1, 100000);
 
     for (const auto &[k, v]:
             PathfinderStrategyParser::pathfindingStrategyToDisplayableText) {
@@ -115,23 +117,27 @@ GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent
 
     pathfindingAlgorithmListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
+    layout->addRow("Iterations", iterationsSpinBox);
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmListWidget);
     setLayout(layout);
 }
 
 void GUI::MultiConfigForm::enable() {
     ConfigFormParent::enable();
-    pathfindingAlgorithmListWidget->setDisabled(false);
+    pathfindingAlgorithmListWidget->setEnabled(false);
+    iterationsSpinBox->setEnabled(true);
 }
 
 void GUI::MultiConfigForm::disable() {
     ConfigFormParent::disable();
     pathfindingAlgorithmListWidget->setDisabled(true);
+    iterationsSpinBox->setDisabled(true);
 }
 
 void GUI::MultiConfigForm::resetForm() {
     ConfigFormParent::resetForm();
     pathfindingAlgorithmListWidget->clearSelection();
+    iterationsSpinBox->setValue(1);
 }
 
 std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
@@ -142,7 +148,8 @@ GUI::MultiConfigForm::getFormParams() {
             static_cast<float>(obstacleDensitySpinBox->value()),
             static_cast<float>(minStartEndDistanceSpinBox->value()),
             static_cast<GridGenerator::ObstacleGenStrategy>(
-                    gridGeneratorAlgorithmComboBox->currentData().toUInt())
+                    gridGeneratorAlgorithmComboBox->currentData().toUInt()),
+            iterationsSpinBox->value()
     };
 
     QList<QListWidgetItem *> selectedItems = pathfindingAlgorithmListWidget->selectedItems();
@@ -161,6 +168,12 @@ GUI::MultiConfigForm::populate(RunInterface::RunGridConfig config, std::list<Pat
     obstacleDensitySpinBox->setValue(config.obstacleDensity);
     minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
     gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy));
+    if (config.iterations.has_value()) {
+        iterationsSpinBox->setValue(config.iterations.value());
+    } else {
+        iterationsSpinBox->setValue(1);
+    }
+
     QItemSelectionModel *selectionModel = pathfindingAlgorithmListWidget->selectionModel();
     std::unordered_set<uint8_t> stratSet;
     for (const auto &strat: strats) {

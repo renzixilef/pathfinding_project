@@ -14,11 +14,12 @@
 namespace RunInterface {
 
     struct RunGridConfig {
-        uint32_t gridWidth;
-        uint32_t gridHeight;
-        float obstacleDensity;
-        float minStartEndDistance;
-        GridGenerator::ObstacleGenStrategy obstacleGenStrategy;
+        uint32_t gridWidth{};
+        uint32_t gridHeight{};
+        float obstacleDensity{};
+        float minStartEndDistance{};
+        GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
+        std::optional<uint32_t> iterations = std::nullopt;
     };
 
 
@@ -65,10 +66,9 @@ namespace RunInterface {
     class MultiRun : public RunnerParent {
     public:
         explicit MultiRun(const RunGridConfig &thisConfig,
-                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
-                          uint32_t thisIterations);
+                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
 
-        void startNext();
+        void nextStep() override;
 
     private:
         std::list<Pathfinder::PathfinderStrategy> strats;
