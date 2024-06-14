@@ -19,11 +19,32 @@ namespace GUI {
             multiRunThread->wait();
         }
 
+    public slots:
+
+        void onGridFinished();
+
+        void onSolverFinished();
+
+        void onNewConfigDemand();
+
+
+    signals:
+
+        void nextRun();
+        void sendNewData(const RunInterface::RunGridConfig &thisConfig,
+                         const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+
     private:
+        void setupConnections();
+
+        void toggleRunButtonHandler();
+
+        bool runPaused = true;
+
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;
 
-        QPushButton *playPauseButton;
+        QPushButton *toggleRunButton;
 
         QVBoxLayout *mainLayout;
 

@@ -126,6 +126,8 @@ namespace GridGenerator {
 
         inline void setUnsolvable() { exitStatus = GridSolvedStatus::GRID_UNSOLVABLE; }
 
+        inline GridSolvedStatus getStatus(){return exitStatus;}
+
         void resetGrid();
 
         static const std::vector<std::pair<int8_t, int8_t>> offsets;

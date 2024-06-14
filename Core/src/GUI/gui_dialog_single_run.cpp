@@ -33,7 +33,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
     mainLayout->addLayout(buttonLayout);
     mainLayout->addLayout(gridWidgetLayout);
 
-    this->setLayout(mainLayout);
+    setLayout(mainLayout);
 }
 
 void GUI::SingleRunDialog::onStepFinished() {

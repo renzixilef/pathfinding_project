@@ -64,17 +64,36 @@ namespace RunInterface {
     };
 
     class MultiRun : public RunnerParent {
+    Q_OBJECT
     public:
         explicit MultiRun(const RunGridConfig &thisConfig,
                           const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
 
         void nextStep() override;
 
+
+    signals:
+
+        void demandNewConfiguration();
+
+        void solverFinished();
+
+    public slots:
+
+        void createNewGridWithCurrentConfig(bool reduceIteratorDueUnsolvable);
+
+        void onNewData(const RunGridConfig &thisConfig,
+                       const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+
+        void nextRun();
+
     private:
         void handleFinishedGrid();
+
         std::list<Pathfinder::PathfinderStrategy> strats;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;
-        Pathfinder::pathfindingParent* currentSolver;
+        uint32_t gridIterator = 0;
+        Pathfinder::pathfindingParent *currentSolver;
     };
 }
