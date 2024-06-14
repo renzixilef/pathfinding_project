@@ -12,6 +12,13 @@
 //TODO: implement iterative solving for multiSolver
 
 namespace RunInterface {
+    enum class RunnerReturnStatus{
+        RETURN_NORMAL,
+        RETURN_UNSOLVABLE,
+        RETURN_LAST_SOLVER_DONE,
+        RETURN_LAST_GRID_DONE,
+    };
+
 
     struct RunGridConfig {
         uint32_t gridWidth{};
@@ -32,9 +39,9 @@ namespace RunInterface {
 
     signals:
 
-        void stepFinished();
+        void stepFinished(){};
 
-        void gridFinished();
+        void gridFinished(){};
 
     public slots:
 
@@ -67,29 +74,29 @@ namespace RunInterface {
     Q_OBJECT
     public:
         explicit MultiRun(const RunGridConfig &thisConfig,
-                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
+                          bool shouldRepeatUnsolvables);
 
         void nextStep() override;
 
 
     signals:
 
-        void demandNewConfiguration();
-
-        void solverFinished();
+        void solverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric>,
+                            RunInterface::RunnerReturnStatus){};
 
     public slots:
 
-        void createNewGridWithCurrentConfig(bool reduceIteratorDueUnsolvable);
+        void createNewGridWithCurrentConfig();
 
-        void onNewData(const RunGridConfig &thisConfig,
+        void onNewData(const RunInterface::RunGridConfig &thisConfig,
                        const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
 
         void nextRun();
 
     private:
-        void handleFinishedGrid();
-
+        void handleFinishedSolver();
+        bool repeatUnsolvables;
         std::list<Pathfinder::PathfinderStrategy> strats;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;

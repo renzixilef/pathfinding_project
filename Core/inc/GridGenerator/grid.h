@@ -104,7 +104,7 @@ namespace GridGenerator {
 
         inline void incrementClosedCellCount() { closedCellCount++; }
 
-        inline void incrementVisitedCellCount() { visitCount++; }
+        inline void incrementVisitedCellCount() { visitedCellCount++; }
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -128,6 +128,10 @@ namespace GridGenerator {
 
         inline GridSolvedStatus getStatus(){return exitStatus;}
 
+        [[nodiscard]] inline uint32_t getPathCells()const{return pathCellCount;}
+        [[nodiscard]] inline uint32_t getVisitedCells()const{return visitedCellCount;}
+        [[nodiscard]] inline uint32_t getClosedCells()const{return closedCellCount;}
+
         void resetGrid();
 
         static const std::vector<std::pair<int8_t, int8_t>> offsets;
@@ -147,7 +151,7 @@ namespace GridGenerator {
 
         uint32_t pathCellCount = 1;
         uint32_t closedCellCount = 0;
-        uint32_t visitCount = 0;
+        uint32_t visitedCellCount = 0;
     };
 
 

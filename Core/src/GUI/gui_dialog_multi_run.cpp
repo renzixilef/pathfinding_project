@@ -16,7 +16,9 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::RunGridCo
 
     auto nextConfig = runQueue.front();
 
-    runInterface = new RunInterface::MultiRun(nextConfig.first, nextConfig.second);
+    runInterface = new RunInterface::MultiRun(nextConfig.first,
+                                              nextConfig.second,
+                                              true);
     runInterface->moveToThread(multiRunThread);
 
     setupConnections();
@@ -46,6 +48,9 @@ void GUI::MultiRunDialog::setupConnections() {
     connect(this, SIGNAL(sendNewData()),
             runInterface, SLOT(onNewData()));
 
+    connect(this, SIGNAL(nextGrid()),
+            runInterface, SLOT(createNewGridWithCurrentConfig()));
+
     connect(multiRunThread, SIGNAL(finished()),
             runInterface, SLOT(deleteLater()));
 
@@ -64,32 +69,45 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
     }
 }
 
-void GUI::MultiRunDialog::onGridFinished() {
-    //TODO: evaluate solved grids
-    //TODO: emit signal to reconstruct solvers
-}
-
-void GUI::MultiRunDialog::onSolverFinished() {
-    if(runPaused){
-        toggleRunButton->setText("Play");
-        toggleRunButton->setStyleSheet("background-color: green");
-    }else{
-        emit nextRun();
+void GUI::MultiRunDialog::onSolverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric> pathfinderExit,
+                                           RunInterface::RunnerReturnStatus exit) {
+    using RunInterface::RunnerReturnStatus;
+    switch (exit) {
+        case RunnerReturnStatus::RETURN_UNSOLVABLE:
+            emit nextGrid();
+            if (runPaused) {
+                toggleRunButton->setText("Play");
+                toggleRunButton->setStyleSheet("background-color: green");
+            } else {
+                emit nextRun();
+            }
+            //TODO: save evaluation for unsolvable run somewhere
+            break;
+        case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
+            handleNewConfigDemand();
+        case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
+            emit nextGrid();
+        case RunnerReturnStatus::RETURN_NORMAL:
+            //TODO: save evaluation for run somewhere
+            if(finished){
+                //TODO: handle multi run finished
+            }else if (runPaused) {
+                toggleRunButton->setText("Play");
+                toggleRunButton->setStyleSheet("background-color: green");
+            } else {
+                emit nextRun();
+            }
+            break;
     }
 }
 
-void GUI::MultiRunDialog::onNewConfigDemand() {
-    onGridFinished();
+void GUI::MultiRunDialog::handleNewConfigDemand() {
     runQueue.pop();
-    if(!runQueue.empty()){
+    if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
         emit sendNewData(nextConfig.first, nextConfig.second);
-        if(runPaused){
-            toggleRunButton->setText("Play");
-            toggleRunButton->setStyleSheet("background-color: green");
-        }else{
-            emit nextRun();
-        }
+    }else{
+        finished = true;
     }
     //TODO: update runView widget
 }

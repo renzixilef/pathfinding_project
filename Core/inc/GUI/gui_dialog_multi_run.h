@@ -21,25 +21,22 @@ namespace GUI {
 
     public slots:
 
-        void onGridFinished();
-
-        void onSolverFinished();
-
-        void onNewConfigDemand();
-
+        void onSolverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric> pathfinderExit,
+                              RunInterface::RunnerReturnStatus exit);
 
     signals:
-
-        void nextRun();
-        void sendNewData(const RunInterface::RunGridConfig &thisConfig,
-                         const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+        void nextGrid(){};
+        void nextRun(){};
+        void sendNewData(const RunInterface::RunGridConfig&,
+                         const std::list<Pathfinder::PathfinderStrategy>&){};
 
     private:
         void setupConnections();
-
+        void handleNewConfigDemand();
         void toggleRunButtonHandler();
 
         bool runPaused = true;
+        bool finished = false;
 
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;

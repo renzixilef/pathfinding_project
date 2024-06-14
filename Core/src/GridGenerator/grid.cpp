@@ -85,6 +85,10 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
 }
 
 void GridGenerator::Grid::resetGrid() {
+    exitStatus = GridSolvedStatus::GRID_UNSOLVED;
+    pathCellCount = 1;
+    closedCellCount = 0;
+    visitedCellCount = 0;
     for (auto &row: cells) {
         for (auto &cell: row) {
             if (cell.getState() != CellState::CELL_OBSTACLE) {
