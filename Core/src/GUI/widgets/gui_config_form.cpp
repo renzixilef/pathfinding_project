@@ -1,8 +1,8 @@
-#include "GUI/gui_config_form.h"
+#include "GUI/widgets/gui_config_form.h"
 
 #include <unordered_set>
 
-GUI::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new QSpinBox(this)),
+GUI::Widgets::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new QSpinBox(this)),
                                                            gridWidthSpinBox(new QSpinBox(this)),
                                                            obstacleDensitySpinBox(new QDoubleSpinBox(this)),
                                                            minStartEndDistanceSpinBox(new QDoubleSpinBox(this)),
@@ -20,7 +20,7 @@ GUI::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new
     layout->addRow("Grid Generator Algorithm", gridGeneratorAlgorithmComboBox);
 }
 
-void GUI::ConfigFormParent::resetForm() {
+void GUI::Widgets::ConfigFormParent::resetForm() {
     gridHeightSpinBox->setValue(20);
     gridWidthSpinBox->setValue(20);
     obstacleDensitySpinBox->setValue(0.0);
@@ -29,7 +29,7 @@ void GUI::ConfigFormParent::resetForm() {
     gridGeneratorAlgorithmComboBox->setCurrentIndex(0);
 }
 
-void GUI::ConfigFormParent::disable() {
+void GUI::Widgets::ConfigFormParent::disable() {
     gridHeightSpinBox->setDisabled(true);
     gridWidthSpinBox->setDisabled(true);
     obstacleDensitySpinBox->setDisabled(true);
@@ -37,7 +37,7 @@ void GUI::ConfigFormParent::disable() {
     gridGeneratorAlgorithmComboBox->setDisabled(true);
 }
 
-void GUI::ConfigFormParent::enable() {
+void GUI::Widgets::ConfigFormParent::enable() {
     gridHeightSpinBox->setEnabled(true);
     gridWidthSpinBox->setEnabled(true);
     obstacleDensitySpinBox->setEnabled(true);
@@ -45,7 +45,7 @@ void GUI::ConfigFormParent::enable() {
     gridGeneratorAlgorithmComboBox->setEnabled(true);
 }
 
-GUI::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this),
+GUI::Widgets::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this),
                                                            pathfindingAlgorithmComboBox(new QComboBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
     gridHeightSpinBox->setRange(20, 100);
@@ -65,7 +65,7 @@ GUI::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this
 }
 
 std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
-GUI::SingleConfigForm::getFormParams() {
+GUI::Widgets::SingleConfigForm::getFormParams() {
     RunInterface::RunGridConfig thisGridConfig = {
             static_cast<uint32_t>(gridWidthSpinBox->value()),
             static_cast<uint32_t>(gridHeightSpinBox->value()),
@@ -81,22 +81,22 @@ GUI::SingleConfigForm::getFormParams() {
 
 }
 
-void GUI::SingleConfigForm::resetForm() {
+void GUI::Widgets::SingleConfigForm::resetForm() {
     ConfigFormParent::resetForm();
     pathfindingAlgorithmComboBox->setCurrentIndex(0);
 }
 
-void GUI::SingleConfigForm::enable() {
+void GUI::Widgets::SingleConfigForm::enable() {
     ConfigFormParent::enable();
     pathfindingAlgorithmComboBox->setEnabled(true);
 }
 
-void GUI::SingleConfigForm::disable() {
+void GUI::Widgets::SingleConfigForm::disable() {
     ConfigFormParent::disable();
     pathfindingAlgorithmComboBox->setDisabled(true);
 }
 
-GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
+GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
                                                          pathfindingAlgorithmListWidget(new QListWidget(this)),
                                                          iterationsSpinBox(new QSpinBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
@@ -122,26 +122,26 @@ GUI::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent
     setLayout(layout);
 }
 
-void GUI::MultiConfigForm::enable() {
+void GUI::Widgets::MultiConfigForm::enable() {
     ConfigFormParent::enable();
     pathfindingAlgorithmListWidget->setEnabled(false);
     iterationsSpinBox->setEnabled(true);
 }
 
-void GUI::MultiConfigForm::disable() {
+void GUI::Widgets::MultiConfigForm::disable() {
     ConfigFormParent::disable();
     pathfindingAlgorithmListWidget->setDisabled(true);
     iterationsSpinBox->setDisabled(true);
 }
 
-void GUI::MultiConfigForm::resetForm() {
+void GUI::Widgets::MultiConfigForm::resetForm() {
     ConfigFormParent::resetForm();
     pathfindingAlgorithmListWidget->clearSelection();
     iterationsSpinBox->setValue(1);
 }
 
 std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
-GUI::MultiConfigForm::getFormParams() {
+GUI::Widgets::MultiConfigForm::getFormParams() {
     RunInterface::RunGridConfig thisGridConfig = {
             static_cast<uint32_t>(gridWidthSpinBox->value()),
             static_cast<uint32_t>(gridHeightSpinBox->value()),
@@ -162,7 +162,7 @@ GUI::MultiConfigForm::getFormParams() {
 }
 
 void
-GUI::MultiConfigForm::populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats) {
+GUI::Widgets::MultiConfigForm::populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats) {
     gridHeightSpinBox->setValue(config.gridHeight);
     gridWidthSpinBox->setValue(config.gridWidth);
     obstacleDensitySpinBox->setValue(config.obstacleDensity);

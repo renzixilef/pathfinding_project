@@ -1,11 +1,11 @@
-#include "GUI/gui_tab_multi_run.h"
+#include "GUI/widgets/gui_tab_multi_run.h"
 
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <utility>
 #include "GUI/gui_dialog_multi_run.h"
 
-GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
+GUI::Widgets::MultiRunTab::MultiRunTab(QWidget *parent) :
         QWidget(parent),
         configTable(new QTableView(this)),
         itemModel(new QStandardItemModel(this)),
@@ -45,7 +45,7 @@ GUI::MultiRunTab::MultiRunTab(QWidget *parent) :
 
 }
 
-void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void GUI::Widgets::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
         const auto &row = selected.indexes().at(0).row();
         auto selectedItem = dynamic_cast<MultiRunItem *>(itemModel->item(row));
@@ -69,7 +69,7 @@ void GUI::MultiRunTab::onSelectionChanged(const QItemSelection &selected, const 
     }
 }
 
-void GUI::MultiRunTab::setupConnections() {
+void GUI::Widgets::MultiRunTab::setupConnections() {
     connect(configTable->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this, &MultiRunTab::onSelectionChanged);
@@ -88,7 +88,7 @@ void GUI::MultiRunTab::setupConnections() {
 
 }
 
-void GUI::MultiRunTab::addOrSaveConfiguration() {
+void GUI::Widgets::MultiRunTab::addOrSaveConfiguration() {
     if (addConfigButton->text() == "Add") {
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
@@ -115,7 +115,7 @@ void GUI::MultiRunTab::addOrSaveConfiguration() {
     }
 }
 
-void GUI::MultiRunTab::removeSelectedConfiguration() {
+void GUI::Widgets::MultiRunTab::removeSelectedConfiguration() {
     QItemSelectionModel *selected = configTable->selectionModel();
     if (selected->hasSelection()) {
         itemModel->removeRow(selected->selectedRows().first().row());
@@ -129,19 +129,20 @@ void GUI::MultiRunTab::removeSelectedConfiguration() {
 
 }
 
-void GUI::MultiRunTab::startRuns() {
-    std::queue<std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>> runQueue;
+void GUI::Widgets::MultiRunTab::startRuns() {
+    std::queue<std::tuple<RunInterface::RunGridConfig,
+            std::list<Pathfinder::PathfinderStrategy>, QString>> runQueue;
     uint32_t rows = itemModel->rowCount();
     for (uint32_t i = 0; i < rows; i++) {
         auto item = dynamic_cast<MultiRunItem *>(itemModel->item(i, 0));
-        runQueue.emplace(item->getGridConfig(), item->getPathfinderList());
+        runQueue.emplace(item->getGridConfig(), item->getPathfinderList(), item->text());
     }
     QDialog *multiRunDialog = new GUI::MultiRunDialog(runQueue);
 
     multiRunDialog->exec();
 }
 
-GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
+GUI::Widgets::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
                                 std::list<Pathfinder::PathfinderStrategy> strats) :
         QStandardItem(),
         itemConfig(config),
@@ -149,7 +150,7 @@ GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
     setTextBasedOnParams();
 }
 
-void GUI::MultiRunItem::setTextBasedOnParams() {
+void GUI::Widgets::MultiRunItem::setTextBasedOnParams() {
     QString gridWidthHeightString = QString("%1 x %2")
             .arg(itemConfig.gridHeight)
             .arg(itemConfig.gridWidth);

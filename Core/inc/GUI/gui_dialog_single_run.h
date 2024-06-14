@@ -7,7 +7,7 @@
 #include <QTimer>
 
 #include "RunInterface/runner.h"
-#include "GUI/gui_grid.h"
+#include "GUI/widgets/gui_grid.h"
 
 namespace GUI {
     class SingleRunDialog : public QDialog {
@@ -46,7 +46,7 @@ namespace GUI {
         RunInterface::SingleRun *runInterface;
         QThread *singleRunThread;
 
-        GridDrawerWidget *gridWidget;
+        Widgets::GridDrawerWidget *gridWidget;
 
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;

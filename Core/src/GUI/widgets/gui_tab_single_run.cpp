@@ -1,10 +1,10 @@
-#include "GUI/gui_tab_single_run.h"
+#include "GUI/widgets/gui_tab_single_run.h"
 #include "Pathfinder/pathfinding.h"
 #include "GridGenerator/obstacle_gen.h"
-#include "../../inc/GUI/gui_dialog_single_run.h"
+#include "GUI/gui_dialog_single_run.h"
 
 
-GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
+GUI::Widgets::SingleRunTab::SingleRunTab(QWidget *parent) :
         QWidget(parent),
         configForm(new SingleConfigForm(this)),
         layout(new QVBoxLayout(this)),
@@ -17,7 +17,7 @@ GUI::SingleRunTab::SingleRunTab(QWidget *parent) :
     setLayout(layout);
 }
 
-void GUI::SingleRunTab::startRun() {
+void GUI::Widgets::SingleRunTab::startRun() {
     auto configParams = configForm->getFormParams();
 
     QDialog *singleRunDialog = new GUI::SingleRunDialog(configParams.first, *configParams.second.begin());

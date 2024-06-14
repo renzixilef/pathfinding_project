@@ -8,7 +8,7 @@
 #include "RunInterface/runner.h"
 #include "Pathfinder/pathfinding.h"
 
-namespace GUI {
+namespace GUI::Widgets {
 
     class ConfigFormParent : public QWidget {
     Q_OBJECT

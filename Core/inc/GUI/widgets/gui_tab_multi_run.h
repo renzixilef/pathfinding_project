@@ -9,7 +9,7 @@
 
 #include "gui_config_form.h"
 
-namespace GUI {
+namespace GUI::Widgets {
     class MultiRunItem : public QStandardItem {
     public:
         explicit MultiRunItem(RunInterface::RunGridConfig config,

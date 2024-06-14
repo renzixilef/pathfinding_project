@@ -7,7 +7,7 @@
 
 #include "gui_config_form.h"
 
-namespace GUI {
+namespace GUI::Widgets {
 
     class SingleRunTab : public QWidget{
         Q_OBJECT

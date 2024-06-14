@@ -5,13 +5,14 @@
 #include <QThread>
 
 #include "RunInterface/runner.h"
+#include "widgets/gui_run_progress_view.h"
 
 namespace GUI {
     class MultiRunDialog : public QDialog {
     Q_OBJECT
     public:
-        explicit MultiRunDialog(std::queue<std::pair<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>>> queue,
+        explicit MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
+                std::list<Pathfinder::PathfinderStrategy>, QString>> queue,
                                 QWidget *parent = nullptr);
 
         ~MultiRunDialog() override {
@@ -25,10 +26,10 @@ namespace GUI {
                               RunInterface::RunnerReturnStatus exit);
 
     signals:
-        void nextGrid(){};
-        void nextRun(){};
+        void nextGrid();
+        void nextRun();
         void sendNewData(const RunInterface::RunGridConfig&,
-                         const std::list<Pathfinder::PathfinderStrategy>&){};
+                         const std::list<Pathfinder::PathfinderStrategy>&);
 
     private:
         void setupConnections();
@@ -37,6 +38,8 @@ namespace GUI {
 
         bool runPaused = true;
         bool finished = false;
+
+        bool shouldReturnUnsolvables = true;
 
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;
@@ -47,7 +50,10 @@ namespace GUI {
 
         QHBoxLayout *buttonLayout;
 
-        std::queue<std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>> runQueue;
+        Widgets::RunProgressView* runProgressView;
+
+        std::queue<std::tuple<RunInterface::RunGridConfig,
+                std::list<Pathfinder::PathfinderStrategy>, QString>> runQueue;
 
     };
 

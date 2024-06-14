@@ -39,9 +39,9 @@ namespace RunInterface {
 
     signals:
 
-        void stepFinished(){};
+        void stepFinished();
 
-        void gridFinished(){};
+        void gridFinished();
 
     public slots:
 
@@ -83,7 +83,7 @@ namespace RunInterface {
     signals:
 
         void solverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric>,
-                            RunInterface::RunnerReturnStatus){};
+                            RunInterface::RunnerReturnStatus);
 
     public slots:
 

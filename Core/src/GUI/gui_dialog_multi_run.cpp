@@ -2,32 +2,37 @@
 
 #include <QPushButton>
 
-GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::RunGridConfig,
-        std::list<Pathfinder::PathfinderStrategy>>> queue,
+GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
+        std::list<Pathfinder::PathfinderStrategy>, QString>> queue,
                                     QWidget *parent) :
 
         QDialog(parent),
         runQueue(std::move(queue)),
         multiRunThread(new QThread(this)),
-        toggleRunButton(new QPushButton("Play", this)),
+        toggleRunButton(new QPushButton("Play")),
         mainLayout(new QVBoxLayout(this)),
-        buttonLayout(new QHBoxLayout()) {
+        buttonLayout(new QHBoxLayout()),
+        runProgressView(new Widgets::RunProgressView()){
     toggleRunButton->setStyleSheet("background-color: green;");
 
     auto nextConfig = runQueue.front();
 
-    runInterface = new RunInterface::MultiRun(nextConfig.first,
-                                              nextConfig.second,
-                                              true);
+    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig),
+                                              std::get<1>(nextConfig),
+                                              shouldReturnUnsolvables);
+    //TODO: Implement shouldRepeatUnsolvables
     runInterface->moveToThread(multiRunThread);
 
     setupConnections();
 
     multiRunThread->start();
 
+    runProgressView->addNewConfig(std::get<2>(nextConfig));
+    runProgressView->updateProgress(std::get<2>(nextConfig),0);
+
     buttonLayout->addWidget(toggleRunButton);
     mainLayout->addLayout(buttonLayout);
-    //mainLayout->addWidget(RunView);
+    mainLayout->addWidget(runProgressView);
     setLayout(mainLayout);
 
 }
@@ -105,7 +110,7 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
     runQueue.pop();
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
-        emit sendNewData(nextConfig.first, nextConfig.second);
+        emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
     }else{
         finished = true;
     }
