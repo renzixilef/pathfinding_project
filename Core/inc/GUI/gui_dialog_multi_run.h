@@ -10,9 +10,9 @@ namespace GUI {
     class MultiRunDialog : public QDialog {
     Q_OBJECT
     public:
-        MultiRunDialog(const RunInterface::RunGridConfig& config,
-                       const std::list<Pathfinder::PathfinderStrategy>& strats,
-                       QWidget *parent = nullptr);
+        explicit MultiRunDialog(std::queue<std::pair<RunInterface::RunGridConfig,
+                std::list<Pathfinder::PathfinderStrategy>>> queue,
+                                QWidget *parent = nullptr);
 
         ~MultiRunDialog() override {
             multiRunThread->quit();
@@ -28,6 +28,8 @@ namespace GUI {
         QVBoxLayout *mainLayout;
 
         QHBoxLayout *buttonLayout;
+
+        std::queue<std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>> runQueue;
 
     };
 

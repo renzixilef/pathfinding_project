@@ -2,15 +2,16 @@
 
 #include <QPushButton>
 
-GUI::MultiRunDialog::MultiRunDialog(const RunInterface::RunGridConfig& config,
-                                    const std::list<Pathfinder::PathfinderStrategy>& strats,
+GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::RunGridConfig,
+        std::list<Pathfinder::PathfinderStrategy>>> queue,
                                     QWidget *parent) :
 
         QDialog(parent),
-        runInterface(new RunInterface::MultiRun(config, strats)),
+        runQueue(std::move(queue)),
         multiRunThread(new QThread(this)),
         playPauseButton(new QPushButton("Play", this)),
         mainLayout(new QVBoxLayout(this)),
         buttonLayout(new QHBoxLayout()) {
+
 
 }

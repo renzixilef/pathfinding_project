@@ -71,8 +71,10 @@ namespace RunInterface {
         void nextStep() override;
 
     private:
+        void handleFinishedGrid();
         std::list<Pathfinder::PathfinderStrategy> strats;
-        uint32_t iterations;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
+        std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;
+        Pathfinder::pathfindingParent* currentSolver;
     };
 }

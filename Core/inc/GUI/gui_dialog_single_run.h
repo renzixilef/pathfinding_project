@@ -36,6 +36,8 @@ namespace GUI {
     private:
         void toggleRunButtonHandler();
 
+        void setupConnections();
+
         void nextStepButtonHandler();
 
         bool runPaused = true;

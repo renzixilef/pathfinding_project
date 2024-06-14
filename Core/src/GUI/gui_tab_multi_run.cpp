@@ -130,10 +130,15 @@ void GUI::MultiRunTab::removeSelectedConfiguration() {
 }
 
 void GUI::MultiRunTab::startRuns() {
-    auto configParams = configForm->getFormParams();
+    std::queue<std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>> runQueue;
+    uint32_t rows = itemModel->rowCount();
+    for (uint32_t i = 0; i < rows; i++) {
+        auto item = dynamic_cast<MultiRunItem *>(itemModel->item(i, 0));
+        runQueue.emplace(item->getGridConfig(), item->getPathfinderList());
+    }
+    QDialog *multiRunDialog = new GUI::MultiRunDialog(runQueue);
 
-    QDialog *singleRunDialog = new GUI::MultiRunDialog(configParams.first, configParams.second);
-    singleRunDialog->exec();
+    multiRunDialog->exec();
 }
 
 GUI::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
