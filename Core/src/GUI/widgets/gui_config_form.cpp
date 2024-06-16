@@ -124,7 +124,7 @@ GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormPare
 
 void GUI::Widgets::MultiConfigForm::enable() {
     ConfigFormParent::enable();
-    pathfindingAlgorithmListWidget->setEnabled(false);
+    pathfindingAlgorithmListWidget->setEnabled(true);
     iterationsSpinBox->setEnabled(true);
 }
 

@@ -12,7 +12,7 @@ namespace GUI {
     Q_OBJECT
     public:
         explicit MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> queue,
+                std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
                                 QWidget *parent = nullptr);
 
         ~MultiRunDialog() override {
@@ -39,7 +39,9 @@ namespace GUI {
         bool runPaused = true;
         bool finished = false;
 
-        bool shouldReturnUnsolvables = true;
+        uint32_t configIterator = 0;
+
+        bool shouldRepeatUnsolvables = true;
 
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;
@@ -53,7 +55,7 @@ namespace GUI {
         Widgets::RunProgressView* runProgressView;
 
         std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> runQueue;
+                std::list<Pathfinder::PathfinderStrategy>, QString>>& runQueue;
 
     };
 
