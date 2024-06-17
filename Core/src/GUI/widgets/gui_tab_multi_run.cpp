@@ -27,6 +27,7 @@ GUI::Widgets::MultiRunTab::MultiRunTab(QWidget *parent) :
 
     addConfigButton->setStyleSheet("background-color: green;");
     removeConfigButton->setEnabled(false);
+    startButton->setEnabled(true);
     removeConfigButton->setStyleSheet("");
 
     buttonLayout->addWidget(addConfigButton);
@@ -51,6 +52,7 @@ void GUI::Widgets::MultiRunTab::onSelectionChanged(const QItemSelection &selecte
 
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
+        startButton->setDisabled(true);
         configForm->enable();
         configForm->populate(selectedItem->getGridConfig(), selectedItem->getPathfinderList());
         removeConfigButton->setEnabled(true);
@@ -59,6 +61,7 @@ void GUI::Widgets::MultiRunTab::onSelectionChanged(const QItemSelection &selecte
     } else {
         addConfigButton->setText("Add");
         addConfigButton->setStyleSheet("background-color: green;");
+        startButton->setEnabled(true);
         configForm->disable();
         configForm->resetForm();
         removeConfigButton->setEnabled(false);
@@ -91,7 +94,7 @@ void GUI::Widgets::MultiRunTab::addOrSaveConfiguration() {
     if (addConfigButton->text() == "Add") {
         addConfigButton->setText("Save");
         addConfigButton->setStyleSheet("background-color: blue;");
-
+        startButton->setDisabled(true);
         configForm->enable();
         configForm->resetForm();
         removeConfigButton->setEnabled(false);
@@ -103,6 +106,7 @@ void GUI::Widgets::MultiRunTab::addOrSaveConfiguration() {
     } else {
         addConfigButton->setStyleSheet("background-color: green;");
         addConfigButton->setText("Add");
+        startButton->setEnabled(true);
         configForm->disable();
         auto params = configForm->getFormParams();
         configForm->resetForm();
@@ -124,6 +128,7 @@ void GUI::Widgets::MultiRunTab::removeSelectedConfiguration() {
     removeConfigButton->setStyleSheet("");
     addConfigButton->setStyleSheet("background-color: green;");
     addConfigButton->setText("Add");
+    startButton->setEnabled(true);
     configForm->disable();
 
 }

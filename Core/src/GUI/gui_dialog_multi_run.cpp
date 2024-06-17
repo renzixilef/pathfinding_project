@@ -90,15 +90,17 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
                                             static_cast<int>(configIterator /
                                                              std::get<0>(currentConfig).iterations.value()));
             handleNewConfigDemand();
-            currentConfig = runQueue.front();
-            runProgressView->addNewConfig(std::get<2>(currentConfig));
-            runProgressView->updateProgress(std::get<2>(currentConfig), 0);
-            emit nextGrid();
+            if (!finished) {
+                currentConfig = runQueue.front();
+                runProgressView->addNewConfig(std::get<2>(currentConfig));
+                runProgressView->updateProgress(std::get<2>(currentConfig), 0);
+                emit nextGrid();
+            }
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
             configIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int>(configIterator /
+                                            static_cast<int>(configIterator * 100 /
                                                              std::get<0>(currentConfig).iterations.value()));
             emit nextGrid();
             break;
