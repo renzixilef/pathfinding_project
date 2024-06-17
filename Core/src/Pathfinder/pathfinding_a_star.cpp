@@ -4,6 +4,7 @@
 #include <queue>
 
 void Pathfinder::AStarSolve::nextStep() {
+    timer.stepBegin();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 
     GridGenerator::GridCoordinate currentCoordinates = nextCellQueue.top();
@@ -42,5 +43,6 @@ void Pathfinder::AStarSolve::nextStep() {
     }
     currentCell.markClosed();
     grid.incrementClosedCellCount();
+    timer.stepEnd();
 }
 

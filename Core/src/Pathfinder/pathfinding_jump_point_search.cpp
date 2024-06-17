@@ -5,12 +5,12 @@
 
 void Pathfinder::JumpPointSolve::nextStep() {
     using GridGenerator::GridCoordinate;
+    timer.stepBegin();
     GridCoordinate endCoordinates = grid.getEndCoordinates();
     GridCoordinate currentCoordinates = nextCellQueue.top();
     nextCellQueue.pop();
 
     grid(currentCoordinates).markClosed();
-    grid.incrementClosedCellCount();
 
     for (const auto &direction: GridGenerator::Grid::offsets) {
         std::optional<GridCoordinate> jumpPoint = jump(currentCoordinates, direction);
@@ -47,6 +47,8 @@ void Pathfinder::JumpPointSolve::nextStep() {
             }
         }
     }
+    grid.incrementClosedCellCount();
+    timer.stepEnd();
 }
 
 std::optional<GridGenerator::GridCoordinate> Pathfinder::JumpPointSolve::jump(
