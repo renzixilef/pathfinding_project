@@ -44,14 +44,23 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-    message("Doxygen build started")
-
-    add_custom_target(doc_doxygen ALL
-            COMMAND
-            ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+    add_custom_command(TARGET pathfinding POST_BUILD
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating API documentation with Doxygen"
-            VERBATIM)
+            VERBATIM
+    )
+
+    find_program(MAKE_EXECUTABLE make)
+    if(MAKE_EXECUTABLE)
+        add_custom_command(TARGET pathfinding POST_BUILD
+                COMMAND ${MAKE_EXECUTABLE} > /dev/null 2>&1
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/latex
+                COMMENT "Generating PDF documentation"
+                VERBATIM)
+    else(MAKE_EXECUTABLE)
+        message("Could not find 'make' command for generating PDF documentation.")
+    endif()
 else (DOXYGEN_FOUND)
     message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
