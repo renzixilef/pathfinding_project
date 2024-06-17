@@ -1,5 +1,5 @@
 /**
- * @file cell.h
+ * @file grid.h
  * @brief Grid object definitions used in GridGenerator.
  */
 
@@ -11,8 +11,6 @@
 #include <cmath>
 
 #include "cell.h"
-
-//TODO: documentation
 
 // Predefined standard values for obstacle density and start-end distance
 #define STANDARD_OBSTACLE_DENSITY 0.3
