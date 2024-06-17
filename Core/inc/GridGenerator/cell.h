@@ -69,78 +69,77 @@ namespace GridGenerator {
 
     public:
         /**
-         * @constructor
          * @brief Default constructor for Cell class. Initializes state to CELL_OPEN, cost to an empty CellCost object, and parent to nullptr.
          */
         Cell() : state(CellState::CELL_OPEN), cost(CellCost{}), parent(nullptr) {}
 
         /**
-         * @function markObstacle
+         * @fn markObstacle
          * @brief Marks the cell as an obstacle.
          */
         inline void markObstacle() { state = CellState::CELL_OBSTACLE; }
 
         /**
-         * @function markOpen
+         * @fn markOpen
          * @brief Marks the cell as open.
          */
         inline void markOpen() { state = CellState::CELL_OPEN; }
 
         /**
-         * @function markVisited
+         * @fn markVisited
          * @brief Marks the cell as visited.
          */
         inline void markVisited() { state = CellState::CELL_VISITED; }
 
         /**
-         * @function markClosed
+         * @fn markClosed
          * @brief Marks the cell as closed.
          */
         inline void markClosed() { state = CellState::CELL_CLOSED; }
 
         /**
-         * @function markPath
+         * @fn markPath
          * @brief Marks the cell as part of the final path.
          */
         inline void markPath() { state = CellState::CELL_PATH; }
 
         /**
-        * @function setGCost
+        * @fn setGCost
         * @brief Sets the actual cost from the start node to this cell (gCost).
         * @param gCost The gCost value to be set.
         */
         inline void setGCost(double gCost) { cost.gCost = gCost; }
 
         /**
-        * @function setHCost
+        * @fn setHCost
         * @brief Sets heuristic estimated cost from this cell to the end node (hCost).
         * @param hCost The hCost value to be set.
         */
         inline void setHCost(double hCost) { cost.hCost = hCost; }
 
         /**
-        * @function setParentCellPointer
+        * @fn setParentCellPointer
         * @brief Sets the parent of this cell.
         * @param parentCell The parent cell to be set.
         */
         inline void setParentCellPointer(Cell *parentCell) { parent = parentCell; }
 
         /**
-        * @function setParentDirPair
+        * @fn setParentDirPair
         * @brief Sets the direction to the parent of this cell.
         * @param parentDir The parent direction pair to be set.
         */
         inline void setParentDirPair(std::pair<int8_t, int8_t> parentDir) { parent = parentDir; }
 
         /**
-        * @function getParentIfCellPointer
+        * @fn getParentIfCellPointer
         * @brief Gets the parent of the cell if it's a Cell pointer.
         * @return Pointer to the parent Cell if cell's parent is a Cell pointer, nullptr otherwise.
         */
         [[nodiscard]] inline Cell **getParentIfCellPointer() { return std::get_if<Cell*>(&parent); }
 
         /**
-        * @function getParentIfDirPair
+        * @fn getParentIfDirPair
         * @brief Gets the direction to the parent of the cell if it's a direction pair.
         * @return Pointer to the parent direction pair if cell's parent is a pair, nullptr otherwise.
         */
@@ -149,14 +148,14 @@ namespace GridGenerator {
         }
 
         /**
-        * @function getState
+        * @fn getState
         * @brief Access the state of the cell.
         * @return The current state of the cell.
         */
         [[nodiscard]] inline CellState getState() const { return state; }
 
         /**
-        * @function getCost
+        * @fn getCost
         * @brief Access the cost of the cell.
         * @return The current cost associated with the cell.
         */
