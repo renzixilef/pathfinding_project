@@ -7,15 +7,15 @@
 #include <QTimer>
 
 #include "RunInterface/runner.h"
-#include "GUI/gui_grid.h"
+#include "GUI/widgets/gui_grid.h"
 
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT
 
     public:
-        SingleRunDialog(RunInterface::RunGridConfig config,
-                        Pathfinder::PathfinderStrategy strat,
+        SingleRunDialog(const RunInterface::RunGridConfig& config,
+                        const Pathfinder::PathfinderStrategy& strat,
                         QWidget *parent = nullptr);
 
         ~SingleRunDialog() override {
@@ -36,6 +36,8 @@ namespace GUI {
     private:
         void toggleRunButtonHandler();
 
+        void setupConnections();
+
         void nextStepButtonHandler();
 
         bool runPaused = true;
@@ -44,7 +46,7 @@ namespace GUI {
         RunInterface::SingleRun *runInterface;
         QThread *singleRunThread;
 
-        GridDrawerWidget *gridWidget;
+        Widgets::GridDrawerWidget *gridWidget;
 
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;

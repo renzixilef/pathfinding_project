@@ -21,17 +21,6 @@ std::vector<std::reference_wrapper<GridGenerator::Cell>>
 GridGenerator::Grid::getNeighborsCells(GridCoordinate coords) {
     std::vector<std::reference_wrapper<Cell>> neighbors;
 
-    std::vector<std::pair<uint8_t, uint8_t>> offsets = {
-            {-1, 0},
-            {1,  0},
-            {0,  -1},
-            {0,  1},  // Top, Bottom, Left, Right
-            {-1, -1},
-            {-1, 1},
-            {1,  -1},
-            {1,  1}  // Diagonals
-    };
-
     for (const auto &offset: offsets) {
         int64_t neighborRow = coords.x + offset.first;
         int64_t neighborCol = coords.y + offset.second;
@@ -96,6 +85,10 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
 }
 
 void GridGenerator::Grid::resetGrid() {
+    exitStatus = GridSolvedStatus::GRID_UNSOLVED;
+    pathCellCount = 1;
+    closedCellCount = 0;
+    visitedCellCount = 0;
     for (auto &row: cells) {
         for (auto &cell: row) {
             if (cell.getState() != CellState::CELL_OBSTACLE) {

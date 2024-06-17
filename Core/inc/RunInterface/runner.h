@@ -12,14 +12,21 @@
 //TODO: implement iterative solving for multiSolver
 
 namespace RunInterface {
+    enum class RunnerReturnStatus {
+        RETURN_NORMAL = 0,
+        RETURN_UNSOLVABLE = 1,
+        RETURN_LAST_SOLVER_DONE = 2,
+        RETURN_LAST_GRID_DONE = 3,
+    };
+
 
     struct RunGridConfig {
-        uint32_t gridWith;
-        uint32_t gridHeight;
-        float obstacleDensity;
-        float minStartEndDistance;
-        GridGenerator::ObstacleGenStrategy obstacleGenStrategy;
-
+        uint32_t gridWidth{};
+        uint32_t gridHeight{};
+        float obstacleDensity{};
+        float minStartEndDistance{};
+        GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
+        std::optional<uint32_t> iterations = std::nullopt;
     };
 
 
@@ -64,16 +71,37 @@ namespace RunInterface {
     };
 
     class MultiRun : public RunnerParent {
+    Q_OBJECT
     public:
         explicit MultiRun(const RunGridConfig &thisConfig,
                           const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
-                          uint32_t thisIterations);
+                          bool shouldRepeatUnsolvables);
 
-        void startNext();
+        void nextStep() override;
+
+
+    signals:
+
+        void solverFinished(const Pathfinder::PathfinderPerformanceMetric &,
+                            int);
+
+    public slots:
+
+        void createNewGridWithCurrentConfig();
+
+        void onNewData(const RunInterface::RunGridConfig &thisConfig,
+                       const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+
+        void nextRun();
 
     private:
+        void handleFinishedSolver();
+
+        bool repeatUnsolvables;
         std::list<Pathfinder::PathfinderStrategy> strats;
-        uint32_t iterations;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
+        std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;
+        uint32_t gridIterator = 0;
+        Pathfinder::pathfindingParent *currentSolver;
     };
 }

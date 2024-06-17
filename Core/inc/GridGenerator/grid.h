@@ -23,12 +23,12 @@ namespace GridGenerator {
         }
 
         [[nodiscard]] inline double getOctileDistanceTo(const GridCoordinate &point) const {
-            uint32_t xDistAbs = std::abs(static_cast<int64_t>(x)-static_cast<int64_t>(point.x));
-            uint32_t yDistAbs = std::abs(static_cast<int64_t>(y)-static_cast<int64_t>(point.y));
+            uint32_t xDistAbs = std::abs(static_cast<int64_t>(x) - static_cast<int64_t>(point.x));
+            uint32_t yDistAbs = std::abs(static_cast<int64_t>(y) - static_cast<int64_t>(point.y));
             if (xDistAbs > yDistAbs)
-                return sqrt(2) * yDistAbs + 1 * (xDistAbs-yDistAbs);
+                return sqrt(2) * yDistAbs + 1 * (xDistAbs - yDistAbs);
             else
-                return sqrt(2) * xDistAbs + 1 * (yDistAbs-xDistAbs);
+                return sqrt(2) * xDistAbs + 1 * (yDistAbs - xDistAbs);
         }
 
 
@@ -86,7 +86,9 @@ namespace GridGenerator {
 
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
 
-        [[nodiscard]] inline bool isInBounds(int64_t x, int64_t y) const {return x>=0 && x<sizeX && y>=0 && y<sizeY;}
+        [[nodiscard]] inline bool isInBounds(int64_t x, int64_t y) const {
+            return x >= 0 && x < sizeX && y >= 0 && y < sizeY;
+        }
 
         [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
 
@@ -102,7 +104,7 @@ namespace GridGenerator {
 
         inline void incrementClosedCellCount() { closedCellCount++; }
 
-        inline void incrementVisitedCellCount() { visitCount++; }
+        inline void incrementVisitedCellCount() { visitedCellCount++; }
 
         inline void setStart(const GridCoordinate &startCoord) {
             startCoordinates = startCoord;
@@ -124,6 +126,12 @@ namespace GridGenerator {
 
         inline void setUnsolvable() { exitStatus = GridSolvedStatus::GRID_UNSOLVABLE; }
 
+        inline GridSolvedStatus getStatus(){return exitStatus;}
+
+        [[nodiscard]] inline uint32_t getPathCells()const{return pathCellCount;}
+        [[nodiscard]] inline uint32_t getVisitedCells()const{return visitedCellCount;}
+        [[nodiscard]] inline uint32_t getClosedCells()const{return closedCellCount;}
+
         void resetGrid();
 
         static const std::vector<std::pair<int8_t, int8_t>> offsets;
@@ -143,7 +151,7 @@ namespace GridGenerator {
 
         uint32_t pathCellCount = 1;
         uint32_t closedCellCount = 0;
-        uint32_t visitCount = 0;
+        uint32_t visitedCellCount = 0;
     };
 
 

@@ -5,7 +5,9 @@
 #include <QFormLayout>
 #include <QPushButton>
 
-namespace GUI {
+#include "gui_config_form.h"
+
+namespace GUI::Widgets {
 
     class SingleRunTab : public QWidget{
         Q_OBJECT
@@ -17,14 +19,9 @@ namespace GUI {
         void startRun();
 
         QPushButton* startRunButton;
+        SingleConfigForm* configForm;
 
-        QSpinBox* gridHeightSpinBox;
-        QSpinBox* gridWidthSpinBox;
-        QDoubleSpinBox* obstacleDensitySpinBox;
-        QDoubleSpinBox* minStartEndDistanceSpinBox;
-        QComboBox* gridGeneratorAlgorithmComboBox;
-        QComboBox* pathfindingAlgorithmComboBox;
-        QFormLayout* layout;
+        QVBoxLayout *layout;
     };
 
 }

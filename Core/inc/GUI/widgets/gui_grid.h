@@ -5,7 +5,7 @@
 #include "GridGenerator/grid.h"
 
 
-namespace GUI {
+namespace GUI::Widgets {
 
     class GridDrawerWidget : public QWidget {
     Q_OBJECT

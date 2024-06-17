@@ -1,8 +1,8 @@
-#include "GUI/gui_grid.h"
+#include "GUI/widgets/gui_grid.h"
 
 #include <QPainter>
 
-void GUI::GridDrawerWidget::paintEvent(QPaintEvent *) {
+void GUI::Widgets::GridDrawerWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
     uint32_t cellSide = std::floor(std::min(double(width()) / grid.getSizeX(),double(height()) / grid.getSizeY()));

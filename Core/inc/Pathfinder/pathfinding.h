@@ -18,6 +18,15 @@ namespace Pathfinder {
         PATHFINDER_A_STAR = 2,
         PATHFINDER_JUMP_POINT_SEARCH = 3
     };
+    struct PathfinderPerformanceMetric {
+        uint32_t pathCells;
+        uint32_t visitedCells;
+        uint32_t closedCells;
+        float solvingSeconds;
+        float avgSeconsPerStep;
+        PathfinderStrategy strat;
+
+    };
 
     class pathfindingParent;
 
@@ -41,7 +50,22 @@ namespace Pathfinder {
 
         virtual void nextStep() = 0;
 
+        inline PathfinderPerformanceMetric getPerformanceMetric() {
+            return PathfinderPerformanceMetric{grid.getPathCells(),
+                                               grid.getVisitedCells(),
+                                               grid.getClosedCells(),
+                                               0,
+                                               0,
+                                               strat};
+            //TODO: implement timer and fix this
+        }
+
+
     protected:
+        PathfinderStrategy strat;
+
+        virtual void setStrat() = 0;
+
         GridGenerator::Grid &grid;
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
                 decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
@@ -54,27 +78,36 @@ namespace Pathfinder {
 
     class DijkstraSolve : public pathfindingParent {
     public:
-        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) { setStrat(); }
 
         void nextStep() override;
+
+    private:
+        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_DIJKSTRA; }
     };
 
     class AStarSolve : public pathfindingParent {
     public:
-        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) { setStrat(); }
 
         void nextStep() override;
+
+    private:
+        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_A_STAR; }
     };
 
     class JumpPointSolve : public pathfindingParent {
     public:
         explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {
             initJPSSolver();
+            setStrat();
         }
 
         void nextStep() override;
 
     private:
+        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH; }
+
         std::optional<GridGenerator::GridCoordinate> jump(GridGenerator::GridCoordinate currentCoord,
                                                           std::pair<int8_t, int8_t> direction);
 
