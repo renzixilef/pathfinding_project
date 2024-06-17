@@ -1,6 +1,6 @@
 /**
- * @file
- * This file contains classes and enums that define/implement pathfinding strategies on a given grid.
+ * @file pathfinding.h
+ * @brief This file contains classes and enums that define/implement pathfinding strategies on a given grid.
  */
 
 #pragma once
