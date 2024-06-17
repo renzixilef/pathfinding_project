@@ -1,9 +1,10 @@
 /**
  * @file cell.h
- * @brief Cell struct definitions used in GridGenerator.
+ * @brief Cell object definitions used in GridGenerator.
  */
 
 #pragma once
+
 #include <QColor>
 #include <variant>
 

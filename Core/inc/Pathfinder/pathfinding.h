@@ -53,9 +53,9 @@ namespace Pathfinder {
         virtual void nextStep() = 0;
 
         inline PathfinderPerformanceMetric getPerformanceMetric() {
-            return PathfinderPerformanceMetric{grid.getPathCells(),
-                                               grid.getVisitedCells(),
-                                               grid.getClosedCells(),
+            return PathfinderPerformanceMetric{grid.getPathCellCount(),
+                                               grid.getVisitedCellCount(),
+                                               grid.getClosedCellCount(),
                                                timer.getAbsoluteTime(),
                                                timer.getAvgUSecondsPerStep(),
                                                timer.getStepCount(),
