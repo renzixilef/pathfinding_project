@@ -14,7 +14,9 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
         buttonLayout(new QHBoxLayout()),
         runProgressView(new Widgets::RunProgressView()) {
     toggleRunButton->setStyleSheet("background-color: green;");
-
+    qRegisterMetaType<Pathfinder::PathfinderPerformanceMetric>("Pathfinder::PathfinderPerformanceMetric");
+    qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
+    qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
     auto nextConfig = runQueue.front();
 
     runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig),
@@ -41,17 +43,15 @@ void GUI::MultiRunDialog::setupConnections() {
     connect(this, SIGNAL(nextRun()),
             runInterface, SLOT(nextRun()));
 
-    connect(runInterface, SIGNAL(solverFinished()),
-            this, SLOT(onSolverFinished()));
+    connect(runInterface, SIGNAL(solverFinished(const Pathfinder::PathfinderPerformanceMetric &,
+                                         int)),
+            this, SLOT(onSolverFinished(const Pathfinder::PathfinderPerformanceMetric&,
+                               int)));
 
-    connect(runInterface, SIGNAL(gridFinished()),
-            this, SLOT(onGridFinished()));
-
-    connect(runInterface, SIGNAL(demandNewConfiguration()),
-            this, SLOT(onNewConfigDemand()));
-
-    connect(this, SIGNAL(sendNewData()),
-            runInterface, SLOT(onNewData()));
+    connect(this, SIGNAL(sendNewData(const RunInterface::RunGridConfig &,
+                                 const std::list<Pathfinder::PathfinderStrategy> & )),
+            runInterface, SLOT(onNewData(const RunInterface::RunGridConfig &,
+                                       const std::list<Pathfinder::PathfinderStrategy> & )));
 
     connect(this, SIGNAL(nextGrid()),
             runInterface, SLOT(createNewGridWithCurrentConfig()));
@@ -74,10 +74,11 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
     }
 }
 
-void GUI::MultiRunDialog::onSolverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric> pathfinderExit,
-                                           RunInterface::RunnerReturnStatus exit) {
+void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
+                                           int exitInt) {
     using RunInterface::RunnerReturnStatus;
     auto currentConfig = runQueue.front();
+    auto exit = static_cast<RunnerReturnStatus>(exitInt);
     switch (exit) {
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
             emit nextGrid();

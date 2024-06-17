@@ -7,6 +7,10 @@
 #include "RunInterface/runner.h"
 #include "widgets/gui_run_progress_view.h"
 
+Q_DECLARE_METATYPE(Pathfinder::PathfinderPerformanceMetric)
+Q_DECLARE_METATYPE(RunInterface::RunGridConfig)
+Q_DECLARE_METATYPE(Pathfinder::PathfinderStrategy)
+
 namespace GUI {
     class MultiRunDialog : public QDialog {
     Q_OBJECT
@@ -22,8 +26,8 @@ namespace GUI {
 
     public slots:
 
-        void onSolverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric> pathfinderExit,
-                              RunInterface::RunnerReturnStatus exit);
+        void onSolverFinished(const Pathfinder::PathfinderPerformanceMetric& pathfinderExit,
+                              int exitInt);
 
     signals:
         void nextGrid();

@@ -17,7 +17,6 @@ GUI::Widgets::MultiRunTab::MultiRunTab(QWidget *parent) :
         removeConfigButton(new QPushButton("Remove", this)),
         startButton(new QPushButton("Start", this)) {
     configTable->setModel(itemModel);
-
     configForm->disable();
     configTable->horizontalHeader()->setVisible(false);
     configTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);

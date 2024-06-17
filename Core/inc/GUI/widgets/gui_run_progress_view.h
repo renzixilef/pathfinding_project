@@ -22,5 +22,6 @@ namespace GUI::Widgets {
         QScrollArea *scrollArea;
         QWidget *scrollWidget;
         QMap<QString, QProgressBar*> progressBars;
+        QVBoxLayout *scrollAreaLayout;
     };
 }

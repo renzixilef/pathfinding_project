@@ -33,22 +33,23 @@ void RunInterface::MultiRun::handleFinishedSolver() {
         if (solverIterator != solvers.end()) {
             currentSolver = solverIterator->get();
             emit solverFinished(currentSolver->getPerformanceMetric(),
-                                RunnerReturnStatus::RETURN_NORMAL);
+                                static_cast<int>(RunnerReturnStatus::RETURN_NORMAL));
         } else {
             if (gridIterator == config.iterations.value()) {
                 emit solverFinished(currentSolver->getPerformanceMetric(),
-                                    RunnerReturnStatus::RETURN_LAST_GRID_DONE);
+                                    static_cast<int>(RunnerReturnStatus::RETURN_LAST_GRID_DONE));
 
             } else {
                 gridIterator++;
                 emit solverFinished(currentSolver->getPerformanceMetric(),
-                                    RunnerReturnStatus::RETURN_LAST_SOLVER_DONE);
+                                    static_cast<int>(RunnerReturnStatus::RETURN_LAST_SOLVER_DONE));
 
             }
         }
     } else {
         if (!repeatUnsolvables) gridIterator++;
-        emit solverFinished(std::nullopt, RunnerReturnStatus::RETURN_UNSOLVABLE);
+        emit solverFinished(Pathfinder::PathfinderPerformanceMetric{},
+                            static_cast<uint8_t>(RunnerReturnStatus::RETURN_UNSOLVABLE));
     }
 }
 

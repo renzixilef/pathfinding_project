@@ -12,11 +12,11 @@
 //TODO: implement iterative solving for multiSolver
 
 namespace RunInterface {
-    enum class RunnerReturnStatus{
-        RETURN_NORMAL,
-        RETURN_UNSOLVABLE,
-        RETURN_LAST_SOLVER_DONE,
-        RETURN_LAST_GRID_DONE,
+    enum class RunnerReturnStatus {
+        RETURN_NORMAL = 0,
+        RETURN_UNSOLVABLE = 1,
+        RETURN_LAST_SOLVER_DONE = 2,
+        RETURN_LAST_GRID_DONE = 3,
     };
 
 
@@ -82,8 +82,8 @@ namespace RunInterface {
 
     signals:
 
-        void solverFinished(std::optional<Pathfinder::PathfinderPerformanceMetric>,
-                            RunInterface::RunnerReturnStatus);
+        void solverFinished(const Pathfinder::PathfinderPerformanceMetric &,
+                            int);
 
     public slots:
 
@@ -96,6 +96,7 @@ namespace RunInterface {
 
     private:
         void handleFinishedSolver();
+
         bool repeatUnsolvables;
         std::list<Pathfinder::PathfinderStrategy> strats;
         std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;

@@ -3,7 +3,8 @@
 GUI::Widgets::RunProgressView::RunProgressView(QWidget *parent) : QWidget(parent),
                                                                   layout(new QVBoxLayout(this)),
                                                                   scrollArea(new QScrollArea()),
-                                                                  scrollWidget(new QWidget()) {
+                                                                  scrollWidget(new QWidget()),
+                                                                  scrollAreaLayout(new QVBoxLayout(scrollWidget)){
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollWidget);
     layout->addWidget(scrollArea);
@@ -16,7 +17,7 @@ void GUI::Widgets::RunProgressView::addNewConfig(const QString &name) {
     auto benchLayout = new QVBoxLayout();
     benchLayout->addWidget(nameLabel);
     benchLayout->addWidget(progressBar);
-    layout->addLayout(benchLayout);
+    scrollAreaLayout->addLayout(benchLayout);
     progressBars[name] = progressBar;
 }
 
