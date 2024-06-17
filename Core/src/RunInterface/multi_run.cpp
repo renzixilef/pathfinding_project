@@ -48,7 +48,7 @@ void RunInterface::MultiRun::handleFinishedSolver() {
         }
     } else {
         if (!repeatUnsolvables) gridIterator++;
-        emit solverFinished(Pathfinder::PathfinderPerformanceMetric{},
+        emit solverFinished(currentSolver->getPerformanceMetric(),
                             static_cast<uint8_t>(RunnerReturnStatus::RETURN_UNSOLVABLE));
     }
 }
