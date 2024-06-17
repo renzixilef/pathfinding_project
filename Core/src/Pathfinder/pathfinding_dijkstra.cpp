@@ -3,6 +3,7 @@
 #include <queue>
 
 void Pathfinder::DijkstraSolve::nextStep() {
+    timer.stepBegin();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 
     GridGenerator::GridCoordinate currentCoordinates = nextCellQueue.top();
@@ -36,6 +37,7 @@ void Pathfinder::DijkstraSolve::nextStep() {
     }
     currentCell.markClosed();
     grid.incrementClosedCellCount();
+    timer.stepEnd();
 }
 
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GridGenerator/grid.h"
+#include "timer.h"
+
 #include <vector>
 #include <map>
 #include <memory>
@@ -9,7 +11,6 @@
 #include <optional>
 
 //TODO: implement functionality to get private grid information
-//TODO: implement gridReset to solve nextGrid
 
 namespace Pathfinder {
 
@@ -22,8 +23,9 @@ namespace Pathfinder {
         uint32_t pathCells;
         uint32_t visitedCells;
         uint32_t closedCells;
-        float solvingSeconds;
-        float avgSeconsPerStep;
+        double solvingSeconds;
+        double avgSeconsPerStep;
+        uint32_t stepCount;
         PathfinderStrategy strat;
 
     };
@@ -54,15 +56,17 @@ namespace Pathfinder {
             return PathfinderPerformanceMetric{grid.getPathCells(),
                                                grid.getVisitedCells(),
                                                grid.getClosedCells(),
-                                               0,
-                                               0,
+                                               timer.getAbsoluteTime(),
+                                               timer.getAvgUSecondsPerStep(),
+                                               timer.getStepCount(),
                                                strat};
-            //TODO: implement timer and fix this
         }
 
 
     protected:
         PathfinderStrategy strat;
+
+        PathfinderTimer timer;
 
         virtual void setStrat() = 0;
 
