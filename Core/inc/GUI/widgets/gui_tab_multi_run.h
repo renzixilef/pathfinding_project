@@ -57,7 +57,7 @@ namespace GUI::Widgets {
 
         MultiConfigForm *configForm;
 
-        int dummyRowIndex{-1};
+        int16_t dummyRowIndex{-1};
 
     };
 }

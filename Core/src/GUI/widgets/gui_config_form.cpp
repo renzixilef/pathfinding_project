@@ -3,11 +3,12 @@
 #include <unordered_set>
 
 GUI::Widgets::ConfigFormParent::ConfigFormParent(QWidget *parent) : gridHeightSpinBox(new QSpinBox(this)),
-                                                           gridWidthSpinBox(new QSpinBox(this)),
-                                                           obstacleDensitySpinBox(new QDoubleSpinBox(this)),
-                                                           minStartEndDistanceSpinBox(new QDoubleSpinBox(this)),
-                                                           gridGeneratorAlgorithmComboBox(new QComboBox(this)),
-                                                           layout(new QFormLayout(this)) {
+                                                                    gridWidthSpinBox(new QSpinBox(this)),
+                                                                    obstacleDensitySpinBox(new QDoubleSpinBox(this)),
+                                                                    minStartEndDistanceSpinBox(
+                                                                            new QDoubleSpinBox(this)),
+                                                                    gridGeneratorAlgorithmComboBox(new QComboBox(this)),
+                                                                    layout(new QFormLayout(this)) {
     using GridGenerator::ObstacleGenStrategyParser;
     for (const auto &[k, v]:
             ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText) {
@@ -46,7 +47,7 @@ void GUI::Widgets::ConfigFormParent::enable() {
 }
 
 GUI::Widgets::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormParent(this),
-                                                           pathfindingAlgorithmComboBox(new QComboBox(this)) {
+                                                                    pathfindingAlgorithmComboBox(new QComboBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
     gridHeightSpinBox->setRange(20, 100);
     gridWidthSpinBox->setRange(20, 100);
@@ -97,11 +98,15 @@ void GUI::Widgets::SingleConfigForm::disable() {
 }
 
 GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
-                                                         pathfindingAlgorithmListWidget(new QListWidget(this)),
-                                                         iterationsSpinBox(new QSpinBox(this)) {
+                                                                  pathfindingAlgorithmListWidget(new QListWidget(this)),
+                                                                  iterationsSpinBox(new QSpinBox(this)),
+                                                                  invalidInputWarningLabel(new QLabel(this)) {
     using Pathfinder::PathfinderStrategyParser;
-    gridHeightSpinBox->setRange(20, 100);
-    gridWidthSpinBox->setRange(20, 100);
+    invalidInputWarningLabel->hide();
+    invalidInputWarningLabel->setStyleSheet("QLabel {color: red;}");
+    invalidInputWarningLabel->setText("Select at least one pathfinding strategy!");
+    gridHeightSpinBox->setRange(20, 1000);
+    gridWidthSpinBox->setRange(20, 1000);
     obstacleDensitySpinBox->setRange(0.0, 0.7);
     obstacleDensitySpinBox->setSingleStep(0.05);
     minStartEndDistanceSpinBox->setRange(0.0, 0.9);
@@ -119,6 +124,7 @@ GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormPare
 
     layout->addRow("Iterations", iterationsSpinBox);
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmListWidget);
+    layout->addRow(invalidInputWarningLabel);
     setLayout(layout);
 }
 
@@ -132,6 +138,7 @@ void GUI::Widgets::MultiConfigForm::disable() {
     ConfigFormParent::disable();
     pathfindingAlgorithmListWidget->setDisabled(true);
     iterationsSpinBox->setDisabled(true);
+    invalidInputWarningLabel->hide();
 }
 
 void GUI::Widgets::MultiConfigForm::resetForm() {
@@ -162,14 +169,15 @@ GUI::Widgets::MultiConfigForm::getFormParams() {
 }
 
 void
-GUI::Widgets::MultiConfigForm::populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats) {
-    gridHeightSpinBox->setValue(config.gridHeight);
-    gridWidthSpinBox->setValue(config.gridWidth);
+GUI::Widgets::MultiConfigForm::populate(const RunInterface::RunGridConfig& config,
+                                        const std::list<Pathfinder::PathfinderStrategy>& strats) {
+    gridHeightSpinBox->setValue(static_cast<int32_t>(config.gridHeight));
+    gridWidthSpinBox->setValue(static_cast<int32_t>(config.gridWidth));
     obstacleDensitySpinBox->setValue(config.obstacleDensity);
     minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
     gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy));
     if (config.iterations.has_value()) {
-        iterationsSpinBox->setValue(config.iterations.value());
+        iterationsSpinBox->setValue(static_cast<int32_t>(config.iterations.value()));
     } else {
         iterationsSpinBox->setValue(1);
     }
@@ -179,7 +187,7 @@ GUI::Widgets::MultiConfigForm::populate(RunInterface::RunGridConfig config, std:
     for (const auto &strat: strats) {
         stratSet.insert(static_cast<uint8_t>(strat));
     }
-    for (uint8_t i = 0; i < pathfindingAlgorithmListWidget->count(); i++) {
+    for (int32_t i = 0; i < pathfindingAlgorithmListWidget->count(); i++) {
         QListWidgetItem *item = pathfindingAlgorithmListWidget->item(i);
         uint8_t itemValue = item->data(Qt::UserRole).toUInt();
         if (stratSet.count(itemValue)) {
@@ -188,4 +196,13 @@ GUI::Widgets::MultiConfigForm::populate(RunInterface::RunGridConfig config, std:
         }
     }
 
+}
+
+bool GUI::Widgets::MultiConfigForm::inputValid() {
+    if (pathfindingAlgorithmListWidget->selectedItems().isEmpty()) return false;
+    else return true;
+}
+
+void GUI::Widgets::MultiConfigForm::handleInvalidInput() {
+    invalidInputWarningLabel->setVisible(true);
 }

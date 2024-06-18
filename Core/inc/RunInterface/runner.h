@@ -149,10 +149,10 @@ namespace RunInterface {
          * @fn solverFinished
          * @brief Signal to indicate that a solver has finished.
          * @param PathfinderPerformanceMetric Object holding the performance metric of the solver.
-         * @param int Represents the exit Status of the runner as RunnerReturnStatus.
+         * @param int32_t Represents the exit Status of the runner as RunnerReturnStatus.
          */
         void solverFinished(const Pathfinder::PathfinderPerformanceMetric &,
-                            int);
+                            int32_t);
 
     public slots:
         /**
