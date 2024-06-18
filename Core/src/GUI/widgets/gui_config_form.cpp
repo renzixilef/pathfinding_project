@@ -105,8 +105,8 @@ GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormPare
     invalidInputWarningLabel->hide();
     invalidInputWarningLabel->setStyleSheet("QLabel {color: red;}");
     invalidInputWarningLabel->setText("Select at least one pathfinding strategy!");
-    gridHeightSpinBox->setRange(20, 100);
-    gridWidthSpinBox->setRange(20, 100);
+    gridHeightSpinBox->setRange(20, 1000);
+    gridWidthSpinBox->setRange(20, 1000);
     obstacleDensitySpinBox->setRange(0.0, 0.7);
     obstacleDensitySpinBox->setSingleStep(0.05);
     minStartEndDistanceSpinBox->setRange(0.0, 0.9);
