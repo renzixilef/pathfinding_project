@@ -74,7 +74,7 @@ started all you need to do is clone the Git repository and then use the Devconta
 ## Documentation
 
 The documentation of this project has been done using Doxygen. To generate the documentation, install all the
-dependencies and subsequently run doxygen Doxyfile. Please note that this readme only provides an overview of the
+dependencies and subsequently run the cmake pipeline. Please note that this readme only provides an overview of the
 project. There is a vast array of parameters and settings that you can configure to customize your experience in regards
 to pathfinding and obstacle generation. Detailed information about these aspects can be found in the code comments and
 the Doxygen generated documentation.
