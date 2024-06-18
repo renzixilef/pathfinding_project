@@ -125,10 +125,3 @@ std::optional<GridGenerator::GridCoordinate> Pathfinder::JumpPointSolve::jump(
     }
     return std::nullopt;
 }
-
-void Pathfinder::JumpPointSolve::initJPSSolver() {
-    GridGenerator::GridCoordinate startCoord = grid.getStartCoordinates();
-    directionMap[startCoord].insert(directionMap[startCoord].end(),
-                                    GridGenerator::Grid::offsets.begin(),
-                                    GridGenerator::Grid::offsets.end());
-}

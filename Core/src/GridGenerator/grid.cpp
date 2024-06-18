@@ -4,7 +4,6 @@
 
 #include <functional>
 
-
 const std::vector<std::pair<int8_t, int8_t>> GridGenerator::Grid::offsets = {
         {-1, 0},
         {1,  0},
@@ -15,21 +14,6 @@ const std::vector<std::pair<int8_t, int8_t>> GridGenerator::Grid::offsets = {
         {1,  -1},
         {1,  1}  // Diagonals
 };
-
-
-std::vector<std::reference_wrapper<GridGenerator::Cell>>
-GridGenerator::Grid::getNeighborsCells(GridCoordinate coords) {
-    std::vector<std::reference_wrapper<Cell>> neighbors;
-
-    for (const auto &offset: offsets) {
-        int64_t neighborRow = coords.x + offset.first;
-        int64_t neighborCol = coords.y + offset.second;
-        if (isInBounds(neighborRow, neighborCol)) {
-            neighbors.push_back(std::ref(cells[neighborRow][neighborCol]));
-        }
-    }
-    return neighbors;
-}
 
 std::vector<GridGenerator::GridCoordinate>
 GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate &coords) const {
