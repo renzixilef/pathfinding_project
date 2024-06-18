@@ -104,17 +104,21 @@ void GUI::Widgets::MultiRunTab::addOrSaveConfiguration() {
         itemModel->appendRow(dummyItem);
         dummyRowIndex = itemModel->rowCount() - 1;
     } else {
-        addConfigButton->setStyleSheet("background-color: green;");
-        addConfigButton->setText("Add");
-        startButton->setEnabled(true);
-        configForm->disable();
-        auto params = configForm->getFormParams();
-        configForm->resetForm();
-        auto *item = new MultiRunItem(params.first, params.second);
-        itemModel->setItem(dummyRowIndex, item);
-        configTable->clearSelection();
-        removeConfigButton->setEnabled(false);
-        removeConfigButton->setStyleSheet("");
+        if(configForm->inputValid()) {
+            addConfigButton->setStyleSheet("background-color: green;");
+            addConfigButton->setText("Add");
+            startButton->setEnabled(true);
+            configForm->disable();
+            auto params = configForm->getFormParams();
+            configForm->resetForm();
+            auto *item = new MultiRunItem(params.first, params.second);
+            itemModel->setItem(dummyRowIndex, item);
+            configTable->clearSelection();
+            removeConfigButton->setEnabled(false);
+            removeConfigButton->setStyleSheet("");
+        }else{
+            configForm->handleInvalidInput();
+        }
     }
 }
 

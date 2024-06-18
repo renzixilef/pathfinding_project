@@ -33,16 +33,16 @@ void RunInterface::MultiRun::handleFinishedSolver() {
         if (solverIterator != solvers.end()) {
             currentSolver = solverIterator->get();
             emit solverFinished(currentSolver->getPerformanceMetric(),
-                                static_cast<int>(RunnerReturnStatus::RETURN_NORMAL));
+                                static_cast<int32_t>(RunnerReturnStatus::RETURN_NORMAL));
         } else {
             if (gridIterator == config.iterations.value()) {
                 emit solverFinished(currentSolver->getPerformanceMetric(),
-                                    static_cast<int>(RunnerReturnStatus::RETURN_LAST_GRID_DONE));
+                                    static_cast<int32_t>(RunnerReturnStatus::RETURN_LAST_GRID_DONE));
 
             } else {
                 gridIterator++;
                 emit solverFinished(currentSolver->getPerformanceMetric(),
-                                    static_cast<int>(RunnerReturnStatus::RETURN_LAST_SOLVER_DONE));
+                                    static_cast<int32_t>(RunnerReturnStatus::RETURN_LAST_SOLVER_DONE));
 
             }
         }

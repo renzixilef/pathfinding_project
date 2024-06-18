@@ -27,7 +27,7 @@ namespace GUI {
     public slots:
 
         void onSolverFinished(const Pathfinder::PathfinderPerformanceMetric& pathfinderExit,
-                              int exitInt);
+                              int32_t exitInt);
 
     signals:
         void nextGrid();

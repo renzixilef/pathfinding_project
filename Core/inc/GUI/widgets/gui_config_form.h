@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QFormLayout>
 #include <QListWidget>
+#include <QLabel>
 
 #include "RunInterface/runner.h"
 #include "Pathfinder/pathfinding.h"
@@ -63,9 +64,14 @@ namespace GUI::Widgets {
 
         void disable() override;
 
-        void populate(RunInterface::RunGridConfig config, std::list<Pathfinder::PathfinderStrategy> strats);
+        bool inputValid();
+
+        void handleInvalidInput();
+
+        void populate(const RunInterface::RunGridConfig& config, const std::list<Pathfinder::PathfinderStrategy>& strats);
 
     private:
+        QLabel *invalidInputWarningLabel;
         QListWidget *pathfindingAlgorithmListWidget;
         QSpinBox *iterationsSpinBox;
     };

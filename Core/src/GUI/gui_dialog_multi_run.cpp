@@ -44,9 +44,9 @@ void GUI::MultiRunDialog::setupConnections() {
             runInterface, SLOT(nextRun()));
 
     connect(runInterface, SIGNAL(solverFinished(const Pathfinder::PathfinderPerformanceMetric &,
-                                         int)),
+                                         int32_t)),
             this, SLOT(onSolverFinished(const Pathfinder::PathfinderPerformanceMetric&,
-                               int)));
+                               int32_t)));
 
     connect(this, SIGNAL(sendNewData(const RunInterface::RunGridConfig &,
                                  const std::list<Pathfinder::PathfinderStrategy> & )),
@@ -75,7 +75,7 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
 }
 
 void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
-                                           int exitInt) {
+                                           int32_t exitInt) {
     using RunInterface::RunnerReturnStatus;
     auto currentConfig = runQueue.front();
     auto exit = static_cast<RunnerReturnStatus>(exitInt);
@@ -87,7 +87,7 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
             configIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int>(configIterator /
+                                            static_cast<int32_t>(configIterator /
                                                              std::get<0>(currentConfig).iterations.value()));
             handleNewConfigDemand();
             if (!finished) {
@@ -100,7 +100,7 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
             configIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int>(configIterator * 100 /
+                                            static_cast<int32_t>(configIterator * 100 /
                                                              std::get<0>(currentConfig).iterations.value()));
             emit nextGrid();
             break;
