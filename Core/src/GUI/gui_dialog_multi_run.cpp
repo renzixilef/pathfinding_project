@@ -1,6 +1,7 @@
 #include "GUI/gui_dialog_multi_run.h"
 
 #include <QPushButton>
+#include "GUI/gui_dialog_evaluation.h"
 
 GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
         std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
@@ -18,7 +19,9 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
     qRegisterMetaType<Pathfinder::PathfinderPerformanceMetric>("Pathfinder::PathfinderPerformanceMetric");
     qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
+    qRegisterMetaType<int32_t>("int32_t");
     auto nextConfig = runQueue.front();
+    setDisplayableStringForCurrentConfig(nextConfig);
 
     runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig),
                                               std::get<1>(nextConfig),
@@ -91,13 +94,13 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
     switch (exit) {
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
             emit nextGrid();
-            evalMap.at(std::get<0>(currentConfig)).second++;
+            incrementUnsolvableCountForConfig(currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
             configIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
                                             static_cast<int32_t>(configIterator /
-                                                             std::get<0>(currentConfig).iterations.value()));
+                                                                 std::get<0>(currentConfig).iterations.value()));
             handleNewConfigDemand();
             if (!finished) {
                 currentConfig = runQueue.front();
@@ -105,18 +108,18 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
                 runProgressView->updateProgress(std::get<2>(currentConfig), 0);
                 emit nextGrid();
             }
-            evalMap.at(std::get<0>(currentConfig)).first.at(pathfinderExit.strat).push_back(pathfinderExit);
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
             configIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
                                             static_cast<int32_t>(configIterator * 100 /
-                                                             std::get<0>(currentConfig).iterations.value()));
+                                                                 std::get<0>(currentConfig).iterations.value()));
             emit nextGrid();
-            evalMap.at(std::get<0>(currentConfig)).first.at(pathfinderExit.strat).push_back(pathfinderExit);
+            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
             break;
         case RunnerReturnStatus::RETURN_NORMAL:
-            evalMap.at(std::get<0>(currentConfig)).first.at(pathfinderExit.strat).push_back(pathfinderExit);
+            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
             break;
     }
     if (finished) {
@@ -134,10 +137,12 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
     }
 }
 
+
 void GUI::MultiRunDialog::handleNewConfigDemand() {
     runQueue.pop();
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
+        setDisplayableStringForCurrentConfig(nextConfig);
         emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
     } else {
         finished = true;
@@ -145,5 +150,7 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
 }
 
 void GUI::MultiRunDialog::moveToEvaluationButtonHandler() {
+    auto evalDialog = new EvaluationDialog(evalMap, this);
 
+    evalDialog->exec();
 }
