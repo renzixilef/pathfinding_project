@@ -31,16 +31,16 @@ void RunInterface::MultiRun::handleFinishedSolver() {
     if (grid.getStatus() == GridGenerator::GRID_SOLVED) {
         solverIterator++;
         if (solverIterator != solvers.end()) {
-            currentSolver = solverIterator->get();
             emit solverFinished(currentSolver->getPerformanceMetric(),
                                 static_cast<int32_t>(RunnerReturnStatus::RETURN_NORMAL));
+            currentSolver = solverIterator->get();
         } else {
+            gridIterator++;
             if (gridIterator == config.iterations.value()) {
                 emit solverFinished(currentSolver->getPerformanceMetric(),
                                     static_cast<int32_t>(RunnerReturnStatus::RETURN_LAST_GRID_DONE));
 
             } else {
-                gridIterator++;
                 emit solverFinished(currentSolver->getPerformanceMetric(),
                                     static_cast<int32_t>(RunnerReturnStatus::RETURN_LAST_SOLVER_DONE));
 

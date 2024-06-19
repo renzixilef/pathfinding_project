@@ -10,20 +10,27 @@ GUI::EvaluationDialog::EvaluationDialog(const GUI::EvaluationDialog::EvalMapType
     overviewScrollArea->setWidgetResizable(true);
     auto &stratToText =  Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText;
 
+    uint16_t maxLabelWidth = 0;
+
     for (auto &evalPair: evalMap) {
-        QLabel *evalLabel = new QLabel();
-        QString labelText = "<b>" + std::get<2>(evalPair.second) + "<b>\n";
-        labelText += "UNSOLVABLE GRIDS GENERATED: " + QString::number(std::get<1>(evalPair.second)) + "\n";
+        auto *evalLabel = new QLabel();
+        QString labelText = "<b>" + std::get<2>(evalPair.second) + "</b><br/>";
+        uint16_t labelWidth = evalLabel->fontMetrics().boundingRect(labelText).width();
+        if(labelWidth > maxLabelWidth) maxLabelWidth = labelWidth;
+        labelText += "UNSOLVABLE GRIDS GENERATED: " + QString::number(std::get<1>(evalPair.second)) + "<br/>";
         for(auto& pathfinderEval: std::get<0>(evalPair.second)){
             labelText += "Pathfinder: " +
-                    QString::fromStdString(stratToText.at(pathfinderEval.first)) + "\n";
+                    QString::fromStdString(stratToText.at(pathfinderEval.first));
             labelText+= generateEvalString(pathfinderEval.second);
         }
         evalLabel->setText(labelText);
-        //evalLabel->setWordWrap(true);
+        evalLabel->setWordWrap(true);
         evalLabel->setAlignment(Qt::AlignTop);
         scrollAreaLayout->addWidget(evalLabel);
     }
+    scrollWidget->setMinimumWidth(maxLabelWidth);
+    overviewScrollArea->setMinimumWidth(maxLabelWidth);
+
     scrollWidget->setLayout(scrollAreaLayout);
     overviewScrollArea->setWidget(scrollWidget);
 
@@ -50,12 +57,12 @@ QString GUI::EvaluationDialog::generateEvalString(const auto& evalList) {
     double avgUSecondsPerStep = absoluteSolvingSeconds*1000/absoluteStepsTaken;
     double avgStepsTaken = static_cast<double>(absoluteStepsTaken)/numberOfGrids;
 
-    evalString += "\t ABSOLUTE SOLVING TIME [s]: " + QString::number(absoluteSolvingSeconds) + "\n";
-    evalString += "\t AVG SOLVING TIME [us]: " + QString::number(avgSolvingUSeconds) + "\n";
-    evalString += "\t AVG STEP TIME [us]: " + QString::number(avgUSecondsPerStep) + "\n";
-    evalString += "\t AVG STEP COUNT [-]: " + QString::number(avgStepsTaken) + "\n";
-    evalString += "\t TOTAL CLOSED CELLS [-]: " + QString::number(totalClosedCells) + "\n";
-    evalString += "\t TOTAL VISITED CELLS [-]: " + QString::number(totalVisitedCells) + "\n";
+    evalString += "<pre>      ABSOLUTE SOLVING TIME [s]: " + QString::number(absoluteSolvingSeconds) + "</pre>";
+    evalString += "<pre>      AVG SOLVING TIME [us]: " + QString::number(avgSolvingUSeconds) + "</pre>";
+    evalString += "<pre>      AVG STEP TIME [us]: " + QString::number(avgUSecondsPerStep) + "</pre>";
+    evalString += "<pre>      AVG STEP COUNT [-]: " + QString::number(avgStepsTaken) + "</pre>";
+    evalString += "<pre>      TOTAL CLOSED CELLS [-]: " + QString::number(totalClosedCells) + "</pre>";
+    evalString += "<pre>      TOTAL VISITED CELLS [-]: " + QString::number(totalVisitedCells) + "</pre><br/>";
     return evalString;
 
 

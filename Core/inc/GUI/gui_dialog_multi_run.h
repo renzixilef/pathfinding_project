@@ -72,7 +72,7 @@ namespace GUI {
         bool runPaused = true;
         bool finished = false;
 
-        uint32_t configIterator = 0;
+        uint32_t gridIterator = 0;
 
         bool shouldRepeatUnsolvables = true;
 

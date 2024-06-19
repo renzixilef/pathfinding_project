@@ -93,35 +93,43 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
     auto exit = static_cast<RunnerReturnStatus>(exitInt);
     switch (exit) {
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
-            emit nextGrid();
+            if (!shouldRepeatUnsolvables) {
+               gridIterator++;
+            }
+            if(gridIterator < std::get<0>(currentConfig).iterations.value()){
+                emit nextGrid();
+            }else{
+                finished = true;
+            }
             incrementUnsolvableCountForConfig(currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
-            configIterator++;
+            gridIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int32_t>(configIterator /
+                                            static_cast<int32_t>(gridIterator * 100 /
                                                                  std::get<0>(currentConfig).iterations.value()));
             handleNewConfigDemand();
             if (!finished) {
                 currentConfig = runQueue.front();
                 runProgressView->addNewConfig(std::get<2>(currentConfig));
-                runProgressView->updateProgress(std::get<2>(currentConfig), 0);
+                gridIterator = 0;
                 emit nextGrid();
             }
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
-            configIterator++;
-            runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int32_t>(configIterator * 100 /
-                                                                 std::get<0>(currentConfig).iterations.value()));
+            gridIterator++;
             emit nextGrid();
-            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
         case RunnerReturnStatus::RETURN_NORMAL:
-            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
     }
+    runProgressView->updateProgress(std::get<2>(currentConfig),
+                                    static_cast<int32_t>(gridIterator * 100 /
+                                                         std::get<0>(currentConfig).iterations.value()));
+
     if (finished) {
         toggleRunButton->setDisabled(true);
         toggleRunButton->setStyleSheet("background-color:gray;");
