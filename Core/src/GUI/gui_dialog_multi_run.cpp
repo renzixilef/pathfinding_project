@@ -88,6 +88,7 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
 
 void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
                                            int32_t exitInt) {
+    //TODO: clean up this method, more readable, avoid duplicates
     using RunInterface::RunnerReturnStatus;
     auto currentConfig = runQueue.front();
     auto exit = static_cast<RunnerReturnStatus>(exitInt);
@@ -95,11 +96,20 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
             if (!shouldRepeatUnsolvables) {
                gridIterator++;
+                runProgressView->updateProgress(std::get<2>(currentConfig),
+                                                static_cast<int32_t>(gridIterator * 100 /
+                                                                     std::get<0>(currentConfig).iterations.value()));
             }
             if(gridIterator < std::get<0>(currentConfig).iterations.value()){
                 emit nextGrid();
             }else{
-                finished = true;
+                handleNewConfigDemand();
+                if (!finished) {
+                    currentConfig = runQueue.front();
+                    runProgressView->addNewConfig(std::get<2>(currentConfig));
+                    gridIterator = 0;
+                    emit nextGrid();
+                }
             }
             incrementUnsolvableCountForConfig(currentConfig);
             break;
