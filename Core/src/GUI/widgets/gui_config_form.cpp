@@ -175,7 +175,7 @@ GUI::Widgets::MultiConfigForm::populate(const RunInterface::RunGridConfig& confi
     gridWidthSpinBox->setValue(static_cast<int32_t>(config.gridWidth));
     obstacleDensitySpinBox->setValue(config.obstacleDensity);
     minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
-    gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy));
+    gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy)-1);
     if (config.iterations.has_value()) {
         iterationsSpinBox->setValue(static_cast<int32_t>(config.iterations.value()));
     } else {

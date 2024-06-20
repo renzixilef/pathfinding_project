@@ -1,6 +1,7 @@
 #include "GUI/gui_dialog_multi_run.h"
 
 #include <QPushButton>
+#include "GUI/gui_dialog_evaluation.h"
 
 GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
         std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
@@ -10,6 +11,7 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
         runQueue(queue),
         multiRunThread(new QThread(this)),
         toggleRunButton(new QPushButton("Play")),
+        moveToEvaluationButton(new QPushButton("Evaluation")),
         mainLayout(new QVBoxLayout(this)),
         buttonLayout(new QHBoxLayout()),
         runProgressView(new Widgets::RunProgressView()) {
@@ -17,13 +19,19 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
     qRegisterMetaType<Pathfinder::PathfinderPerformanceMetric>("Pathfinder::PathfinderPerformanceMetric");
     qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
+    qRegisterMetaType<int32_t>("int32_t");
     auto nextConfig = runQueue.front();
+    setDisplayableStringForCurrentConfig(nextConfig);
 
     runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig),
                                               std::get<1>(nextConfig),
                                               shouldRepeatUnsolvables);
     //TODO: Implement shouldRepeatUnsolvables
     runInterface->moveToThread(multiRunThread);
+
+    moveToEvaluationButton->hide();
+    moveToEvaluationButton->setStyleSheet("background-color: blue;");
+    moveToEvaluationButton->setDisabled(true);
 
     setupConnections();
 
@@ -35,6 +43,7 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
     buttonLayout->addWidget(toggleRunButton);
     mainLayout->addLayout(buttonLayout);
     mainLayout->addWidget(runProgressView);
+    mainLayout->addWidget(moveToEvaluationButton);
     setLayout(mainLayout);
 
 }
@@ -61,6 +70,9 @@ void GUI::MultiRunDialog::setupConnections() {
 
     connect(toggleRunButton, &QPushButton::clicked,
             this, &MultiRunDialog::toggleRunButtonHandler);
+
+    connect(moveToEvaluationButton, &QPushButton::clicked,
+            this, &MultiRunDialog::moveToEvaluationButtonHandler);
 }
 
 void GUI::MultiRunDialog::toggleRunButtonHandler() {
@@ -76,55 +88,87 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
 
 void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
                                            int32_t exitInt) {
+    //TODO: clean up this method, more readable, avoid duplicates
     using RunInterface::RunnerReturnStatus;
     auto currentConfig = runQueue.front();
     auto exit = static_cast<RunnerReturnStatus>(exitInt);
     switch (exit) {
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
-            emit nextGrid();
-            //TODO: save evaluation for unsolvable run somewhere
+            if (!shouldRepeatUnsolvables) {
+               gridIterator++;
+                runProgressView->updateProgress(std::get<2>(currentConfig),
+                                                static_cast<int32_t>(gridIterator * 100 /
+                                                                     std::get<0>(currentConfig).iterations.value()));
+            }
+            if(gridIterator < std::get<0>(currentConfig).iterations.value()){
+                emit nextGrid();
+            }else{
+                handleNewConfigDemand();
+                if (!finished) {
+                    currentConfig = runQueue.front();
+                    runProgressView->addNewConfig(std::get<2>(currentConfig));
+                    gridIterator = 0;
+                    emit nextGrid();
+                }
+            }
+            incrementUnsolvableCountForConfig(currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
-            configIterator++;
+            gridIterator++;
             runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int32_t>(configIterator /
-                                                             std::get<0>(currentConfig).iterations.value()));
+                                            static_cast<int32_t>(gridIterator * 100 /
+                                                                 std::get<0>(currentConfig).iterations.value()));
             handleNewConfigDemand();
             if (!finished) {
                 currentConfig = runQueue.front();
                 runProgressView->addNewConfig(std::get<2>(currentConfig));
-                runProgressView->updateProgress(std::get<2>(currentConfig), 0);
+                gridIterator = 0;
                 emit nextGrid();
             }
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
-            configIterator++;
-            runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int32_t>(configIterator * 100 /
-                                                             std::get<0>(currentConfig).iterations.value()));
+            gridIterator++;
             emit nextGrid();
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
         case RunnerReturnStatus::RETURN_NORMAL:
-            //TODO: save evaluation for run somewhere
+            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             break;
     }
+    runProgressView->updateProgress(std::get<2>(currentConfig),
+                                    static_cast<int32_t>(gridIterator * 100 /
+                                                         std::get<0>(currentConfig).iterations.value()));
+
     if (finished) {
-        //TODO: handle multi run finished
+        toggleRunButton->setDisabled(true);
+        toggleRunButton->setStyleSheet("background-color:gray;");
+        toggleRunButton->setText("Play");
+
+        moveToEvaluationButton->show();
+        moveToEvaluationButton->setEnabled(true);
     } else if (runPaused) {
         toggleRunButton->setText("Play");
-        toggleRunButton->setStyleSheet("background-color: green");
+        toggleRunButton->setStyleSheet("background-color: green;");
     } else {
         emit nextRun();
     }
 }
 
+
 void GUI::MultiRunDialog::handleNewConfigDemand() {
     runQueue.pop();
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
+        setDisplayableStringForCurrentConfig(nextConfig);
         emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
     } else {
         finished = true;
     }
-    //TODO: update runView widget
+}
+
+void GUI::MultiRunDialog::moveToEvaluationButtonHandler() {
+    auto evalDialog = new EvaluationDialog(evalMap, this);
+
+    evalDialog->exec();
 }

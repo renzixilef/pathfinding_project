@@ -91,6 +91,11 @@ namespace Pathfinder {
         }
 
         /**
+         * @brief Destructor for the pathfindingParent class.
+         */
+        virtual ~pathfindingParent() = default;
+
+        /**
          * @fn queueEmpty
          * @brief Checks if the next cell queue is empty.
          * @return Returns true if queue is empty, false otherwise.
@@ -109,6 +114,7 @@ namespace Pathfinder {
          * @return Returns a PathfinderPerformanceMetric structure.
          */
         inline PathfinderPerformanceMetric getPerformanceMetric() {
+            setStrat();
             return PathfinderPerformanceMetric{grid.getPathCellCount(),
                                                grid.getVisitedCellCount(),
                                                grid.getClosedCellCount(),
@@ -165,7 +171,7 @@ namespace Pathfinder {
          * @brief Constructor for the DijkstraSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Dijkstra algorithm will be applied.
          */
-        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) { setStrat(); }
+        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -191,7 +197,7 @@ namespace Pathfinder {
          * @brief Constructor for the AStarSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the A* algorithm will be applied.
          */
-        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) { setStrat(); }
+        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -217,7 +223,7 @@ namespace Pathfinder {
          * @brief Constructor for the JumpPointSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Jump-Point-Search algorithm will be applied.
          */
-        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) { setStrat(); }
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
 
         /**
          * @fn void nextStep

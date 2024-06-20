@@ -45,6 +45,12 @@ namespace RunInterface {
         GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
         /**< Optional iterations count */
         std::optional<uint32_t> iterations = std::nullopt;
+
+        bool operator<(const RunGridConfig& other) const {
+            return std::tie(gridWidth, gridHeight, obstacleDensity, minStartEndDistance, obstacleGenStrategy) <
+                   std::tie(other.gridWidth, other.gridHeight, other.obstacleDensity, other.minStartEndDistance,
+                            other.obstacleGenStrategy);
+        }
     };
 
     /**

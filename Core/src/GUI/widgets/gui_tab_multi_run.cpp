@@ -142,7 +142,7 @@ void GUI::Widgets::MultiRunTab::startRuns() {
             std::list<Pathfinder::PathfinderStrategy>, QString>> runQueue;
     uint32_t rows = itemModel->rowCount();
     for (uint32_t i = 0; i < rows; i++) {
-        auto item = dynamic_cast<MultiRunItem *>(itemModel->item(i));
+        auto item = dynamic_cast<MultiRunItem *>(itemModel->item(static_cast<int>(i)));
         runQueue.emplace(item->getGridConfig(), item->getPathfinderList(), item->text());
     }
     QDialog *multiRunDialog = new GUI::MultiRunDialog(runQueue, this);

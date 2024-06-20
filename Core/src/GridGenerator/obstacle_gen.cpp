@@ -6,8 +6,7 @@
 
 #include "GridGenerator/obstacle_gen.h"
 
-//TODO: documentation
-//TODO: implement always solvable grid generation via vector slicing and std::vector<Cell>.isblocked method
+//TODO: more clean structure through base and derived classes
 
 
 const std::map<GridGenerator::ObstacleGenStrategy, std::string>
@@ -46,6 +45,7 @@ void GridGenerator::RandomObstacleGenerator::generateObstacles(GridGenerator::Gr
     GridCoordinate startCoord{distrX(gen), distrY(gen)};
     grid.setStart(startCoord);
     GridCoordinate endCoord{};
+    //TODO: endless loop if startCoord is somewhere in the middle and dist is too high
     do {
         endCoord = GridCoordinate{distrX(gen), distrY(gen)};
     } while (startCoord.getAbsDistanceTo(endCoord) < minStartEndDistance);
