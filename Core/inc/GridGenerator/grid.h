@@ -53,6 +53,7 @@ namespace GridGenerator {
          * @return The calculated distance.
          */
         [[nodiscard]] inline double getAbsDistanceTo(const GridCoordinate &point) const {
+            //TODO: implement define.h (with changable constants) and constexpr to get diagonal distance
             return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
         }
 
