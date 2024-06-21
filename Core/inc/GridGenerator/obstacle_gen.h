@@ -59,6 +59,7 @@ namespace GridGenerator {
      * @brief This is a base class for generating obstacles in a grid.
      */
     class ObstacleGenerator {
+        //TODO: parent (pure) virtual method to set start and end point, make start end point setting optional
     public:
         /**
          * @brief Default constructor for the ObstacleGenerator class. Initializes the random number generator.
