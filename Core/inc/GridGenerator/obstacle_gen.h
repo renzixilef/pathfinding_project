@@ -31,8 +31,6 @@ namespace GridGenerator {
         OBSTACLE_PERLIN_NOISE = 4 /**< Perlin Noise obstacle generation. */
     };
 
-    // Forward declaration to avoid compile-time errors
-    class ObstacleGenerator;
 
     /**
      * @struct ObstacleGenStrategyParser

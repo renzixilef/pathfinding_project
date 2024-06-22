@@ -6,7 +6,7 @@ const std::map<Pathfinder::PathfinderStrategy, std::string>
          {PathfinderStrategy::PATHFINDER_A_STAR,   "A* Algorithm"},
          {PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH, "Jump Point Search"}};
 
-std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(
+std::unique_ptr<Pathfinder::PathfindingParent> Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(
         PathfinderStrategy strat,
         GridGenerator::Grid &grid) {
     switch(strat){
@@ -20,7 +20,7 @@ std::unique_ptr<Pathfinder::pathfindingParent> Pathfinder::PathfinderStrategyPar
     return nullptr;
 }
 
-void Pathfinder::pathfindingParent::initGenericSolver() {
+void Pathfinder::PathfindingParent::initGenericSolver() {
     GridGenerator::GridCoordinate currentCoordinates = grid.getStartCoordinates();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 
@@ -32,7 +32,7 @@ void Pathfinder::pathfindingParent::initGenericSolver() {
 
 }
 
-bool Pathfinder::pathfindingParent::isCellBlockedOrOutOfBounds(int64_t x, int64_t y) {
+bool Pathfinder::PathfindingParent::isCellBlockedOrOutOfBounds(int64_t x, int64_t y) {
     if(grid.isInBounds(x,y)){
         auto castX = static_cast<uint32_t>(x);
         auto castY = static_cast<uint32_t>(y);

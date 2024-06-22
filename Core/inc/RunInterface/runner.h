@@ -124,7 +124,7 @@ namespace RunInterface {
         /**< holds the pathfinder strategy to be used */
         Pathfinder::PathfinderStrategy strat;
         /**< holds a unique pointer to the pathfinding object corresponding to strat */
-        std::unique_ptr<Pathfinder::pathfindingParent> solver;
+        std::unique_ptr<Pathfinder::PathfindingParent> solver;
     };
 
     /**
@@ -194,12 +194,12 @@ namespace RunInterface {
         /**< List of current config solver strategies. */
         std::list<Pathfinder::PathfinderStrategy> strats;
         /**< List of current solver instances. */
-        std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>> solvers;
         /**< Iterator for solver instances. */
-        std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>>::iterator solverIterator;
         /**< Keeping track of grid count for multi-grid scenarios. */
         uint32_t gridIterator = 0;
         /**< Current solver instance. */
-        Pathfinder::pathfindingParent *currentSolver;
+        Pathfinder::PathfindingParent *currentSolver;
     };
 }

@@ -1,18 +1,5 @@
 #pragma once
 
-#include <QMetaType>
-#include <Pathfinder/pathfinding.h>
-#include <RunInterface/runner.h>
-
-
-Q_DECLARE_METATYPE(Pathfinder::PathfinderPerformanceMetric)
-
-Q_DECLARE_METATYPE(RunInterface::RunGridConfig)
-
-Q_DECLARE_METATYPE(Pathfinder::PathfinderStrategy)
-
-Q_DECLARE_METATYPE(int32_t)
-
 //TODO: refactoring, maybe use const variables instead of macros
 
 // Predefined standard values for wall like and perlin noise algorithm

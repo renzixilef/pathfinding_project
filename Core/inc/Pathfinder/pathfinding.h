@@ -15,6 +15,7 @@
 #include "GridGenerator/grid.h"
 #include "timer.h"
 
+
 /**
  * @namespace Pathfinder
  * @brief Namespace for classes and functionalities related to pathfinding algorithms.
@@ -54,7 +55,7 @@ namespace Pathfinder {
     };
 
     // Forward declaration to avoid compile-time errors
-    class pathfindingParent;
+    class PathfindingParent;
 
     /**
      * @struct PathfinderStrategyParser
@@ -71,29 +72,29 @@ namespace Pathfinder {
          * @param grid The grid on which to apply the strategy.
          * @return A unique_ptr to the generated pathfinding object.
          */
-        static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
+        static std::unique_ptr<PathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
                                                                           GridGenerator::Grid &grid);
     };
 
     /**
-     * @class pathfindingParent
+     * @class PathfindingParent
      * @brief The parent pathfinding class. Contains the grid and the main functions of pathfinding.
      */
-    class pathfindingParent {
+    class PathfindingParent {
     public:
         /**
-         * @brief Constructor for the pathfindingParent class.
+         * @brief Constructor for the PathfindingParent class.
          * @param grid Reference to the Grid object used in the pathfinding.
          */
-        explicit pathfindingParent(GridGenerator::Grid &grid) :
+        explicit PathfindingParent(GridGenerator::Grid &grid) :
                 grid(grid) {
             initGenericSolver();
         }
 
         /**
-         * @brief Destructor for the pathfindingParent class.
+         * @brief Destructor for the PathfindingParent class.
          */
-        virtual ~pathfindingParent() = default;
+        virtual ~PathfindingParent() = default;
 
         /**
          * @fn queueEmpty
@@ -163,15 +164,15 @@ namespace Pathfinder {
 
     /**
      * @class DijkstraSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies Dijkstra's algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies Dijkstra's algorithm for pathfinding.
      */
-    class DijkstraSolve : public pathfindingParent {
+    class DijkstraSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the DijkstraSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Dijkstra algorithm will be applied.
          */
-        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit DijkstraSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -189,15 +190,15 @@ namespace Pathfinder {
 
     /**
      * @class AStarSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies the A* algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the A* algorithm for pathfinding.
      */
-    class AStarSolve : public pathfindingParent {
+    class AStarSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the AStarSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the A* algorithm will be applied.
          */
-        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit AStarSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -215,15 +216,15 @@ namespace Pathfinder {
 
     /**
      * @class JumpPointSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies the Jump Point Search algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the Jump Point Search algorithm for pathfinding.
      */
-    class JumpPointSolve : public pathfindingParent {
+    class JumpPointSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the JumpPointSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Jump-Point-Search algorithm will be applied.
          */
-        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
