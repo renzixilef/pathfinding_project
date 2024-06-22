@@ -38,7 +38,7 @@ namespace GridGenerator {
      * @struct ObstacleGenStrategyParser
      * @brief This struct is responsible for parsing the obstacle generation strategy.
      */
-    struct ObstacleGenStrategyParser{
+    struct ObstacleGenStrategyParser {
         /** obstacleGenStrategyToDisplayableText is a static map that maps ObstacleGenStrategy values to text */
         static const std::map<ObstacleGenStrategy, std::string> obstacleGenStrategyToDisplayableText;
 
@@ -56,7 +56,6 @@ namespace GridGenerator {
      * @brief This is a base class for generating obstacles in a grid.
      */
     class ObstacleGenerator {
-        //TODO: parent (pure) virtual method to set start and end point, make start end point setting optional
     public:
         /**
          * @brief Default constructor for the ObstacleGenerator class. Initializes the random number generator.
@@ -78,10 +77,40 @@ namespace GridGenerator {
         virtual void generateObstacles(Grid &grid, float obstacleDensity, float minStartEndDistance) = 0;
 
     protected:
-        /**< rd is a random device */
-        std::random_device rd;
-        /**< gen is a random number generator */
-        std::mt19937 gen;
+        /**
+         * @fn setStartAndEndCoordinate
+         * @brief method to set the start and end Coordinate for the grid based on walkable Vector
+         * @param grid The grid where start and End should be set
+         * @param minStartEndDistance The required minimum distance between the start and end nodes.
+         * @return True if placement possible, false otherwise.
+         */
+        bool setStartAndEndCoordinate(GridGenerator::Grid &grid, float minStartEndDistance);
+
+        /**
+         * @fn isValidToMarkAsObstacle
+         * @brief method to check if a certain GridCoordinate on the grid can be mark as an obstacle.
+         * @param grid The grid where the check should be performed.
+         * @param thisCoord The coordinate that gets checked
+         * @return True if Coordinate can be marked, false otherwise.
+         */
+        static inline bool isValidToMarkAsObstacle(const Grid& grid, const GridCoordinate& thisCoord) {
+            return grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE &&
+                    thisCoord != grid.getStartCoordinates() &&
+                    thisCoord != grid.getEndCoordinates();
+        }
+
+
+        std::random_device rd; /**< rd is a random device */
+        std::mt19937 gen; /**< gen is a random number generator */
+
+    private:
+        /**
+         * @fn generateWalkableVector
+         * @brief Method to generate a vector containing all the walkable GridCoordinate objects in a grid.
+         * @param grid The grid where the action should be performed.
+         * @return std::vector of walkable GridCoordinate objects
+         */
+        static std::vector<GridCoordinate> generateWalkableVector(const Grid &grid);
     };
 
     /**
@@ -93,7 +122,7 @@ namespace GridGenerator {
         /**
          * @brief Constructor for the RandomObstacleGenerator class. Uses the parent class ObstacleGenerator's constructor.
          */
-        explicit RandomObstacleGenerator():ObstacleGenerator(){}
+        explicit RandomObstacleGenerator() : ObstacleGenerator() {}
 
         /**
          * @fn generateObstacles
@@ -114,7 +143,7 @@ namespace GridGenerator {
         /**
          * @brief A constructor for the RandomWallLikeGenerator class. Uses the parent class ObstacleGenerator's constructor.
          */
-        explicit RandomWallLikeGenerator():ObstacleGenerator(){}
+        explicit RandomWallLikeGenerator() : ObstacleGenerator() {}
 
         /**
          * @fn generateObstacles
@@ -136,7 +165,7 @@ namespace GridGenerator {
         /**
          * @brief Constructor for the PerlinNoise class, which initializes permutation variable and calls the parent class constructor.
          */
-        explicit PerlinNoise():ObstacleGenerator(){
+        explicit PerlinNoise() : ObstacleGenerator() {
             permutation.resize(256);
             std::iota(permutation.begin(), permutation.end(), 0);
             std::shuffle(permutation.begin(), permutation.end(), gen);
@@ -180,8 +209,7 @@ namespace GridGenerator {
          */
         static double grad(uint32_t hash, double x, double y);
 
-        /**< permutation is a vector containing permutation operations. */
-        std::vector<uint8_t> permutation;
+        std::vector<uint8_t> permutation; /**< permutation is a vector containing permutation operations. */
     };
 
     /**
@@ -193,7 +221,7 @@ namespace GridGenerator {
         /**
          * @brief Constructor for the DrunkenWalk class, which calls the parent class ObstacleGenerator's constructor.
          */
-        explicit DrunkenWalk():ObstacleGenerator(){}
+        explicit DrunkenWalk() : ObstacleGenerator() {}
 
         /**
          * @fn generateObstacles

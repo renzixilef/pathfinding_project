@@ -13,6 +13,7 @@ Q_DECLARE_METATYPE(Pathfinder::PathfinderStrategy)
 
 Q_DECLARE_METATYPE(int32_t)
 
+//TODO: refactoring, maybe use const variables instead of macros
 
 // Predefined standard values for wall like and perlin noise algorithm
 #define WALL_LENGTH_EXPONENTIAL_LAMBDA 15
