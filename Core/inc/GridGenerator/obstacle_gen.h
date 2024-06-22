@@ -12,10 +12,7 @@
 #include <memory>
 
 #include "grid.h"
-
-// Predefined standard values for wall like and perlin noise algorithm
-#define WALL_LENGTH_EXPONENTIAL_LAMBDA 15
-#define PERLIN_NOISE_SCALE 10.0
+#include "define.h"
 
 /**
  * @namespace GridGenerator

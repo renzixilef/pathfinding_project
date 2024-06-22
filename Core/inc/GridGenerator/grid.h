@@ -11,10 +11,7 @@
 #include <cmath>
 
 #include "cell.h"
-
-// Predefined standard values for obstacle density and start-end distance
-#define STANDARD_OBSTACLE_DENSITY 0.3
-#define STANDARD_START_END_DISTANCE 0.5
+#include "define.h"
 
 /**
  * @namespace GridGenerator
@@ -53,8 +50,12 @@ namespace GridGenerator {
          * @return The calculated distance.
          */
         [[nodiscard]] inline double getAbsDistanceTo(const GridCoordinate &point) const {
-            //TODO: implement define.h (with changable constants) and constexpr to get diagonal distance
-            return sqrt(pow(static_cast<double>(x) - point.x, 2) + pow(static_cast<double>(y) - point.y, 2));
+            return sqrt(pow((static_cast<double>(x) - point.x) * HORIZONTAL_DISTANCE, 2) +
+                        pow((static_cast<double>(y) - point.y) * VERTICAL_DISTANCE, 2));
+        }
+
+        [[nodiscard]] static constexpr double  getDiagonalDistance() {
+        return std::sqrt(std::pow(HORIZONTAL_DISTANCE, 2)+ std::pow(VERTICAL_DISTANCE,2));
         }
 
         /**
@@ -67,9 +68,9 @@ namespace GridGenerator {
             uint32_t xDistAbs = std::abs(static_cast<int64_t>(x) - static_cast<int64_t>(point.x));
             uint32_t yDistAbs = std::abs(static_cast<int64_t>(y) - static_cast<int64_t>(point.y));
             if (xDistAbs > yDistAbs)
-                return sqrt(2) * yDistAbs + 1 * (xDistAbs - yDistAbs);
+                return getDiagonalDistance() * yDistAbs + 1 * (xDistAbs - yDistAbs);
             else
-                return sqrt(2) * xDistAbs + 1 * (yDistAbs - xDistAbs);
+                return getDiagonalDistance() * xDistAbs + 1 * (yDistAbs - xDistAbs);
         }
 
         /**
@@ -297,7 +298,7 @@ namespace GridGenerator {
          *
          * @return The current Grid status.
          */
-        [[nodiscard]] inline GridSolvedStatus getStatus() { return exitStatus; }
+        [[nodiscard]] inline GridSolvedStatus getStatus() const { return exitStatus; }
 
         /**
          * @fn getPathCellCount
