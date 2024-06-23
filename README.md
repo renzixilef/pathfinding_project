@@ -1,3 +1,5 @@
+![Build and Documentation CI/CD](https://github.com/renzixilef/pathfinding_project/actions/workflows/cmake.yml/badge.svg)
+
 # Pathfinding
 
 This project is developed as a part of the "Effizient programmieren" module at the University of Stuttgart in the
