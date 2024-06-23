@@ -7,16 +7,16 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  Build binary and documentation:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout github repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake graphviz graphicx texlive
+          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake graphviz texlive
 
       - name: Configure and Build CMake
         run: cmake -Bbuild ${{github.workspace}}/build --target pathfinding -j 14

@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     texlive \
     git \
     graphviz \
-    graphicx \
     multicol \
     babel \
     amssymb \
