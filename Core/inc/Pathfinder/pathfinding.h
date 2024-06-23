@@ -37,20 +37,13 @@ namespace Pathfinder {
      * @brief Struct to hold the performance metrics of a pathfinding strategy.
      */
     struct PathfinderPerformanceMetric {
-        /**< Count of cells that are part of the path */
-        uint32_t pathCells;
-        /**< Count of cells that have been visited */
-        uint32_t visitedCells;
-        /**< Count of cells that have been closed */
-        uint32_t closedCells;
-        /**< Total time taken for solving in micro seconds */
-        double solvingUSeconds;
-        /**< Average time taken per step in micro seconds */
-        double avgUSecondsPerStep;
-        /**< Total number of steps taken in the algorithm */
-        uint32_t stepCount;
-        /**< Strategy used for the pathfinding */
-        PathfinderStrategy strat;
+        uint32_t pathCells;/**< Count of cells that are part of the path */
+        uint32_t visitedCells; /**< Count of cells that have been visited */
+        uint32_t closedCells; /**< Count of cells that have been closed */
+        double solvingUSeconds; /**< Total time taken for solving in micro seconds */
+        double avgUSecondsPerStep; /**< Average time taken per step in micro seconds */
+        uint32_t stepCount; /**< Total number of steps taken in the algorithm */
+        PathfinderStrategy strat; /**< Strategy used for the pathfinding */
 
     };
 
@@ -62,7 +55,7 @@ namespace Pathfinder {
      * @brief Struct to parse PathfinderStrategy type
      */
     struct PathfinderStrategyParser {
-        /**< Maps PathfinderStrategy to its displayable string representation*/
+        /// @brief Maps PathfinderStrategy to its displayable string representation
         static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
 
         /**
@@ -141,16 +134,13 @@ namespace Pathfinder {
          */
         bool isCellBlockedOrOutOfBounds(int64_t x, int64_t y);
 
-        /**< Strategy of the implemented Pathfinder */
-        PathfinderStrategy strat;
+        PathfinderStrategy strat; /**< Strategy of the implemented Pathfinder */
 
-        /**< Timer object for evaluation pathfinder performance */
-        PathfinderTimer timer;
+        PathfinderTimer timer; /**< Timer object for evaluation pathfinder performance */
 
-        /**< Reference to the grid which the pathfinder is working on */
-        GridGenerator::Grid &grid;
+        GridGenerator::Grid &grid; /**< Reference to the grid which the pathfinder is working on */
 
-        /**< Priority queue of the next Cells to be evluated */
+        /// @brief Priority queue of the next Cells to be evluated
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
                 decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
 

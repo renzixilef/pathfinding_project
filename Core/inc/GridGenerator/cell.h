@@ -65,7 +65,7 @@ namespace GridGenerator {
      * @brief Class representing a cell in the grid.
      */
     class Cell {
-        /**< Type for parent of a cell. Can be a pointer to the parent Cell or a pair representing the direction to the parent. */
+        /// @brief Type for parent of a cell. Can be a pointer to the parent Cell or a pair representing the direction to the parent.
         using CellParentType = std::variant<Cell*, std::pair<int8_t, int8_t>>;
 
     public:
@@ -163,11 +163,8 @@ namespace GridGenerator {
         [[nodiscard]] inline CellCost getCost() const { return cost; }
 
     private:
-        /**< Indicates the current state of the cell. */
-        CellState state;
-        /**< Contains the cost information related to the cell. */
-        CellCost cost;
-        /**< Parent cell or the direction pair to get to the parent cell. */
-        CellParentType parent;
+        CellState state; /**< Indicates the current state of the cell. */
+        CellCost cost; /**< Contains the cost information related to the cell. */
+        CellParentType parent; /**< Parent cell or the direction pair to get to the parent cell. */
     };
 }

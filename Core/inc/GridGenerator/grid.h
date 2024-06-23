@@ -334,33 +334,22 @@ namespace GridGenerator {
         static const std::vector<std::pair<int8_t, int8_t>> offsets;
 
     private:
-        /**< The horizontal size of the grid. */
-        uint32_t sizeX;
-        /**< The vertical size of the grid. */
-        uint32_t sizeY;
+        uint32_t sizeX; /**< The horizontal size of the grid. */
+        uint32_t sizeY; /**< The vertical size of the grid. */
 
-        /**< 2D vector containing cells of the grid. */
-        std::vector<std::vector<Cell>> cells;
+        std::vector<std::vector<Cell>> cells; /**< 2D vector containing cells of the grid. */
 
-        /**< Pointer to the start cell. */
-        Cell *startCell;
-        /**< Pointer to the end cell. */
-        Cell *endCell;
+        Cell *startCell; /**< Pointer to the start cell. */
+        Cell *endCell; /**< Pointer to the end cell. */
 
-        /**< Coordinates of the start cell. */
-        GridCoordinate startCoordinates;
-        /**< Coordinates of the end cell. */
-        GridCoordinate endCoordinates;
+        GridCoordinate startCoordinates; /**< Coordinates of the start cell. */
+        GridCoordinate endCoordinates; /**< Coordinates of the end cell. */
 
-        /**< The current solved state of the pathfinding problem. */
-        GridSolvedStatus exitStatus;
+        GridSolvedStatus exitStatus; /**< The current solved state of the pathfinding problem. */
 
-        /**< Number of cells in the current path. */
-        uint32_t pathCellCount = 1;
-        /**< Number of closed cells in the search algorithm. */
-        uint32_t closedCellCount = 0;
-        /**< Number of visited cells in the search algorithm. */
-        uint32_t visitedCellCount = 0;
+        uint32_t pathCellCount = 1; /**< Number of cells in the current path. */
+        uint32_t closedCellCount = 0; /**< Number of closed cells in the search algorithm. */
+        uint32_t visitedCellCount = 0; /**< Number of visited cells in the search algorithm. */
     };
 
 
