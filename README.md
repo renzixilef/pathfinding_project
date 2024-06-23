@@ -1,4 +1,4 @@
-![Build and Documentation CI/CD](https://github.com/renzixilef/pathfinding_project/actions/workflows/cmake.yml/badge.svg)
+![Build and Documentation CI/CD](https://github.com/renzixilef/pathfinding_project/actions/workflows/full.yml/badge.svg)
 
 # Pathfinding
 
