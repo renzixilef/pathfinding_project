@@ -9,6 +9,8 @@
 #include "RunInterface/runner.h"
 #include "GUI/widgets/gui_grid.h"
 
+//TODO: implement self definable start and end button for SingleRuns
+
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT

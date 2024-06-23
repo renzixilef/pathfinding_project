@@ -7,6 +7,7 @@
 #include "RunInterface/runner.h"
 #include "widgets/gui_run_progress_view.h"
 
+
 Q_DECLARE_METATYPE(Pathfinder::PathfinderPerformanceMetric)
 
 Q_DECLARE_METATYPE(RunInterface::RunGridConfig)

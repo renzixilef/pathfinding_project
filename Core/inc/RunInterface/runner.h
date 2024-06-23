@@ -33,18 +33,13 @@ namespace RunInterface {
      * @brief Data structure to hold the grid configuration for running a pathfinding algorithm.
      */
     struct RunGridConfig {
-        /**< Grid width */
-        uint32_t gridWidth{};
-        /**< Grid height */
-        uint32_t gridHeight{};
-        /**< Density of obstacles in the grid */
-        float obstacleDensity{};
-        /**< Minimum distance between start and end points */
-        float minStartEndDistance{};
-        /**< Obstacle generation strategy */
+        uint32_t gridWidth{}; /**< Grid width */
+        uint32_t gridHeight{}; /**< Grid height */
+        float obstacleDensity{}; /**< Density of obstacles in the grid */
+        float minStartEndDistance{}; /**< Minimum distance between start and end points */
+        /// @brief Obstacle generation strategy
         GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
-        /**< Optional iterations count */
-        std::optional<uint32_t> iterations = std::nullopt;
+        std::optional<uint32_t> iterations = std::nullopt; /**< Optional iterations count */
 
         bool operator<(const RunGridConfig& other) const {
             return std::tie(gridWidth, gridHeight, obstacleDensity, minStartEndDistance, obstacleGenStrategy) <
@@ -87,10 +82,8 @@ namespace RunInterface {
         virtual void nextStep() = 0;
 
     protected:
-        /**< Configuration data of the runner. */
-        RunGridConfig config;
-        /**< The current Grid that the runner is working on. */
-        GridGenerator::Grid grid;
+        RunGridConfig config; /**< Configuration data of the runner. */
+        GridGenerator::Grid grid; /**< The current Grid that the runner is working on. */
     };
 
     /**
@@ -121,10 +114,9 @@ namespace RunInterface {
         void onRunReset();
 
     private:
-        /**< holds the pathfinder strategy to be used */
-        Pathfinder::PathfinderStrategy strat;
-        /**< holds a unique pointer to the pathfinding object corresponding to strat */
-        std::unique_ptr<Pathfinder::pathfindingParent> solver;
+        Pathfinder::PathfinderStrategy strat; /**< holds the pathfinder strategy to be used */
+        /// @brief holds a unique pointer to the pathfinding object corresponding to strat
+        std::unique_ptr<Pathfinder::PathfindingParent> solver;
     };
 
     /**
@@ -189,17 +181,11 @@ namespace RunInterface {
          */
         void handleFinishedSolver();
 
-        /**< Determines whether to repeat unsolvable runs. */
-        bool repeatUnsolvables;
-        /**< List of current config solver strategies. */
-        std::list<Pathfinder::PathfinderStrategy> strats;
-        /**< List of current solver instances. */
-        std::list<std::unique_ptr<Pathfinder::pathfindingParent>> solvers;
-        /**< Iterator for solver instances. */
-        std::list<std::unique_ptr<Pathfinder::pathfindingParent>>::iterator solverIterator;
-        /**< Keeping track of grid count for multi-grid scenarios. */
-        uint32_t gridIterator = 0;
-        /**< Current solver instance. */
-        Pathfinder::pathfindingParent *currentSolver;
+        bool repeatUnsolvables; /**< indicates whether unsolvable grids should be generated again */
+        std::list<Pathfinder::PathfinderStrategy> strats; /**< List of current config solver strategies. */
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>> solvers; /**< List of current solver instances. */
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>>::iterator solverIterator; /**< Iterator for solver instances. */
+        uint32_t gridIterator = 0; /**< Keeping track of grid count for multi-grid scenarios. */
+        Pathfinder::PathfindingParent *currentSolver; /**< Current solver instance. */
     };
 }

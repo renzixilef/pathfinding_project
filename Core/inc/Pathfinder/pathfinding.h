@@ -15,6 +15,7 @@
 #include "GridGenerator/grid.h"
 #include "timer.h"
 
+
 /**
  * @namespace Pathfinder
  * @brief Namespace for classes and functionalities related to pathfinding algorithms.
@@ -36,32 +37,25 @@ namespace Pathfinder {
      * @brief Struct to hold the performance metrics of a pathfinding strategy.
      */
     struct PathfinderPerformanceMetric {
-        /**< Count of cells that are part of the path */
-        uint32_t pathCells;
-        /**< Count of cells that have been visited */
-        uint32_t visitedCells;
-        /**< Count of cells that have been closed */
-        uint32_t closedCells;
-        /**< Total time taken for solving in micro seconds */
-        double solvingUSeconds;
-        /**< Average time taken per step in micro seconds */
-        double avgUSecondsPerStep;
-        /**< Total number of steps taken in the algorithm */
-        uint32_t stepCount;
-        /**< Strategy used for the pathfinding */
-        PathfinderStrategy strat;
+        uint32_t pathCells;/**< Count of cells that are part of the path */
+        uint32_t visitedCells; /**< Count of cells that have been visited */
+        uint32_t closedCells; /**< Count of cells that have been closed */
+        double solvingUSeconds; /**< Total time taken for solving in micro seconds */
+        double avgUSecondsPerStep; /**< Average time taken per step in micro seconds */
+        uint32_t stepCount; /**< Total number of steps taken in the algorithm */
+        PathfinderStrategy strat; /**< Strategy used for the pathfinding */
 
     };
 
     // Forward declaration to avoid compile-time errors
-    class pathfindingParent;
+    class PathfindingParent;
 
     /**
      * @struct PathfinderStrategyParser
      * @brief Struct to parse PathfinderStrategy type
      */
     struct PathfinderStrategyParser {
-        /**< Maps PathfinderStrategy to its displayable string representation*/
+        /// @brief Maps PathfinderStrategy to its displayable string representation
         static const std::map<PathfinderStrategy, std::string> pathfindingStrategyToDisplayableText;
 
         /**
@@ -71,29 +65,29 @@ namespace Pathfinder {
          * @param grid The grid on which to apply the strategy.
          * @return A unique_ptr to the generated pathfinding object.
          */
-        static std::unique_ptr<pathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
+        static std::unique_ptr<PathfindingParent> parsePathfinderStrategy(PathfinderStrategy strat,
                                                                           GridGenerator::Grid &grid);
     };
 
     /**
-     * @class pathfindingParent
+     * @class PathfindingParent
      * @brief The parent pathfinding class. Contains the grid and the main functions of pathfinding.
      */
-    class pathfindingParent {
+    class PathfindingParent {
     public:
         /**
-         * @brief Constructor for the pathfindingParent class.
+         * @brief Constructor for the PathfindingParent class.
          * @param grid Reference to the Grid object used in the pathfinding.
          */
-        explicit pathfindingParent(GridGenerator::Grid &grid) :
+        explicit PathfindingParent(GridGenerator::Grid &grid) :
                 grid(grid) {
             initGenericSolver();
         }
 
         /**
-         * @brief Destructor for the pathfindingParent class.
+         * @brief Destructor for the PathfindingParent class.
          */
-        virtual ~pathfindingParent() = default;
+        virtual ~PathfindingParent() = default;
 
         /**
          * @fn queueEmpty
@@ -140,16 +134,13 @@ namespace Pathfinder {
          */
         bool isCellBlockedOrOutOfBounds(int64_t x, int64_t y);
 
-        /**< Strategy of the implemented Pathfinder */
-        PathfinderStrategy strat;
+        PathfinderStrategy strat; /**< Strategy of the implemented Pathfinder */
 
-        /**< Timer object for evaluation pathfinder performance */
-        PathfinderTimer timer;
+        PathfinderTimer timer; /**< Timer object for evaluation pathfinder performance */
 
-        /**< Reference to the grid which the pathfinder is working on */
-        GridGenerator::Grid &grid;
+        GridGenerator::Grid &grid; /**< Reference to the grid which the pathfinder is working on */
 
-        /**< Priority queue of the next Cells to be evluated */
+        /// @brief Priority queue of the next Cells to be evluated
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
                 decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
 
@@ -163,15 +154,15 @@ namespace Pathfinder {
 
     /**
      * @class DijkstraSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies Dijkstra's algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies Dijkstra's algorithm for pathfinding.
      */
-    class DijkstraSolve : public pathfindingParent {
+    class DijkstraSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the DijkstraSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Dijkstra algorithm will be applied.
          */
-        explicit DijkstraSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit DijkstraSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -189,15 +180,15 @@ namespace Pathfinder {
 
     /**
      * @class AStarSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies the A* algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the A* algorithm for pathfinding.
      */
-    class AStarSolve : public pathfindingParent {
+    class AStarSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the AStarSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the A* algorithm will be applied.
          */
-        explicit AStarSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit AStarSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
@@ -215,15 +206,15 @@ namespace Pathfinder {
 
     /**
      * @class JumpPointSolve
-     * @brief Extension of the pathfindingParent class. Defines an object which applies the Jump Point Search algorithm for pathfinding.
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the Jump Point Search algorithm for pathfinding.
      */
-    class JumpPointSolve : public pathfindingParent {
+    class JumpPointSolve : public PathfindingParent {
     public:
         /**
          * @brief Constructor for the JumpPointSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Jump-Point-Search algorithm will be applied.
          */
-        explicit JumpPointSolve(GridGenerator::Grid &grid) : pathfindingParent(grid) {}
+        explicit JumpPointSolve(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
 
         /**
          * @fn void nextStep
