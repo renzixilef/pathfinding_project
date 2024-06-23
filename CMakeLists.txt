@@ -54,7 +54,7 @@ if (DOXYGEN_FOUND)
     find_program(MAKE_EXECUTABLE make)
     if(MAKE_EXECUTABLE)
         add_custom_command(TARGET pathfinding POST_BUILD
-                COMMAND ${MAKE_EXECUTABLE} > /dev/null 2>&1
+                COMMAND ${MAKE_EXECUTABLE}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/latex
                 COMMENT "Generating PDF documentation"
                 VERBATIM)
