@@ -1,13 +1,11 @@
 name: CMake
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  Build:
+  buildAndTest:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout github repo
@@ -16,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake doxygen cmake graphviz texlive-full ninja-build make
+          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake ninja-build make
 
       - name: Configure and Build CMake
         run: |
@@ -32,12 +30,5 @@ jobs:
         with:
           name: binary
           path: build/pathfinding
-          compression-level: 0
-
-      - name: Upload documentation
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: build/docs/latex/refman.pdf
           compression-level: 0
 
