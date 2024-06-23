@@ -24,16 +24,16 @@ jobs:
       #  run: ctest -C ${{env.BUILD_TYPE}}
 
       - name: Upload binary
-          - uses: actions/upload-artifact@v3
-              with:
-                name: binary
-                path: build/pathfinding
-                compression-level: 0
+      - uses: actions/upload-artifact@v3
+        with:
+          name: binary
+          path: build/pathfinding
+          compression-level: 0
 
       - name: Upload documentation
-          - uses: actions/upload-artifact@v3
-              with:
-                name: documentation
-                path: build/docs/latex/refman.pdf
-                compression-level: 0
+      - uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: build/docs/latex/refman.pdf
+          compression-level: 0
 
