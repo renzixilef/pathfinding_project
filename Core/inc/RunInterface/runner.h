@@ -181,16 +181,11 @@ namespace RunInterface {
          */
         void handleFinishedSolver();
 
-        bool repeatUnsolvables;
-        /**< List of current config solver strategies. */
-        std::list<Pathfinder::PathfinderStrategy> strats;
-        /**< List of current solver instances. */
-        std::list<std::unique_ptr<Pathfinder::PathfindingParent>> solvers;
-        /**< Iterator for solver instances. */
-        std::list<std::unique_ptr<Pathfinder::PathfindingParent>>::iterator solverIterator;
-        /**< Keeping track of grid count for multi-grid scenarios. */
-        uint32_t gridIterator = 0;
-        /**< Current solver instance. */
-        Pathfinder::PathfindingParent *currentSolver;
+        bool repeatUnsolvables; /**< indicates whether unsolvable grids should be generated again */
+        std::list<Pathfinder::PathfinderStrategy> strats; /**< List of current config solver strategies. */
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>> solvers; /**< List of current solver instances. */
+        std::list<std::unique_ptr<Pathfinder::PathfindingParent>>::iterator solverIterator; /**< Iterator for solver instances. */
+        uint32_t gridIterator = 0; /**< Keeping track of grid count for multi-grid scenarios. */
+        Pathfinder::PathfindingParent *currentSolver; /**< Current solver instance. */
     };
 }
