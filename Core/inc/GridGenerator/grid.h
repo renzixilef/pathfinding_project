@@ -333,8 +333,16 @@ namespace GridGenerator {
          */
         void resetGrid();
 
+        /**
+         * @fn serialize
+         * @brief Writes a grid object to a file
+         */
         void serialize(const std::string& filename) const;
 
+        /**
+         * @fn deserialize
+         * @brief Reads a grid object from a file
+         */
         static Grid deserialize(const std::string& filename);
 
     private:
