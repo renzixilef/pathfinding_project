@@ -7,16 +7,9 @@ RUN apt-get update && apt-get install -y \
     gdb \
     cmake \
     doxygen \
-    texlive \
+    texlive-full \
     git \
     graphviz \
-    graphicx \
-    multicol \
-    babel \
-    amssymb \
-    fancyhdr \
-    inputenc \
-    fontenc \
     qtcreator \
     qtbase5-dev \
     qt5-qmake
