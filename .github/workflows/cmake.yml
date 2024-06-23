@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake graphviz texlive ninja-build
+          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake cmake graphviz texlive ninja-build make
 
       - name: Configure and Build CMake
         run: |
@@ -28,7 +28,7 @@ jobs:
       #  run: ctest -C ${{env.BUILD_TYPE}}
 
       - name: Upload binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binary
           path: build/pathfinding
