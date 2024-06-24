@@ -7,6 +7,8 @@ project(
         LANGUAGES C CXX ASM
 )
 
+enable_testing()
+include(FetchContent)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -52,15 +54,28 @@ if (DOXYGEN_FOUND)
     )
 
     find_program(MAKE_EXECUTABLE make)
-    if(MAKE_EXECUTABLE)
+    if (MAKE_EXECUTABLE)
         add_custom_command(TARGET pathfinding POST_BUILD
                 COMMAND ${MAKE_EXECUTABLE} > /dev/null 2>&1
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/latex
                 COMMENT "Generating PDF documentation"
                 VERBATIM)
-    else(MAKE_EXECUTABLE)
+    else (MAKE_EXECUTABLE)
         message("Could not find 'make' command for generating PDF documentation.")
-    endif()
+    endif ()
 else (DOXYGEN_FOUND)
     message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
+
+# testing
+# set up gtest
+find_package(GTest)
+if (GTEST_FOUND)
+    include_directories(${GTEST_INCLUDE_DIRS})
+
+    add_executable(AStarPathfinder_UnitTest test/AStarPathfinder_UnitTest)
+    target_link_libraries(AStarPathfinder_UnitTest gtest gtest_main pthread)
+    add_test(NAME AStarPathFinder_Test COMMAND AStarPathFinder_UnitTest)
+else (GTEST_FOUND)
+    message("Could not find gtest, skipping tests.")
+endif (GTEST_FOUND)

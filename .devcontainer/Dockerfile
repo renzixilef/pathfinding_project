@@ -12,8 +12,12 @@ RUN apt-get update && apt-get install -y \
     graphviz \
     qtcreator \
     qtbase5-dev \
-    qt5-qmake
+    qt5-qmake \
+    libgtest-dev
 
+RUN mkdir /usr/src/gtest/build
+RUN cd /usr/src/gtest/build && cmake .. && make && cd lib && cp *.a /usr/lib
+RUN rm -r /usr/src/gtest/build
 
 RUN apt-get upgrade -y
 
