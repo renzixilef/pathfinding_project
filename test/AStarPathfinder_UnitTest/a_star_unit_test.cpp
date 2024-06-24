@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-#include "Pathfinder/pathfinding.h"
-#include "GridGenerator/grid.h"
+#include "pathfinding.h"
+#include "grid.h"
 
 TEST(Pathfinder, AStarUnitTest){
     auto finishedGrid = GridGenerator::Grid::deserialize("astar_testgrid.bin");
