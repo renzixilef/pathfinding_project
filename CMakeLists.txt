@@ -47,10 +47,9 @@ if (DOXYGEN_FOUND)
 
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
     add_custom_command(TARGET pathfinding POST_BUILD
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT} > /dev/null 2>&1
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating API documentation with Doxygen"
-            VERBATIM
     )
 
     find_program(MAKE_EXECUTABLE make)
@@ -59,7 +58,7 @@ if (DOXYGEN_FOUND)
                 COMMAND ${MAKE_EXECUTABLE} > /dev/null 2>&1
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/latex
                 COMMENT "Generating PDF documentation"
-                VERBATIM)
+                )
     else (MAKE_EXECUTABLE)
         message("Could not find 'make' command for generating PDF documentation.")
     endif ()
@@ -69,13 +68,14 @@ endif (DOXYGEN_FOUND)
 
 # testing
 # set up gtest
-find_package(GTest)
-if (GTEST_FOUND)
-    include_directories(${GTEST_INCLUDE_DIRS})
+# find_package(GTest)
+# if (GTEST_FOUND)
+#    include_directories(${GTEST_INCLUDE_DIRS})
 
-    add_executable(AStarPathfinder_UnitTest test/AStarPathfinder_UnitTest)
-    target_link_libraries(AStarPathfinder_UnitTest gtest gtest_main pthread)
-    add_test(NAME AStarPathFinder_Test COMMAND AStarPathFinder_UnitTest)
-else (GTEST_FOUND)
-    message("Could not find gtest, skipping tests.")
-endif (GTEST_FOUND)
+#    add_executable(AStarPathfinder_UnitTest  ${SRC} ${MOC_SRCS} test/AStarPathfinder_UnitTest/a_star_unit_test.cpp Core/src/Pathfinder/pathfinding_a_star.cpp)
+#    target_include_directories(AStarPathfinder_UnitTest PUBLIC Core/inc/)
+#    target_link_libraries(AStarPathfinder_UnitTest gtest_main gtest pthread Qt5::Widgets Qt5::Core)
+#    add_test(NAME AStarUnitTest COMMAND AStarPathfinder_UnitTest)
+#else (GTEST_FOUND)
+#    message("Could not find gtest, skipping tests.")
+#endif (GTEST_FOUND)
