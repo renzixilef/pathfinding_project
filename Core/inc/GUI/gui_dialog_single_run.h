@@ -9,6 +9,8 @@
 #include "RunInterface/runner.h"
 #include "GUI/widgets/gui_grid.h"
 
+Q_DECLARE_METATYPE(std::string)
+
 //TODO: implement self definable start and end button for SingleRuns
 
 namespace GUI {
@@ -29,6 +31,7 @@ namespace GUI {
 
         void nextStep();
         void resetRun();
+        void serialize(const std::string&);
 
     public slots:
         void onGridFinished();
@@ -42,6 +45,8 @@ namespace GUI {
 
         void nextStepButtonHandler();
 
+        void serializeButtonHandler();
+
         bool runPaused = true;
         bool runFinished = false;
 
@@ -52,6 +57,7 @@ namespace GUI {
 
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
+        QPushButton *serializeRunForDebugButton;
 
         QVBoxLayout *mainLayout;
         QHBoxLayout* gridWidgetLayout;

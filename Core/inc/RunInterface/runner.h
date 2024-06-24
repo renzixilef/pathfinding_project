@@ -113,6 +113,13 @@ namespace RunInterface {
          */
         void onRunReset();
 
+        /**
+         * @fn onSerializeRequest
+         * @brief Slot that defines the action to be taken on requesting the serialization of the grid object.
+         * @param filename The path to the file in which the binary serialization should be saved.
+         */
+        void onSerializeRequest(const std::string& filename);
+
     private:
         Pathfinder::PathfinderStrategy strat; /**< holds the pathfinder strategy to be used */
         /// @brief holds a unique pointer to the pathfinding object corresponding to strat

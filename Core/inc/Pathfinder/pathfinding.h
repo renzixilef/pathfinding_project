@@ -118,6 +118,12 @@ namespace Pathfinder {
                                                strat};
         }
 
+        /**
+         * @fn solveNoWait
+         * @brief Solves the grid without using the regular runnerInterface, just for debugging and testing purposes
+         */
+        [[maybe_unused]] void solveNoWait();
+
     protected:
         /**
          * @fn virtual setStrat

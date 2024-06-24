@@ -105,9 +105,9 @@ namespace GridGenerator {
      * @brief Enum which describes the current status of the grid.
      */
     enum GridSolvedStatus {
-        GRID_SOLVED,  ///< Indicates the grid has been successfully solved
-        GRID_UNSOLVABLE, ///< Indicates the grid cannot be solved
-        GRID_UNSOLVED ///< Indicates the grid has not yet been solved
+        GRID_SOLVED = 0,  ///< Indicates the grid has been successfully solved
+        GRID_UNSOLVABLE = 1, ///< Indicates the grid cannot be solved
+        GRID_UNSOLVED= 2 ///< Indicates the grid has not yet been solved
     };
 
     /**
@@ -117,7 +117,7 @@ namespace GridGenerator {
     class Grid {
     public:
         /**
-         * @brief Constructs a Grid object.
+         * @brief Constructs a Grid object. This is the public constructor
          *
          * @param sizeX Horizontal (x-axis) size of the grid.
          * @param sizeY Vertical (y-axis) size of the grid.
@@ -154,6 +154,9 @@ namespace GridGenerator {
                 throw std::out_of_range("Grid indices out of range");
             return cells[coords.x][coords.y];
         }
+
+        /// @brief Static const field holding the possible directional offsets for calculating neighboring cells.
+        static const std::vector<std::pair<int8_t, int8_t>> offsets;
 
         /**
          * @fn isInBounds
@@ -330,10 +333,43 @@ namespace GridGenerator {
          */
         void resetGrid();
 
-        /**< Static const field holding the possible directional offsets for calculating neighboring cells. */
-        static const std::vector<std::pair<int8_t, int8_t>> offsets;
+        /**
+         * @fn serialize
+         * @brief Writes a grid object to a file
+         */
+        void serialize(const std::string& filename) const;
+
+        /**
+         * @fn deserialize
+         * @brief Reads a grid object from a file
+         */
+        static Grid deserialize(const std::string& filename);
 
     private:
+        /**
+         * @brief Private overload for the Grid Constructor. Just intended for use in the deserialize method!
+         *
+         * @param inCells vector of vector of Cell objects with their corresponding CellState set
+         * @param inStartCoordinates GridCoordinate object representing the starting Coordinates
+         * @param inEndCoordinates GridCoordinate object representing the starting Coordinates
+         * @param inExitStatus GridSolvedStatus value representing the exit status of the grid
+         * @param inPathCellCount number of path cells
+         * @param inClosedCellCount number of closed cells
+         * @param inVisitedCellCount number of visited cells
+         */
+        Grid(std::vector<std::vector<Cell>> inCells,
+             GridCoordinate inStartCoordinates, GridCoordinate inEndCoordinates,
+             GridSolvedStatus inExitStatus,
+             uint32_t inPathCellCount, uint32_t inClosedCellCount, uint32_t inVisitedCellCount):
+             cells(std::move(inCells)),
+             startCoordinates(inStartCoordinates), endCoordinates(inEndCoordinates), exitStatus(inExitStatus),
+             pathCellCount(inPathCellCount), closedCellCount(inClosedCellCount), visitedCellCount(inVisitedCellCount){
+            startCell = &(*this)(startCoordinates);
+            endCell = &(*this)(endCoordinates);
+            sizeX = cells.size();
+            sizeY = cells.at(0).size();
+        }
+
         uint32_t sizeX; /**< The horizontal size of the grid. */
         uint32_t sizeY; /**< The vertical size of the grid. */
 

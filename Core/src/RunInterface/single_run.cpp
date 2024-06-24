@@ -33,3 +33,7 @@ void RunInterface::SingleRun::onRunReset() {
     solver = Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid);
     emit stepFinished();
 }
+
+void RunInterface::SingleRun::onSerializeRequest(const std::string &filename) {
+    grid.serialize(filename);
+}
