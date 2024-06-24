@@ -41,3 +41,16 @@ bool Pathfinder::PathfindingParent::isCellBlockedOrOutOfBounds(int64_t x, int64_
     }
     return true;
 }
+
+void Pathfinder::PathfindingParent::solveNoWait() {
+    while(grid.getStatus() == GridGenerator::GRID_UNSOLVED){
+        if (queueEmpty()) {
+            nextStep();
+        } else {
+            grid.setUnsolvable();
+        }
+        if (grid.getEndCell()->getState() == GridGenerator::CellState::CELL_PATH) {
+            grid.setSolved();
+        }
+    }
+}

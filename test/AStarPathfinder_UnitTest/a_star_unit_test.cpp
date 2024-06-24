@@ -9,7 +9,7 @@ TEST(AStarPathfinder, UnitTest){
     gridToSolve.resetGrid();
 
     Pathfinder::AStarSolve solver{gridToSolve};
-
+    solver.solveNoWait();
 
 
 }
