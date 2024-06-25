@@ -46,9 +46,10 @@ void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
 
         GridGenerator::GridCoordinate cellCoord{static_cast<uint32_t>(cellX),
                                                 static_cast<uint32_t>(cellY)};
-        if (event->button() == Qt::LeftButton) const_cast<GridGenerator::Grid &>(grid).setStart(cellCoord);
-
-        if (event->button() == Qt::RightButton) const_cast<GridGenerator::Grid &>(grid).setEnd(cellCoord);
-        update();
+        if (grid(cellCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE) {
+            if (event->button() == Qt::LeftButton) const_cast<GridGenerator::Grid &>(grid).setStart(cellCoord);
+            if (event->button() == Qt::RightButton) const_cast<GridGenerator::Grid &>(grid).setEnd(cellCoord);
+            update();
+        }
     }
 }
