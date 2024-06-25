@@ -12,8 +12,6 @@
 
 Q_DECLARE_METATYPE(std::string)
 
-//TODO: implement self definable start and end button for SingleRuns
-
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT
