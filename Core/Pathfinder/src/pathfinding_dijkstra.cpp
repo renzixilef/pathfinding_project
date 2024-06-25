@@ -10,6 +10,7 @@ void Pathfinder::DijkstraSolve::nextStep() {
     nextCellQueue.pop();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     if (currentCoordinates == endCoordinates) {
+        timer.stepEnd();
         grid.markPathByParentCells(true);
         return;
     }

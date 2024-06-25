@@ -57,13 +57,12 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
         std::pair<int8_t, int8_t> *nextDir = endCell->getParentIfDirPair();
         GridCoordinate nextCoordinate = endCoordinates;
         getEndCell()->markPath();
-        while (true) {
+        while (nextCoordinate != startCoordinates) {
             nextCoordinate = {static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.x) + nextDir->first),
                               static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.y) + nextDir->second)};
             Cell &thisCell = (*this)(nextCoordinate);
             thisCell.markPath();
             pathCellCount++;
-            if (nextCoordinate == startCoordinates) break;
             if (thisCell.getParentIfDirPair() != nullptr) {
                 nextDir = thisCell.getParentIfDirPair();
             }

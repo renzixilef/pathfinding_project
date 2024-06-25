@@ -1,4 +1,4 @@
-name: CMake
+name: FULL CI #TODO: rename
 
 on:
   push:
