@@ -12,8 +12,6 @@
 
 Q_DECLARE_METATYPE(std::string)
 
-//TODO: implement self definable start and end button for SingleRuns
-
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT
@@ -50,6 +48,8 @@ namespace GUI {
 
         void serializeButtonHandler();
 
+        void toggleStartEndRedefinitionButtonHandler();
+
         bool runPaused = true;
         bool runFinished = false;
 
@@ -61,6 +61,7 @@ namespace GUI {
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
         QPushButton *serializeRunForDebugButton;
+        QPushButton *toggleStartEndRedefinitionButton;
 
         QVBoxLayout *mainLayout;
         QHBoxLayout* gridWidgetLayout;
