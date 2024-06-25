@@ -14,22 +14,27 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake doxygen cmake graphviz texlive-full ninja-build make
+          sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake doxygen 
+          sudo apt-get install -y cmake graphviz texlive-full ninja-build make libgtest-dev
+          sudo mkdir /usr/src/gtest/build
+          sudo cd /usr/src/gtest/build && sudo cmake .. && sudo make && sudo cd lib && sudo cp *.a /usr/lib
+          sudo rm -r /usr/src/gtest/build
 
       - name: Configure and Build CMake
         run: |
           cmake -GNinja -S ${{github.workspace}} -B ${{github.workspace}}/build
-          cmake --build ${{github.workspace}}/build --target pathfinding
+          cmake --build ${{github.workspace}}/build 
 
-      #- name: Test
-      #  working-directory: ${{.github.workspace}}/build
-      #  run: ctest -C ${{env.BUILD_TYPE}}
+        # TODO: maybe specify BUILD-TYPE env var and tests depending on build type
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        run: ctest
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: binary
-          path: build/pathfinding
+          path: build/Pathfinding_Bench_Program
           compression-level: 0
 
       - name: Upload documentation

@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 # project setup
 project(
-        pathfinding
+        Pathfinding_Bench_Program
         VERSION 0.1
         LANGUAGES C CXX ASM
 )
 
+enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -17,24 +18,16 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 
-# include qt5 relevant headers and moc them
-file(GLOB_RECURSE MOC_HEADERS
-        Core/inc/gui_*.h
-        Core/inc/RunInterface/runner.h
-)
+# include project-own libraries
+add_subdirectory(Core/GridGenerator)
+add_subdirectory(Core/Pathfinder)
+add_subdirectory(Core/RunInterface)
+add_subdirectory(Core/GUI/widgets)
+add_subdirectory(Core/GUI)
 
-qt5_wrap_cpp(MOC_SRCS ${MOC_HEADERS})
-
-# find all relevant source files
-file(GLOB_RECURSE SRC
-        Core/src/*.cpp
-)
-
-# setup target and linker
-add_executable(pathfinding ${SRC} ${MOC_SRCS})
-target_include_directories(pathfinding PUBLIC Core/inc)
-
-target_link_libraries(pathfinding Qt5::Widgets Qt5::Core)
+# main executable setup
+add_executable(Pathfinding_Bench_Program Core/main.cpp)
+target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets)
 
 # doxygen documentation
 find_package(Doxygen)
@@ -44,23 +37,53 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-    add_custom_command(TARGET pathfinding POST_BUILD
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+    add_custom_command(TARGET Pathfinding_Bench_Program POST_BUILD
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT} > /dev/null 2>&1
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating API documentation with Doxygen"
-            VERBATIM
     )
 
     find_program(MAKE_EXECUTABLE make)
-    if(MAKE_EXECUTABLE)
-        add_custom_command(TARGET pathfinding POST_BUILD
+    if (MAKE_EXECUTABLE)
+        add_custom_command(TARGET Pathfinding_Bench_Program POST_BUILD
                 COMMAND ${MAKE_EXECUTABLE} > /dev/null 2>&1
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/latex
                 COMMENT "Generating PDF documentation"
-                VERBATIM)
-    else(MAKE_EXECUTABLE)
+        )
+    else (MAKE_EXECUTABLE)
         message("Could not find 'make' command for generating PDF documentation.")
-    endif()
+    endif ()
 else (DOXYGEN_FOUND)
     message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
+
+# set up testing
+find_package(GTest)
+if (GTEST_FOUND)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests")
+
+    # A-Star unit-Tests
+    add_executable(AStarPathfinder_UnitTest Tests/UnitTests/a_star_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/astar_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
+    target_link_libraries(AStarPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
+    add_test(NAME AStarUnitTest
+            COMMAND AStarPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
+
+    # Dijsktra unit-Tests
+    add_executable(DijkstraPathfinder_UnitTest Tests/UnitTests/dijkstra_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/dijkstra_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
+    target_link_libraries(DijkstraPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
+    add_test(NAME DijkstraUnitTest
+            COMMAND DijkstraPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
+
+else (GTEST_FOUND)
+    message("Could not find gtest, skipping tests.")
+endif (GTEST_FOUND)
+
+
+
