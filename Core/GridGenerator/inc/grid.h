@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <cmath>
+#include <sstream>
 
 #include "cell.h"
 #include "define.h"
@@ -54,8 +55,8 @@ namespace GridGenerator {
                         pow((static_cast<double>(y) - point.y) * VERTICAL_DISTANCE, 2));
         }
 
-        [[nodiscard]] static constexpr double  getDiagonalDistance() {
-        return std::sqrt(std::pow(HORIZONTAL_DISTANCE, 2)+ std::pow(VERTICAL_DISTANCE,2));
+        [[nodiscard]] static constexpr double getDiagonalDistance() {
+            return std::sqrt(std::pow(HORIZONTAL_DISTANCE, 2) + std::pow(VERTICAL_DISTANCE, 2));
         }
 
         /**
@@ -107,7 +108,7 @@ namespace GridGenerator {
     enum GridSolvedStatus {
         GRID_SOLVED = 0,  ///< Indicates the grid has been successfully solved
         GRID_UNSOLVABLE = 1, ///< Indicates the grid cannot be solved
-        GRID_UNSOLVED= 2 ///< Indicates the grid has not yet been solved
+        GRID_UNSOLVED = 2 ///< Indicates the grid has not yet been solved
     };
 
     /**
@@ -137,8 +138,12 @@ namespace GridGenerator {
          * @return A reference to the cell at the specified coordinates.
          */
         Cell &operator()(GridCoordinate coords) {
-            if (!isInBounds(coords.x, coords.y))
-                throw std::out_of_range("Grid indices out of range");
+            if (!isInBounds(coords.x, coords.y)) {
+                std::ostringstream oss;
+                oss << "Grid indices out of range. X: " << coords.x << " Y: " << coords.y <<
+                    " sizeX: " << sizeX << " sizeY: " << sizeY;
+                throw std::out_of_range(oss.str());
+            }
             return cells[coords.x][coords.y];
         }
 
@@ -150,8 +155,12 @@ namespace GridGenerator {
          * @return A const reference to the cell at the specified coordinates.
          */
         const Cell &operator()(GridCoordinate coords) const {
-            if (!isInBounds(coords.x, coords.y))
-                throw std::out_of_range("Grid indices out of range");
+            if (!isInBounds(coords.x, coords.y)) {
+                std::ostringstream oss;
+                oss << "Grid indices out of range. X: " << coords.x << " Y: " << coords.y <<
+                    " sizeX: " << sizeX << " sizeY: " << sizeY;
+                throw std::out_of_range(oss.str());
+            }
             return cells[coords.x][coords.y];
         }
 
@@ -337,13 +346,13 @@ namespace GridGenerator {
          * @fn serialize
          * @brief Writes a grid object to a file
          */
-        void serialize(const std::string& filename) const;
+        void serialize(const std::string &filename) const;
 
         /**
          * @fn deserialize
          * @brief Reads a grid object from a file
          */
-        static Grid deserialize(const std::string& filename);
+        static Grid deserialize(const std::string &filename);
 
     private:
         /**
@@ -360,12 +369,13 @@ namespace GridGenerator {
         Grid(std::vector<std::vector<Cell>> inCells,
              GridCoordinate inStartCoordinates, GridCoordinate inEndCoordinates,
              GridSolvedStatus inExitStatus,
-             uint32_t inPathCellCount, uint32_t inClosedCellCount, uint32_t inVisitedCellCount):
-             cells(std::move(inCells)),
-             startCoordinates(inStartCoordinates), endCoordinates(inEndCoordinates), exitStatus(inExitStatus),
-             pathCellCount(inPathCellCount), closedCellCount(inClosedCellCount), visitedCellCount(inVisitedCellCount){
-            startCell = &(*this)(startCoordinates);
-            endCell = &(*this)(endCoordinates);
+             uint32_t inPathCellCount, uint32_t inClosedCellCount, uint32_t inVisitedCellCount) :
+                cells(std::move(inCells)),
+                startCoordinates(inStartCoordinates), endCoordinates(inEndCoordinates), exitStatus(inExitStatus),
+                pathCellCount(inPathCellCount), closedCellCount(inClosedCellCount),
+                visitedCellCount(inVisitedCellCount) {
+            startCell = &cells.at(startCoordinates.x).at(endCoordinates.y);
+            endCell = &cells.at(endCoordinates.x).at(endCoordinates.y);
             sizeX = cells.size();
             sizeY = cells.at(0).size();
         }
