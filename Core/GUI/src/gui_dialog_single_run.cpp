@@ -13,10 +13,11 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
         QDialog(parent),
         runInterface(new RunInterface::SingleRun(config, strat)),
         singleRunThread(new QThread(this)),
-        nextStepButton(new QPushButton("Next Step", this)),
-        toggleRunButton(new QPushButton("Play", this)),
-        serializeRunForDebugButton(new QPushButton("Debug Save", this)),
-        gridWidget(new Widgets::GridDrawerWidget(runInterface->getGridRef(), this)),
+        nextStepButton(new QPushButton("Next Step")),
+        toggleRunButton(new QPushButton("Play")),
+        serializeRunForDebugButton(new QPushButton("Debug Save")),
+        toggleStartEndRedefinitionButton(new QPushButton("Choose Start/End")),
+        gridWidget(new Widgets::GridDrawerWidget(runInterface->getGridRef())),
         mainLayout(new QVBoxLayout(this)),
         gridWidgetLayout(new QHBoxLayout()),
         buttonLayout(new QHBoxLayout()),
@@ -37,6 +38,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
 
     buttonLayout->addWidget(toggleRunButton);
     buttonLayout->addWidget(nextStepButton);
+    buttonLayout->addWidget(toggleStartEndRedefinitionButton);
     buttonLayout->addWidget(serializeRunForDebugButton);
     gridWidgetLayout->addWidget(gridWidget);
     mainLayout->addLayout(buttonLayout);
@@ -63,18 +65,21 @@ void GUI::SingleRunDialog::toggleRunButtonHandler() {
         runPaused = true;
         runFinished = false;
         serializeRunForDebugButton->hide();
+        toggleStartEndRedefinitionButton->setEnabled(true);
         toggleRunButton->setText("Play");
         toggleRunButton->setStyleSheet("background-color: green");
         toggleRunButton->setEnabled(false);
         emit resetRun();
     } else {
         if (runPaused) {
+            toggleStartEndRedefinitionButton->setDisabled(true);
             nextStepButton->setEnabled(false);
             toggleRunButton->setText("Pause");
             toggleRunButton->setStyleSheet("background-color: red");
             runPaused = false;
             emit nextStep();
         } else {
+            toggleStartEndRedefinitionButton->setDisabled(true);
             runPaused = true;
         }
     }
@@ -83,6 +88,7 @@ void GUI::SingleRunDialog::toggleRunButtonHandler() {
 void GUI::SingleRunDialog::nextStepButtonHandler() {
     nextStepButton->setEnabled(false);
     toggleRunButton->setEnabled(false);
+    toggleStartEndRedefinitionButton->setDisabled(true);
     emit nextStep();
 }
 
@@ -113,6 +119,8 @@ void GUI::SingleRunDialog::setupConnections() {
             this, &SingleRunDialog::toggleRunButtonHandler);
     connect(serializeRunForDebugButton, &QPushButton::clicked,
             this, &SingleRunDialog::serializeButtonHandler);
+    connect(toggleStartEndRedefinitionButton, &QPushButton::clicked,
+            this, &SingleRunDialog::toggleStartEndRedefinitionButtonHandler);
     connect(this, SIGNAL(serialize(const std::string&)),
             runInterface, SLOT(onSerializeRequest(const std::string&)));
     connect(runInterface, SIGNAL(saveDone()),
@@ -139,4 +147,27 @@ void GUI::SingleRunDialog::onSaveDone() {
     serializeRunForDebugButton->setEnabled(false);
     serializeRunForDebugButton->setStyleSheet("background-color:green;");
     toggleRunButton->setEnabled(true);
+}
+
+void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
+    if(gridWidget->getRedefinitionStatus()){
+        gridWidget->toggleStartEndRedefinitionPhase();
+        toggleRunButton->setEnabled(true);
+        nextStepButton->setEnabled(true);
+        if(!serializeRunForDebugButton->isHidden()){
+            serializeRunForDebugButton->setEnabled(true);
+        }
+    }else{
+        gridWidget->toggleStartEndRedefinitionPhase();
+        toggleRunButton->setDisabled(true);
+        nextStepButton->setDisabled(true);
+        if(!serializeRunForDebugButton->isHidden()){
+            serializeRunForDebugButton->setDisabled(true);
+        }
+        QMessageBox redefinitionExplainerBox;
+        redefinitionExplainerBox.setText("How to redefine Start/End");
+        redefinitionExplainerBox.setInformativeText("Set start position: Left Click on the new node\n"
+                                                    "Set end position: Right Click on the new node");
+        redefinitionExplainerBox.exec();
+    }
 }

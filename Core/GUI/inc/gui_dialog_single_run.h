@@ -50,6 +50,8 @@ namespace GUI {
 
         void serializeButtonHandler();
 
+        void toggleStartEndRedefinitionButtonHandler();
+
         bool runPaused = true;
         bool runFinished = false;
 
@@ -61,6 +63,7 @@ namespace GUI {
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
         QPushButton *serializeRunForDebugButton;
+        QPushButton *toggleStartEndRedefinitionButton;
 
         QVBoxLayout *mainLayout;
         QHBoxLayout* gridWidgetLayout;
