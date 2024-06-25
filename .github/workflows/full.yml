@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binary
-          path: build/pathfinding
+          path: build/Pathfinding_Bench_Program
           compression-level: 0
 
       - name: Upload documentation
