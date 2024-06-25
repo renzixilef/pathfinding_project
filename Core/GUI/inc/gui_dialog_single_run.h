@@ -12,7 +12,7 @@
 
 Q_DECLARE_METATYPE(std::string)
 
-//TODO: implement self definable start and end button for SingleRuns
+// TODO: implement bitmap/screenshot from gridGui widget video recording of solving
 
 namespace GUI {
     class SingleRunDialog : public QDialog {
