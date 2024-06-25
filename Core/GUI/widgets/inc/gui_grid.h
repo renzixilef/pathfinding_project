@@ -13,9 +13,19 @@ namespace GUI::Widgets {
         explicit GridDrawerWidget(const GridGenerator::Grid &grid, QWidget *parent = nullptr) :
                 QWidget(parent), grid(grid) {}
 
+        inline void toggleStartEndRedefinitionPhase() { startEndRedefinitionEnabled = !startEndRedefinitionEnabled; }
+
+        [[nodiscard]] inline bool getRedefinitionStatus() const { return startEndRedefinitionEnabled; }
+
     private:
+
+        void paintEvent(QPaintEvent *) override;
+
+        void mousePressEvent(QMouseEvent *event) override;
+
         const GridGenerator::Grid &grid;
-        void paintEvent(QPaintEvent*) override;
+        uint32_t cellSide = 0;
+        bool startEndRedefinitionEnabled = false;
     };
 
 }
