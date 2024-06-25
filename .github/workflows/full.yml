@@ -23,7 +23,7 @@ jobs:
       - name: Configure and Build CMake
         run: |
           cmake -GNinja -S ${{github.workspace}} -B ${{github.workspace}}/build
-          cmake --build ${{github.workspace}}/build --target pathfinding
+          cmake --build ${{github.workspace}}/build 
 
         # TODO: maybe specify BUILD-TYPE env var and tests depending on build type
       - name: Test
