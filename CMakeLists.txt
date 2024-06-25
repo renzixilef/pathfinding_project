@@ -61,13 +61,18 @@ endif (DOXYGEN_FOUND)
 find_package(GTest)
 if (GTEST_FOUND)
     include_directories(${GTEST_INCLUDE_DIRS})
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests")
 
-    # A-Star unit-test
-    add_executable(AStarPathfinder_UnitTest  test/AStarPathfinder_UnitTest/a_star_unit_test.cpp)
+    # A-Star unit-Tests
+    add_executable(AStarPathfinder_UnitTest Tests/UnitTests/a_star_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/astar_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
     target_link_libraries(AStarPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
-    add_test(NAME AStarUnitTest COMMAND AStarPathfinder_UnitTest)
+    add_test(NAME AStarUnitTest
+            COMMAND AStarPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
 
-    # Dijsktra unit-test
+    # Dijsktra unit-Tests
 
 
 else (GTEST_FOUND)

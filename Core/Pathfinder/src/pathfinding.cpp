@@ -44,7 +44,7 @@ bool Pathfinder::PathfindingParent::isCellBlockedOrOutOfBounds(int64_t x, int64_
 
 void Pathfinder::PathfindingParent::solveNoWait() {
     while(grid.getStatus() == GridGenerator::GRID_UNSOLVED){
-        if (queueEmpty()) {
+        if (!queueEmpty()) {
             nextStep();
         } else {
             grid.setUnsolvable();

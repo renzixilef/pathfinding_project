@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 #include <fstream>
+#include <iostream>
+#include <bitset>
 
 #include "pathfinding.h"
 #include "grid.h"
 
 TEST(Pathfinder, AStarUnitTest){
-    auto finishedGrid = GridGenerator::Grid::deserialize("astar_testgrid.bin");
+    auto finishedGrid = GridGenerator::Grid::deserialize("./astar_testgrid.bin");
     auto gridToSolve = finishedGrid;
     gridToSolve.resetGrid();
 

@@ -53,6 +53,7 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
             nextCell = *nextCell->getParentIfCellPointer();
         }
     } else {
+        //TODO: debug this mess
         std::pair<int8_t, int8_t> *nextDir = endCell->getParentIfDirPair();
         GridCoordinate nextCoordinate = endCoordinates;
         getEndCell()->markPath();
@@ -61,6 +62,7 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
                               static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.y) + nextDir->second)};
             Cell &thisCell = (*this)(nextCoordinate);
             thisCell.markPath();
+            pathCellCount++;
             if (nextCoordinate == startCoordinates) break;
             if (thisCell.getParentIfDirPair() != nullptr) {
                 nextDir = thisCell.getParentIfDirPair();
@@ -71,7 +73,7 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
 
 void GridGenerator::Grid::resetGrid() {
     exitStatus = GridSolvedStatus::GRID_UNSOLVED;
-    pathCellCount = 1;
+    pathCellCount = 0;
     closedCellCount = 0;
     visitedCellCount = 0;
     for (auto &row: cells) {
@@ -81,6 +83,8 @@ void GridGenerator::Grid::resetGrid() {
             }
         }
     }
+    startCell = &(*this)(startCoordinates);
+    endCell = &(*this)(endCoordinates);
 }
 
 void GridGenerator::Grid::serialize(const std::string &filename) const {

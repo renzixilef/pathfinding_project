@@ -383,7 +383,7 @@ namespace GridGenerator {
 
         GridSolvedStatus exitStatus; /**< The current solved state of the pathfinding problem. */
 
-        uint32_t pathCellCount = 1; /**< Number of cells in the current path. */
+        uint32_t pathCellCount = 0; /**< Number of cells in the current path. */
         uint32_t closedCellCount = 0; /**< Number of closed cells in the search algorithm. */
         uint32_t visitedCellCount = 0; /**< Number of visited cells in the search algorithm. */
     };
