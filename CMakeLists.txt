@@ -73,7 +73,13 @@ if (GTEST_FOUND)
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
 
     # Dijsktra unit-Tests
-
+    add_executable(DijkstraPathfinder_UnitTest Tests/UnitTests/dijkstra_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/dijkstra_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
+    target_link_libraries(DijkstraPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
+    add_test(NAME DijkstraUnitTest
+            COMMAND DijkstraPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
 
 else (GTEST_FOUND)
     message("Could not find gtest, skipping tests.")
