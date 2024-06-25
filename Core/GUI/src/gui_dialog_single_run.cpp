@@ -115,6 +115,8 @@ void GUI::SingleRunDialog::setupConnections() {
             this, &SingleRunDialog::serializeButtonHandler);
     connect(this, SIGNAL(serialize(const std::string&)),
             runInterface, SLOT(onSerializeRequest(const std::string&)));
+    connect(runInterface, SIGNAL(saveDone()),
+            this, SLOT(onSaveDone()));
     connect(nextStepTimer, &QTimer::timeout,
             this, &SingleRunDialog::nextStep);
 
@@ -127,15 +129,14 @@ void GUI::SingleRunDialog::serializeButtonHandler() {
     std::string filenameStd = filename.toStdString();
 
     if(!filenameStd.empty()){
-        if(QFile::exists(filename)){
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("Warning"),
-                                          tr("File already exists. Overwrite?"),
-                                          QMessageBox::Yes|QMessageBox::No);
-            if(reply==QMessageBox::Yes) emit serialize(filenameStd);
-        }else{
-            emit serialize(filenameStd);
-        }
+        emit serialize(filenameStd);
+        toggleRunButton->setDisabled(true);
     }
 
+}
+
+void GUI::SingleRunDialog::onSaveDone() {
+    serializeRunForDebugButton->setEnabled(false);
+    serializeRunForDebugButton->setStyleSheet("background-color:green;");
+    toggleRunButton->setEnabled(true);
 }

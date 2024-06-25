@@ -36,4 +36,5 @@ void RunInterface::SingleRun::onRunReset() {
 
 void RunInterface::SingleRun::onSerializeRequest(const std::string &filename) {
     grid.serialize(filename);
+    emit saveDone();
 }

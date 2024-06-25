@@ -41,7 +41,7 @@ namespace RunInterface {
         GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
         std::optional<uint32_t> iterations = std::nullopt; /**< Optional iterations count */
 
-        bool operator<(const RunGridConfig& other) const {
+        bool operator<(const RunGridConfig &other) const {
             return std::tie(gridWidth, gridHeight, obstacleDensity, minStartEndDistance, obstacleGenStrategy) <
                    std::tie(other.gridWidth, other.gridHeight, other.obstacleDensity, other.minStartEndDistance,
                             other.obstacleGenStrategy);
@@ -69,12 +69,15 @@ namespace RunInterface {
         [[nodiscard]] const inline GridGenerator::Grid &getGridRef() const { return grid; }
 
     signals:
+
         /**< Signal emitted when a step is finished. *//**< Signal emitted when a step is finished. */
         void stepFinished();
+
         /**< Signal emitted when grid is finished. */
         void gridFinished();
 
     public slots:
+
         /**
          * @fn virtual nextStep
          * @brief Pure virtual method to be overridden by derived classes to start the next step of the pathfinder.
@@ -106,7 +109,15 @@ namespace RunInterface {
          */
         void nextStep() override;
 
+    signals:
+        /**
+         * @fn saveDone
+         * @brief Emitted when serialization is complete!
+         */
+        void saveDone();
+
     public slots:
+
         /**
          * @fn onRunReset
          * @brief Slot that defines the action to be taken on resetting the running of pathfinding algorithm.
@@ -118,7 +129,7 @@ namespace RunInterface {
          * @brief Slot that defines the action to be taken on requesting the serialization of the grid object.
          * @param filename The path to the file in which the binary serialization should be saved.
          */
-        void onSerializeRequest(const std::string& filename);
+        void onSerializeRequest(const std::string &filename);
 
     private:
         Pathfinder::PathfinderStrategy strat; /**< holds the pathfinder strategy to be used */
@@ -150,6 +161,7 @@ namespace RunInterface {
         void nextStep() override;
 
     signals:
+
         /**
          * @fn solverFinished
          * @brief Signal to indicate that a solver has finished.
@@ -160,6 +172,7 @@ namespace RunInterface {
                             int32_t);
 
     public slots:
+
         /**
          * @fn createNewGridWithCurrentConfig
          * @brief Slot to handle creating a new grid based on the current configuration.

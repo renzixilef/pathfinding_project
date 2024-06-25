@@ -39,6 +39,8 @@ namespace GUI {
 
         void onStepFinished();
 
+        void onSaveDone();
+
     private:
         void toggleRunButtonHandler();
 
