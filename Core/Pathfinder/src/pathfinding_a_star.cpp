@@ -12,6 +12,7 @@ void Pathfinder::AStarSolve::nextStep() {
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
     if (currentCell.getState() == GridGenerator::CellState::CELL_CLOSED) return;
     if (currentCoordinates == endCoordinates) {
+        timer.stepEnd();
         grid.markPathByParentCells(true);
         return;
     }

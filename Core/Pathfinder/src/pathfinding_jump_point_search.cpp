@@ -22,6 +22,7 @@ void Pathfinder::JumpPointSolve::nextStep() {
                 jumpPointCell.setParentDirPair(std::make_pair(-direction.first, -direction.second));
                 jumpPointCell.setGCost(gCostFromCurrent);
                 jumpPointCell.setHCost(jumpPointCoord.getAbsDistanceTo(endCoordinates));
+                timer.stepEnd();
                 grid.markPathByParentCells(false);
                 return;
             }
