@@ -18,6 +18,9 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 
+# include opencv
+find_package(OPENCV REQUIRED)
+
 # include project-own libraries
 add_subdirectory(Core/GridGenerator)
 add_subdirectory(Core/Pathfinder)
@@ -27,7 +30,7 @@ add_subdirectory(Core/GUI)
 
 # main executable setup
 add_executable(Pathfinding_Bench_Program Core/main.cpp)
-target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets)
+target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets ${OPENCV_LIBS})
 
 # doxygen documentation
 find_package(Doxygen)
