@@ -1,4 +1,4 @@
-name: Build and Test CI #TODO: rename
+name: Build and Test CI
 
 on:
   pull_request:
