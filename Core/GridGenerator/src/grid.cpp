@@ -82,7 +82,7 @@ void GridGenerator::Grid::resetGrid() {
             }
         }
     }
-    startCell = &(*this)(startCoordinates);
+     startCell = &(*this)(startCoordinates);
     endCell = &(*this)(endCoordinates);
 }
 
