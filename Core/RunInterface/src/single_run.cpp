@@ -38,3 +38,7 @@ void RunInterface::SingleRun::onSerializeRequest(const std::string &filename) {
     grid.serialize(filename);
     emit saveDone();
 }
+
+void RunInterface::SingleRun::onStartEndChanged() {
+    solver->reInit();
+}

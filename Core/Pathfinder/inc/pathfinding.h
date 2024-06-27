@@ -124,6 +124,12 @@ namespace Pathfinder {
          */
         [[maybe_unused]] void solveNoWait();
 
+        /**
+         * @fn reInit
+         * @brief re initializes the queue and the start end node cost calculation
+         */
+        void reInit();
+
     protected:
         /**
          * @fn virtual setStrat

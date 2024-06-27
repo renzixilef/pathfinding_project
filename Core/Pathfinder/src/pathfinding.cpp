@@ -54,3 +54,9 @@ void Pathfinder::PathfindingParent::solveNoWait() {
         }
     }
 }
+
+void Pathfinder::PathfindingParent::reInit() {
+    nextCellQueue.pop();
+    grid.resetGrid();
+    initGenericSolver();
+}

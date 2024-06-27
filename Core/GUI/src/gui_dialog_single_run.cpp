@@ -25,8 +25,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
 
     qRegisterMetaType<std::string>("std::string");
 
-    toggleRunButton->setStyleSheet("background-color: green");
-    toggleRunButton->setStyleSheet("color:white");
+    toggleRunButton->setStyleSheet("background-color: green; color: white;");
 
     serializeRunForDebugButton->hide();
     showMaximized();
@@ -56,7 +55,7 @@ void GUI::SingleRunDialog::onStepFinished() {
         nextStepButton->setEnabled(true);
         toggleRunButton->setEnabled(true);
         toggleRunButton->setText("Play");
-        toggleRunButton->setStyleSheet("background-color: green");
+        toggleRunButton->setStyleSheet("background-color: green; color: white;");
     }
 }
 
@@ -67,7 +66,7 @@ void GUI::SingleRunDialog::toggleRunButtonHandler() {
         serializeRunForDebugButton->hide();
         toggleStartEndRedefinitionButton->setEnabled(true);
         toggleRunButton->setText("Play");
-        toggleRunButton->setStyleSheet("background-color: green");
+        toggleRunButton->setStyleSheet("background-color: green; color: white;");
         toggleRunButton->setEnabled(false);
         emit resetRun();
     } else {
@@ -75,7 +74,7 @@ void GUI::SingleRunDialog::toggleRunButtonHandler() {
             toggleStartEndRedefinitionButton->setDisabled(true);
             nextStepButton->setEnabled(false);
             toggleRunButton->setText("Pause");
-            toggleRunButton->setStyleSheet("background-color: red");
+            toggleRunButton->setStyleSheet("background-color: red; color: white;");
             runPaused = false;
             emit nextStep();
         } else {
@@ -97,7 +96,7 @@ void GUI::SingleRunDialog::onGridFinished() {
     nextStepButton->setEnabled(false);
     toggleRunButton->setEnabled(true);
     toggleRunButton->setText("New Run");
-    toggleRunButton->setStyleSheet("background-color: blue");
+    toggleRunButton->setStyleSheet("background-color: blue; color: white;");
     serializeRunForDebugButton->show();
     runFinished = true;
 }
@@ -123,6 +122,8 @@ void GUI::SingleRunDialog::setupConnections() {
             this, &SingleRunDialog::toggleStartEndRedefinitionButtonHandler);
     connect(this, SIGNAL(serialize(const std::string&)),
             runInterface, SLOT(onSerializeRequest(const std::string&)));
+    connect(this, SIGNAL(startEndChanged()),
+            runInterface, SLOT(onStartEndChanged()));
     connect(runInterface, SIGNAL(saveDone()),
             this, SLOT(onSaveDone()));
     connect(nextStepTimer, &QTimer::timeout,
@@ -145,7 +146,7 @@ void GUI::SingleRunDialog::serializeButtonHandler() {
 
 void GUI::SingleRunDialog::onSaveDone() {
     serializeRunForDebugButton->setEnabled(false);
-    serializeRunForDebugButton->setStyleSheet("background-color:green;");
+    serializeRunForDebugButton->setStyleSheet("background-color:green; color: white;");
     toggleRunButton->setEnabled(true);
 }
 
@@ -157,6 +158,7 @@ void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
         if(!serializeRunForDebugButton->isHidden()){
             serializeRunForDebugButton->setEnabled(true);
         }
+        emit startEndChanged();
     }else{
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setDisabled(true);
