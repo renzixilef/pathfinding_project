@@ -1,4 +1,4 @@
-name: FULL CI #TODO: rename
+name: FULL CI
 
 on:
   push:
