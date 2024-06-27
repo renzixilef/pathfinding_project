@@ -67,13 +67,17 @@ void GUI::Widgets::GridDrawerWidget::paintEvent(QPaintEvent *) {
             }
         }
     }
-    pixmapQueue.enqueue(this->grab());
+    if (!currentlyGrabbing) {
+        currentlyGrabbing = true;
+        pixmapQueue.enqueue(this->grab());
+        currentlyGrabbing = false;
+    }
 }
 
 void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
     if (startEndRedefinitionEnabled &&
         (event->button() == Qt::LeftButton || event->button() == Qt::RightButton)) {
-        // Get grid cell clicked
+
         int x = event->pos().x();
         int y = event->pos().y();
 
@@ -90,13 +94,14 @@ void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void GUI::Widgets::GridDrawerWidget::exportPixmapQueue(const std::string& filename) const {
+void GUI::Widgets::GridDrawerWidget::exportPixmapQueue(const std::string &filename) const {
     int32_t frameWidth = pixmapQueue.head().width();
     int32_t frameHeight = pixmapQueue.head().height();
 
-    cv::VideoWriter video(filename, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 1, cv::Size(frameWidth, frameHeight));
+    cv::VideoWriter video(filename, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 1,
+                          cv::Size(frameWidth, frameHeight));
     cv::Mat mat;
-    for(auto const& pixmap: pixmapQueue){
+    for (auto const &pixmap: pixmapQueue) {
         mat = pixmapToMat(pixmap);
         video.write(mat);
     }

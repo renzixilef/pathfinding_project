@@ -34,6 +34,7 @@ namespace GUI::Widgets {
         QQueue<QPixmap> pixmapQueue;
         uint32_t cellSide = 0;
         bool startEndRedefinitionEnabled = false;
+        bool currentlyGrabbing = false;
     };
 
 }

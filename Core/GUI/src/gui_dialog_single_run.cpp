@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <algorithm>
 #include <QMenu>
+#include <QLabel>
 
 GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
                                       const Pathfinder::PathfinderStrategy &strat,
@@ -184,11 +185,19 @@ void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
 
 void GUI::SingleRunDialog::exportVideoHandler() {
     QString filename = QFileDialog::getSaveFileName(this, tr("Export Video as"),
-                                                    "/home", tr("Binary Files (*.bin);; All Files(*)"));
+                                                    "/home", tr("AVI Files (*.avi);; All Files(*)"));
     std::string filenameStd = filename.toStdString();
 
     if(!filenameStd.empty()){
-        emit serialize(filenameStd);
-        toggleRunButton->setDisabled(true);
+        QDialog dialog(this);
+        dialog.setModal(true);
+        auto *label = new QLabel("Please Wait");
+        auto *layout = new QVBoxLayout();
+        layout->addWidget(label);
+        dialog.setLayout(layout);
+        dialog.setWindowFlags(Qt::Dialog | Qt::WindowTitleHint);
+        dialog.show();
+        gridWidget->exportPixmapQueue(filenameStd);
+        dialog.accept();
     }
 }
