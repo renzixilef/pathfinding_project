@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QMouseEvent>
+#include <opencv4/opencv2/opencv.hpp>
 
 void GUI::Widgets::GridDrawerWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
@@ -89,6 +90,22 @@ void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void GUI::Widgets::GridDrawerWidget::exportPixmapQueue() {
+void GUI::Widgets::GridDrawerWidget::exportPixmapQueue(const std::string& filename) const {
+    int32_t frameWidth = pixmapQueue.head().width();
+    int32_t frameHeight = pixmapQueue.head().height();
 
+    cv::VideoWriter video(filename, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 1, cv::Size(frameWidth, frameHeight));
+    cv::Mat mat;
+    for(auto const& pixmap: pixmapQueue){
+        mat = pixmapToMat(pixmap);
+        video.write(mat);
+    }
+    video.release();
+}
+
+cv::Mat GUI::Widgets::GridDrawerWidget::pixmapToMat(const QPixmap &pixmap) {
+    QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB888);
+    cv::Mat mat(image.height(), image.width(), CV_8UC3, image.bits(), image.bytesPerLine());
+    cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
+    return mat;
 }

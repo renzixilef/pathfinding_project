@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QQueue>
+#include <opencv4/opencv2/opencv.hpp>
 
 #include "grid.h"
 
@@ -15,7 +16,7 @@ namespace GUI::Widgets {
 
         inline void resetPixmapQueue() {pixmapQueue.clear();}
 
-        void exportPixmapQueue();
+        void exportPixmapQueue(const std::string& filename) const;
 
         inline void toggleStartEndRedefinitionPhase() { startEndRedefinitionEnabled = !startEndRedefinitionEnabled; }
 
@@ -26,6 +27,8 @@ namespace GUI::Widgets {
         void paintEvent(QPaintEvent *) override;
 
         void mousePressEvent(QMouseEvent *event) override;
+
+        static cv::Mat pixmapToMat(const QPixmap& pixmap);
 
         const GridGenerator::Grid &grid;
         QQueue<QPixmap> pixmapQueue;
