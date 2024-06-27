@@ -66,6 +66,7 @@ void GUI::Widgets::GridDrawerWidget::paintEvent(QPaintEvent *) {
             }
         }
     }
+    pixmapQueue.enqueue(this->grab());
 }
 
 void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
@@ -86,4 +87,8 @@ void GUI::Widgets::GridDrawerWidget::mousePressEvent(QMouseEvent *event) {
             update();
         }
     }
+}
+
+void GUI::Widgets::GridDrawerWidget::exportPixmapQueue() {
+
 }

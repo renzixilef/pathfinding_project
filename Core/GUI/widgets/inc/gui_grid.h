@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QQueue>
 
 #include "grid.h"
 
@@ -11,6 +12,10 @@ namespace GUI::Widgets {
     public:
         explicit GridDrawerWidget(const GridGenerator::Grid &grid, QWidget *parent = nullptr) :
                 QWidget(parent), grid(grid) {}
+
+        inline void resetPixmapQueue() {pixmapQueue.clear();}
+
+        void exportPixmapQueue();
 
         inline void toggleStartEndRedefinitionPhase() { startEndRedefinitionEnabled = !startEndRedefinitionEnabled; }
 
@@ -23,6 +28,7 @@ namespace GUI::Widgets {
         void mousePressEvent(QMouseEvent *event) override;
 
         const GridGenerator::Grid &grid;
+        QQueue<QPixmap> pixmapQueue;
         uint32_t cellSide = 0;
         bool startEndRedefinitionEnabled = false;
     };
