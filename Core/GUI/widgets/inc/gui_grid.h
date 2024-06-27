@@ -4,7 +4,6 @@
 
 #include "grid.h"
 
-// TODO: implement CellCost printing below certain width/height
 namespace GUI::Widgets {
 
     class GridDrawerWidget : public QWidget {

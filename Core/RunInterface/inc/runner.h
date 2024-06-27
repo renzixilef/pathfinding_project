@@ -131,6 +131,13 @@ namespace RunInterface {
          */
         void onSerializeRequest(const std::string &filename);
 
+        /**
+         * @fn onStartEndChanged
+         * @brief Slot that defines the action to be taken on changed start and end coords.
+         */
+        void onStartEndChanged();
+
+
     private:
         Pathfinder::PathfinderStrategy strat; /**< holds the pathfinder strategy to be used */
         /// @brief holds a unique pointer to the pathfinding object corresponding to strat

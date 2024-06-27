@@ -32,6 +32,7 @@ namespace GUI {
         void nextStep();
         void resetRun();
         void serialize(const std::string&);
+        void startEndChanged();
 
     public slots:
         void onGridFinished();
