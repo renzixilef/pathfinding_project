@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <algorithm>
+#include <QMenu>
 
 GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
                                       const Pathfinder::PathfinderStrategy &strat,
@@ -15,7 +16,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
         singleRunThread(new QThread(this)),
         nextStepButton(new QPushButton("Next Step")),
         toggleRunButton(new QPushButton("Play")),
-        serializeRunForDebugButton(new QPushButton("Debug Save")),
+        exportRunMenuButton(new QToolButton()),
         toggleStartEndRedefinitionButton(new QPushButton("Choose Start/End")),
         gridWidget(new Widgets::GridDrawerWidget(runInterface->getGridRef())),
         mainLayout(new QVBoxLayout(this)),
@@ -24,11 +25,18 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
         nextStepTimer(new QTimer(this)) {
 
     qRegisterMetaType<std::string>("std::string");
+    showMaximized();
 
     toggleRunButton->setStyleSheet("background-color: green; color: white;");
 
-    serializeRunForDebugButton->hide();
-    showMaximized();
+    exportRunMenuButton->hide();
+    exportRunMenuButton->setText("Export Run");
+    auto *exportMenu = new QMenu();
+    exportVideoAction = exportMenu->addAction("Export Video");
+    debugSerializeAction = exportMenu->addAction("Serialize Grid");
+    exportRunMenuButton->setMenu(exportMenu);
+    exportRunMenuButton->setPopupMode(QToolButton::MenuButtonPopup);
+
     runInterface->moveToThread(singleRunThread);
 
     setupConnections();
@@ -38,7 +46,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
     buttonLayout->addWidget(toggleRunButton);
     buttonLayout->addWidget(nextStepButton);
     buttonLayout->addWidget(toggleStartEndRedefinitionButton);
-    buttonLayout->addWidget(serializeRunForDebugButton);
+    buttonLayout->addWidget(exportRunMenuButton);
     gridWidgetLayout->addWidget(gridWidget);
     mainLayout->addLayout(buttonLayout);
     mainLayout->addLayout(gridWidgetLayout);
@@ -63,11 +71,12 @@ void GUI::SingleRunDialog::toggleRunButtonHandler() {
     if (runFinished) {
         runPaused = true;
         runFinished = false;
-        serializeRunForDebugButton->hide();
+        exportRunMenuButton->hide();
         toggleStartEndRedefinitionButton->setEnabled(true);
         toggleRunButton->setText("Play");
         toggleRunButton->setStyleSheet("background-color: green; color: white;");
         toggleRunButton->setEnabled(false);
+        gridWidget->resetPixmapQueue();
         emit resetRun();
     } else {
         if (runPaused) {
@@ -97,7 +106,7 @@ void GUI::SingleRunDialog::onGridFinished() {
     toggleRunButton->setEnabled(true);
     toggleRunButton->setText("New Run");
     toggleRunButton->setStyleSheet("background-color: blue; color: white;");
-    serializeRunForDebugButton->show();
+    exportRunMenuButton->show();
     runFinished = true;
 }
 
@@ -116,8 +125,10 @@ void GUI::SingleRunDialog::setupConnections() {
             this, &SingleRunDialog::nextStepButtonHandler);
     connect(toggleRunButton, &QPushButton::clicked,
             this, &SingleRunDialog::toggleRunButtonHandler);
-    connect(serializeRunForDebugButton, &QPushButton::clicked,
+    connect(debugSerializeAction, &QAction::triggered,
             this, &SingleRunDialog::serializeButtonHandler);
+    connect(exportVideoAction, &QAction::triggered,
+            this, &SingleRunDialog::exportVideoHandler);
     connect(toggleStartEndRedefinitionButton, &QPushButton::clicked,
             this, &SingleRunDialog::toggleStartEndRedefinitionButtonHandler);
     connect(this, SIGNAL(serialize(const std::string&)),
@@ -132,7 +143,6 @@ void GUI::SingleRunDialog::setupConnections() {
 }
 
 void GUI::SingleRunDialog::serializeButtonHandler() {
-
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Grid As"),
                                                     "/home", tr("Binary Files (*.bin);; All Files(*)"));
     std::string filenameStd = filename.toStdString();
@@ -145,8 +155,6 @@ void GUI::SingleRunDialog::serializeButtonHandler() {
 }
 
 void GUI::SingleRunDialog::onSaveDone() {
-    serializeRunForDebugButton->setEnabled(false);
-    serializeRunForDebugButton->setStyleSheet("background-color:green; color: white;");
     toggleRunButton->setEnabled(true);
 }
 
@@ -155,21 +163,32 @@ void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setEnabled(true);
         nextStepButton->setEnabled(true);
-        if(!serializeRunForDebugButton->isHidden()){
-            serializeRunForDebugButton->setEnabled(true);
+        if(!exportRunMenuButton->isHidden()){
+            exportRunMenuButton->setEnabled(true);
         }
         emit startEndChanged();
     }else{
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setDisabled(true);
         nextStepButton->setDisabled(true);
-        if(!serializeRunForDebugButton->isHidden()){
-            serializeRunForDebugButton->setDisabled(true);
+        if(!exportRunMenuButton->isHidden()){
+            exportRunMenuButton->setDisabled(true);
         }
         QMessageBox redefinitionExplainerBox;
         redefinitionExplainerBox.setText("How to redefine Start/End");
         redefinitionExplainerBox.setInformativeText("Set start position: Left Click on the new node\n"
                                                     "Set end position: Right Click on the new node");
         redefinitionExplainerBox.exec();
+    }
+}
+
+void GUI::SingleRunDialog::exportVideoHandler() {
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export Video as"),
+                                                    "/home", tr("Binary Files (*.bin);; All Files(*)"));
+    std::string filenameStd = filename.toStdString();
+
+    if(!filenameStd.empty()){
+        emit serialize(filenameStd);
+        toggleRunButton->setDisabled(true);
     }
 }

@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QTimer>
+#include <QToolButton>
 
 #include "runner.h"
 #include "pathfinding.h"
@@ -50,6 +51,8 @@ namespace GUI {
 
         void serializeButtonHandler();
 
+        void exportVideoHandler();
+
         void toggleStartEndRedefinitionButtonHandler();
 
         bool runPaused = true;
@@ -62,7 +65,9 @@ namespace GUI {
 
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
-        QPushButton *serializeRunForDebugButton;
+        QToolButton *exportRunMenuButton;
+        QAction *exportVideoAction;
+        QAction *debugSerializeAction;
         QPushButton *toggleStartEndRedefinitionButton;
 
         QVBoxLayout *mainLayout;
