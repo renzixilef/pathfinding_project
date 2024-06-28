@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QToolButton>
+#include <QFutureWatcher>
 
 #include "runner.h"
 #include "pathfinding.h"
@@ -75,6 +76,9 @@ namespace GUI {
         QHBoxLayout *buttonLayout;
 
         QTimer* nextStepTimer;
+
+        QFuture<void> exportVideoFuture;
+        QFutureWatcher<void> exportVideoWatcher;
 
     };
 }

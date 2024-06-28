@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <QMenu>
 #include <QLabel>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
                                       const Pathfinder::PathfinderStrategy &strat,
@@ -57,6 +59,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
 
 void GUI::SingleRunDialog::onStepFinished() {
     gridWidget->update();
+    gridWidget->enqueueNextPixmap();
     if (!runPaused) {
         nextStepTimer->setSingleShot(true);
         nextStepTimer->start(50);
@@ -103,6 +106,7 @@ void GUI::SingleRunDialog::nextStepButtonHandler() {
 
 void GUI::SingleRunDialog::onGridFinished() {
     gridWidget->update();
+    gridWidget->enqueueNextPixmap();
     nextStepButton->setEnabled(false);
     toggleRunButton->setEnabled(true);
     toggleRunButton->setText("New Run");
@@ -161,6 +165,8 @@ void GUI::SingleRunDialog::onSaveDone() {
 
 void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
     if(gridWidget->getRedefinitionStatus()){
+        toggleStartEndRedefinitionButton->setStyleSheet("");
+        toggleStartEndRedefinitionButton->setText("Choose Start/End");
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setEnabled(true);
         nextStepButton->setEnabled(true);
@@ -168,7 +174,10 @@ void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
             exportRunMenuButton->setEnabled(true);
         }
         emit startEndChanged();
+        gridWidget->resetPixmapQueue();
     }else{
+        toggleStartEndRedefinitionButton->setText("Done");
+        toggleStartEndRedefinitionButton->setStyleSheet("background-color: red;");
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setDisabled(true);
         nextStepButton->setDisabled(true);
@@ -189,15 +198,18 @@ void GUI::SingleRunDialog::exportVideoHandler() {
     std::string filenameStd = filename.toStdString();
 
     if(!filenameStd.empty()){
-        QDialog dialog(this);
-        dialog.setModal(true);
-        auto *label = new QLabel("Please Wait");
-        auto *layout = new QVBoxLayout();
-        layout->addWidget(label);
-        dialog.setLayout(layout);
-        dialog.setWindowFlags(Qt::Dialog | Qt::WindowTitleHint);
-        dialog.show();
-        gridWidget->exportPixmapQueue(filenameStd);
-        dialog.accept();
+        auto msgBox = new QMessageBox;
+        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        msgBox->setWindowModality(Qt::ApplicationModal);
+        msgBox->setText("Please wait...");
+        msgBox->setStandardButtons(QMessageBox::NoButton);
+        msgBox->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowTitleHint);
+        msgBox->show();
+        QObject::connect(&exportVideoWatcher, &QFutureWatcher<void>::finished, msgBox, &QMessageBox::accept);
+        exportVideoFuture = QtConcurrent::run([this, filenameStd](){
+            gridWidget->exportPixmapQueue(filenameStd);
+        });
+        exportVideoWatcher.setFuture(exportVideoFuture);
+
     }
 }

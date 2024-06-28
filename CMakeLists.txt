@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Core Concurrent REQUIRED)
 
 # include opencv
 set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4")
@@ -32,7 +32,7 @@ add_subdirectory(Core/GUI)
 
 # main executable setup
 add_executable(Pathfinding_Bench_Program Core/main.cpp)
-target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets ${OpenCV_LIBS})
+target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets)
 
 # doxygen documentation
 find_package(Doxygen)
