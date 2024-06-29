@@ -24,8 +24,7 @@ GridGenerator::Grid::getNeighborsCoordinates(const GridGenerator::GridCoordinate
         int64_t neighborRow = coords.x + offset.first;
         int64_t neighborCol = coords.y + offset.second;
         if (isInBounds(neighborRow, neighborCol)) {
-            neighbors.push_back(
-                    GridCoordinate{static_cast<uint32_t>(neighborRow), static_cast<uint32_t>(neighborCol)});
+            neighbors.emplace_back(static_cast<uint32_t>(neighborRow), static_cast<uint32_t>(neighborCol));
         }
     }
     return neighbors;
@@ -53,18 +52,21 @@ void GridGenerator::Grid::markPathByParentCells(bool markByCellPointer) {
             nextCell = *nextCell->getParentIfCellPointer();
         }
     } else {
-        //TODO: debug this mess
-        std::pair<int8_t, int8_t> *nextDir = endCell->getParentIfDirPair();
         GridCoordinate nextCoordinate = endCoordinates;
-        getEndCell()->markPath();
+        auto nextCell = &(*this)(endCoordinates);
+        auto currentParent = static_cast<GridCoordinate>(*nextCell->getParentIfCoord());
+        std::pair<int8_t, int8_t> nextDir = GridCoordinate::getDirection(nextCoordinate, currentParent);
+        nextCell->markPath();
         while (nextCoordinate != startCoordinates) {
-            nextCoordinate = {static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.x) + nextDir->first),
-                              static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.y) + nextDir->second)};
-            Cell &thisCell = (*this)(nextCoordinate);
-            thisCell.markPath();
+            nextCoordinate = GridCoordinate(static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.x) + nextDir.first),
+                              static_cast<uint32_t>(static_cast<int64_t>(nextCoordinate.y) + nextDir.second));
+            nextCell = &(*this)(nextCoordinate);
+            nextCell->markPath();
             pathCellCount++;
-            if (thisCell.getParentIfDirPair() != nullptr) {
-                nextDir = thisCell.getParentIfDirPair();
+            if(nextCoordinate == startCoordinates) break;
+            if (nextCoordinate == currentParent) {
+                currentParent = static_cast<GridCoordinate>(*nextCell->getParentIfCoord());
+                nextDir = GridCoordinate::getDirection(nextCoordinate, currentParent);
             }
         }
     }

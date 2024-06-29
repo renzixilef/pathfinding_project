@@ -11,7 +11,6 @@
 #include <functional>
 #include <queue>
 #include <optional>
-
 #include "grid.h"
 #include "timer.h"
 
@@ -80,7 +79,8 @@ namespace Pathfinder {
          * @param grid Reference to the Grid object used in the pathfinding.
          */
         explicit PathfindingParent(GridGenerator::Grid &grid) :
-                grid(grid) {
+                grid(grid),
+                nextCellQueue(grid.compareCells()) {
             initGenericSolver();
         }
 
@@ -131,6 +131,9 @@ namespace Pathfinder {
         void reInit();
 
     protected:
+        using compareCellsFunction = std::function<bool(const GridGenerator::GridCoordinate &,
+                                                        const GridGenerator::GridCoordinate &)>;
+
         /**
          * @fn virtual setStrat
          * @brief Abstract method for setting the pathfinding strategy.
@@ -154,7 +157,7 @@ namespace Pathfinder {
 
         /// @brief Priority queue of the next Cells to be evluated
         std::priority_queue<GridGenerator::GridCoordinate, std::vector<GridGenerator::GridCoordinate>,
-                decltype(grid.compareCells())> nextCellQueue{grid.compareCells()};
+                compareCellsFunction > nextCellQueue;
 
     private:
         /**
