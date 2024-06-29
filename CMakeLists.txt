@@ -86,6 +86,15 @@ if (GTEST_FOUND)
             COMMAND DijkstraPathfinder_UnitTest
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
 
+    # JPS unit-Tests
+    add_executable(JPSPathfinder_UnitTest Tests/UnitTests/jps_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/jps_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
+    target_link_libraries(JPSPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
+    add_test(NAME JPSUnitTest
+            COMMAND JPSPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
+
 else (GTEST_FOUND)
     message("Could not find gtest, skipping tests.")
 endif (GTEST_FOUND)
