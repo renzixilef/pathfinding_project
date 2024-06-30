@@ -32,7 +32,7 @@ namespace GridGenerator {
      * @struct CellStateParser
      * @brief Structure to parse cell states.
      */
-    struct CellStateParser{
+    struct CellStateParser {
         /**
          * @fn parseCellStateToQColor
          * @brief Parses cell state to QColor.
@@ -40,7 +40,7 @@ namespace GridGenerator {
          * @param startEnd A boolean indicating if the cell is a starting or end cell.
          * @return QColor corresponding to the cell state.
          */
-        static QColor parseCellStateToQColor(CellState state, bool&& startEnd = false);
+        static QColor parseCellStateToQColor(CellState state, bool &&startEnd = false);
     };
 
     /**
@@ -66,7 +66,7 @@ namespace GridGenerator {
      */
     class Cell {
         /// @brief Type for parent of a cell. Can be a pointer to the parent Cell or a pair representing the direction to the parent.
-        using CellParentType = std::variant<Cell*, std::pair<int8_t, int8_t>>;
+        using CellParentType = std::variant<Cell *, std::pair<uint32_t, uint32_t>>;
 
     public:
         /**
@@ -126,26 +126,28 @@ namespace GridGenerator {
         inline void setParentCellPointer(Cell *parentCell) { parent = parentCell; }
 
         /**
-        * @fn setParentDirPair
-        * @brief Sets the direction to the parent of this cell.
-        * @param parentDir The parent direction pair to be set.
+        * @fn setParentCoordinates
+        * @brief Sets the coordinates of the parents of this cell.
+        * @param parentCoords The parent coordinates to be set.
         */
-        inline void setParentDirPair(std::pair<int8_t, int8_t> parentDir) { parent = parentDir; }
+        inline void setParentCoordinates(std::pair<uint32_t, uint32_t> parentCoords) {
+            parent = std::move(parentCoords);
+        }
 
         /**
         * @fn getParentIfCellPointer
         * @brief Gets the parent of the cell if it's a Cell pointer.
         * @return Pointer to the parent Cell if cell's parent is a Cell pointer, nullptr otherwise.
         */
-        [[nodiscard]] inline Cell **getParentIfCellPointer() { return std::get_if<Cell*>(&parent); }
+        [[nodiscard]] inline Cell **getParentIfCellPointer() { return std::get_if<Cell *>(&parent); }
 
         /**
         * @fn getParentIfDirPair
         * @brief Gets the direction to the parent of the cell if it's a direction pair.
         * @return Pointer to the parent direction pair if cell's parent is a pair, nullptr otherwise.
         */
-        [[nodiscard]] inline std::pair<int8_t, int8_t>* getParentIfDirPair() {
-            return std::get_if<std::pair<int8_t, int8_t>>(&parent);
+        [[nodiscard]] inline std::pair<uint32_t, uint32_t> *getParentIfCoord() {
+            return std::get_if<std::pair<uint32_t, uint32_t>>(&parent);
         }
 
         /**

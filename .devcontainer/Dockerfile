@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
     qtcreator \
     qtbase5-dev \
     qt5-qmake \
-    libgtest-dev
+    libgtest-dev \
+    libopencv-dev
 
 RUN mkdir /usr/src/gtest/build
 RUN cd /usr/src/gtest/build && cmake .. && make && cd lib && cp *.a /usr/lib

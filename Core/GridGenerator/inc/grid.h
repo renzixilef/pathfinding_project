@@ -27,6 +27,27 @@ namespace GridGenerator {
         uint32_t x, y; ///< The x and y value of the coordinate
 
         /**
+         * @brief Cast to std::pair operator
+         * @return a std::pair representing the GridCoordinate
+         */
+        explicit operator std::pair<uint32_t, uint32_t>() const {
+            return {x, y};
+        }
+
+        /**
+         * @brief Constructs a GridCoordinate from a std::pair
+         * @param pair reference to a pair to construct the GridCoordinate with.
+         */
+        explicit GridCoordinate(const std::pair<uint32_t, uint32_t> &pair) : x(pair.first), y(pair.second) {}
+
+        /**
+         * @brief Constructs a GridCoordinate object from two uint32_t
+         * @param x The x value of the GridCoordinate.
+         * @param y The y value of the GridCoordinate.
+         */
+        explicit GridCoordinate(uint32_t x = 0, uint32_t y = 0) : x(x), y(y) {}
+
+        /**
          * @brief Compare operator. Checks if the current GridCoordinate object is equal to another GridCoordinate object.
          * @param other GridCoordinate object to compare with.
          * @return Boolean value indicating whether the current object is equal to the other object.
@@ -92,9 +113,9 @@ namespace GridGenerator {
          * @return A pair of integers, where each integer represents the direction in x-axis and y-axis respectively.
          */
         static std::pair<int8_t, int8_t> getDirection(const GridCoordinate &first, const GridCoordinate &second) {
-            int64_t x = first.x - second.x;
-            int64_t y = first.y - second.y;
-            return std::make_pair(x == 0 ? 0 : x > 0 ? 1 : -1, y == 0 ? 0 : y > 0 ? 1 : -1);
+            int64_t x = static_cast<int64_t>(first.x) - second.x;
+            int64_t y = static_cast<int64_t>(first.y) - second.y;
+            return std::make_pair(x == 0 ? 0 : x > 0 ? -1 : 1, y == 0 ? 0 : y > 0 ? -1 : 1);
         }
     };
 

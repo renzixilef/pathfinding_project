@@ -16,7 +16,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Core Concurrent REQUIRED)
+
+# include opencv
+set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4")
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # include project-own libraries
 add_subdirectory(Core/GridGenerator)
@@ -79,6 +84,15 @@ if (GTEST_FOUND)
     target_link_libraries(DijkstraPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
     add_test(NAME DijkstraUnitTest
             COMMAND DijkstraPathfinder_UnitTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
+
+    # JPS unit-Tests
+    add_executable(JPSPathfinder_UnitTest Tests/UnitTests/jps_unit_test.cpp)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Tests/UnitTests/jps_testgrid.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests COPYONLY)
+    target_link_libraries(JPSPathfinder_UnitTest gtest_main gtest pthread GridGenerator Pathfinder)
+    add_test(NAME JPSUnitTest
+            COMMAND JPSPathfinder_UnitTest
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
 
 else (GTEST_FOUND)
