@@ -68,6 +68,8 @@ namespace RunInterface {
          */
         [[nodiscard]] const inline GridGenerator::Grid &getGridRef() const { return grid; }
 
+
+        std::atomic<bool> atomicCloseFlag = false; /**< indicates if the parent gui/headless interface got stopped*/
     signals:
 
         /**< Signal emitted when a step is finished. *//**< Signal emitted when a step is finished. */

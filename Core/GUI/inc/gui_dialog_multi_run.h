@@ -49,6 +49,8 @@ namespace GUI {
                          const std::list<Pathfinder::PathfinderStrategy> &);
 
     private:
+        void closeEvent(QCloseEvent *event) override;
+
         void setupConnections();
 
         void handleNewConfigDemand();
@@ -94,6 +96,7 @@ namespace GUI {
                 std::list<Pathfinder::PathfinderStrategy>, QString>> &runQueue;
 
         EvalMapType evalMap;
+
     };
 
 }
