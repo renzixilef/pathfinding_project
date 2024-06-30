@@ -44,6 +44,8 @@ namespace GUI {
         void onSaveDone();
 
     private:
+        void closeEvent(QCloseEvent* event) override;
+
         void toggleRunButtonHandler();
 
         void setupConnections();
