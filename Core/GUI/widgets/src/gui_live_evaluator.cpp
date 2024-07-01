@@ -5,8 +5,8 @@ GUI::Widgets::LiveEvaluatorWidget::LiveEvaluatorWidget(const Pathfinder::Pathfin
         solver(solver),
         layout(new QGridLayout(this)) {
     Pathfinder::PathfinderPerformanceMetric currentPerformanceMetric = solver.getPerformanceMetric();
-    addMetric("Step [-]", QString::number(currentPerformanceMetric.stepCount));
 
+    addMetric("Step [-]", QString::number(currentPerformanceMetric.stepCount));
     addMetric("Total Time [us] ", QString::number(currentPerformanceMetric.solvingUSeconds));
     addMetric("Last Step Time [us] ", QString::number(currentPerformanceMetric.solvingUSeconds-lastSolvingUSeconds));
     lastSolvingUSeconds = currentPerformanceMetric.solvingUSeconds;
