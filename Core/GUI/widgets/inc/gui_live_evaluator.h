@@ -13,17 +13,18 @@ namespace GUI::Widgets {
     public:
         explicit LiveEvaluatorWidget(const Pathfinder::PathfindingParent &solver, QWidget *parent = nullptr);
 
-        void updatePerformanceMetric();
+        void updateMetrics();
 
     private:
         void addMetric(const QString &id, const QString &val);
 
         const Pathfinder::PathfindingParent &solver;
 
-        QGridLayout * layout;
-        QMap<QString, QLabel*> labels;
+        QGridLayout *layout;
+        QVBoxLayout *capsuleLayout;
+        QMap<QString, QLabel *> labels;
 
-        double lastSolvingUSeconds;
+        double lastSolvingUSeconds = 0;
 
 
     };

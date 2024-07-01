@@ -61,6 +61,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
 
 void GUI::SingleRunDialog::onStepFinished() {
     gridWidget->update();
+    liveEvaluator->updateMetrics();
     gridWidget->enqueueNextPixmap();
     if (!runPaused) {
         nextStepTimer->setSingleShot(true);
@@ -108,6 +109,7 @@ void GUI::SingleRunDialog::nextStepButtonHandler() {
 
 void GUI::SingleRunDialog::onGridFinished() {
     gridWidget->update();
+    liveEvaluator->updateMetrics();
     gridWidget->enqueueNextPixmap();
     nextStepButton->setEnabled(false);
     toggleRunButton->setEnabled(true);
