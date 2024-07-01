@@ -213,3 +213,14 @@ void GUI::SingleRunDialog::exportVideoHandler() {
 
     }
 }
+
+void GUI::SingleRunDialog::closeEvent(QCloseEvent *event) {
+    runInterface->terminate();
+    QThread::msleep(1000);
+    singleRunThread->quit();
+    if(!singleRunThread->wait(3000)){
+        singleRunThread->terminate();
+        singleRunThread->wait();
+    }
+    QDialog::closeEvent(event);
+}

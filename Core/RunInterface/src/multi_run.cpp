@@ -64,11 +64,12 @@ void RunInterface::MultiRun::createNewGridWithCurrentConfig() {
         solvers.push_back(Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid));
     }
     solverIterator = solvers.begin();
+    currentSolver = solverIterator->get();
 }
 
 void RunInterface::MultiRun::nextRun() {
     grid.resetGrid();
-    while (grid.getStatus() == GridGenerator::GridSolvedStatus::GRID_UNSOLVED) {
+    while (grid.getStatus() == GridGenerator::GridSolvedStatus::GRID_UNSOLVED && !atomicCloseFlag) {
         nextStep();
     }
 }
@@ -78,3 +79,4 @@ void RunInterface::MultiRun::onNewData(const RunInterface::RunGridConfig &thisCo
     config = thisConfig;
     strats = thisStrats;
 }
+

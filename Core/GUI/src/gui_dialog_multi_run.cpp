@@ -172,3 +172,14 @@ void GUI::MultiRunDialog::moveToEvaluationButtonHandler() {
 
     evalDialog->exec();
 }
+
+void GUI::MultiRunDialog::closeEvent(QCloseEvent* event){
+    runInterface->terminate();
+    QThread::msleep(1000);
+    multiRunThread->quit();
+    if(!multiRunThread->wait(3000)){
+        multiRunThread->terminate();
+        multiRunThread->wait();
+    }
+    QDialog::closeEvent(event);
+}

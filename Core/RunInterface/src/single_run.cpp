@@ -11,6 +11,7 @@ RunInterface::SingleRun::SingleRun(const RunInterface::RunGridConfig &thisConfig
 }
 
 void RunInterface::SingleRun::nextStep() {
+    if(atomicCloseFlag) return;
     if (!solver->queueEmpty()) {
         solver->nextStep();
     } else {
