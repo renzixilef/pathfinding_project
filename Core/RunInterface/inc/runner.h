@@ -72,7 +72,8 @@ namespace RunInterface {
          * @fn terminate
          * @brief Sets the field atomicCloseFlag to true, effectively terminating the execution.
          */
-        inline void terminate(){atomicCloseFlag = true;}
+        inline void terminate() { atomicCloseFlag = true; }
+
     signals:
 
         /**< Signal emitted when a step is finished. *//**< Signal emitted when a step is finished. */
@@ -115,7 +116,15 @@ namespace RunInterface {
          */
         void nextStep() override;
 
+        /**
+         * fn getSolverRef
+         * @brief returns a reference to the Pathfinder
+         * @return const& to  a PathfindingParent object
+         */
+        [[nodiscard]] inline const Pathfinder::PathfindingParent &getSolverRef() { return *solver; }
+
     signals:
+
         /**
          * @fn saveDone
          * @brief Emitted when serialization is complete!

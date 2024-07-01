@@ -22,6 +22,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
         exportRunMenuButton(new QToolButton()),
         toggleStartEndRedefinitionButton(new QPushButton("Choose Start/End")),
         gridWidget(new Widgets::GridDrawerWidget(runInterface->getGridRef())),
+        liveEvaluator(new Widgets::LiveEvaluatorWidget(runInterface->getSolverRef())),
         mainLayout(new QVBoxLayout(this)),
         gridWidgetLayout(new QHBoxLayout()),
         buttonLayout(new QHBoxLayout()),
@@ -51,6 +52,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
     buttonLayout->addWidget(toggleStartEndRedefinitionButton);
     buttonLayout->addWidget(exportRunMenuButton);
     gridWidgetLayout->addWidget(gridWidget);
+    gridWidgetLayout->addWidget(liveEvaluator);
     mainLayout->addLayout(buttonLayout);
     mainLayout->addLayout(gridWidgetLayout);
 
@@ -59,6 +61,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
 
 void GUI::SingleRunDialog::onStepFinished() {
     gridWidget->update();
+    liveEvaluator->updateMetrics();
     gridWidget->enqueueNextPixmap();
     if (!runPaused) {
         nextStepTimer->setSingleShot(true);
@@ -106,6 +109,7 @@ void GUI::SingleRunDialog::nextStepButtonHandler() {
 
 void GUI::SingleRunDialog::onGridFinished() {
     gridWidget->update();
+    liveEvaluator->updateMetrics();
     gridWidget->enqueueNextPixmap();
     nextStepButton->setEnabled(false);
     toggleRunButton->setEnabled(true);

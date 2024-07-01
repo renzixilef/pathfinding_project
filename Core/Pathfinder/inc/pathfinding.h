@@ -107,15 +107,14 @@ namespace Pathfinder {
          * @brief Get a structure containing performance metrics of the algorithm.
          * @return Returns a PathfinderPerformanceMetric structure.
          */
-        inline PathfinderPerformanceMetric getPerformanceMetric() {
-            setStrat();
+        [[nodiscard]] inline PathfinderPerformanceMetric getPerformanceMetric() const {
             return PathfinderPerformanceMetric{grid.getPathCellCount(),
                                                grid.getVisitedCellCount(),
                                                grid.getClosedCellCount(),
                                                timer.getAbsoluteTime(),
                                                timer.getAvgUSecondsPerStep(),
                                                timer.getStepCount(),
-                                               strat};
+                                               getStrat()};
         }
 
         /**
@@ -135,10 +134,10 @@ namespace Pathfinder {
                                                         const GridGenerator::GridCoordinate &)>;
 
         /**
-         * @fn virtual setStrat
-         * @brief Abstract method for setting the pathfinding strategy.
+         * @fn virtual getStrat
+         * @brief Abstract method for getting the pathfinding strategy.
          */
-        virtual void setStrat() = 0;
+        [[nodiscard]] virtual PathfinderStrategy getStrat() const = 0;
 
         /**
          * @fn isCellBlockedOrOutOfBounds
@@ -148,8 +147,6 @@ namespace Pathfinder {
          * @return Returns true if the cell is either blocked or out of bounds, false otherwise
          */
         bool isCellBlockedOrOutOfBounds(int64_t x, int64_t y);
-
-        PathfinderStrategy strat; /**< Strategy of the implemented Pathfinder */
 
         PathfinderTimer timer; /**< Timer object for evaluation pathfinder performance */
 
@@ -187,10 +184,12 @@ namespace Pathfinder {
 
     private:
         /**
-         * @fn setStrat
-         * @brief Overrides the setStrat() function to set the strategy to Dijkstra.
+         * @fn getStrat
+         * @brief Overrides the getStrat() function to get the strategy (Dijkstra).
          */
-        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_DIJKSTRA; }
+        [[nodiscard]] inline PathfinderStrategy getStrat() const override {
+            return PathfinderStrategy::PATHFINDER_DIJKSTRA;
+        }
     };
 
     /**
@@ -213,10 +212,12 @@ namespace Pathfinder {
 
     private:
         /**
-         * @fn setStrat
-         * @brief Overrides the setStrat() function to set the strategy to Dijkstra.
+         * @fn getStrat
+         * @brief Overrides the getStrat() function to get the strategy (A*).
          */
-        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_A_STAR; }
+        [[nodiscard]] inline PathfinderStrategy getStrat() const override {
+            return PathfinderStrategy::PATHFINDER_A_STAR;
+        }
     };
 
     /**
@@ -239,10 +240,12 @@ namespace Pathfinder {
 
     private:
         /**
-         * @fn setStrat
-         * @brief Overrides the setStrat() function to set the strategy to Dijkstra.
+         * @fn getStrat
+         * @brief Overrides the getStrat() function to get the strategy (JPS).
          */
-        inline void setStrat() override { strat = PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH; }
+        [[nodiscard]] inline PathfinderStrategy getStrat() const override {
+            return PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH;
+        }
 
         /**
          * @fn jump

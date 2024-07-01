@@ -11,6 +11,7 @@
 #include "runner.h"
 #include "pathfinding.h"
 #include "gui_grid.h"
+#include "gui_live_evaluator.h"
 
 Q_DECLARE_METATYPE(std::string)
 
@@ -65,6 +66,7 @@ namespace GUI {
         QThread *singleRunThread;
 
         Widgets::GridDrawerWidget *gridWidget;
+        Widgets::LiveEvaluatorWidget *liveEvaluator;
 
         QPushButton *nextStepButton;
         QPushButton *toggleRunButton;
