@@ -3,7 +3,7 @@
 
 void Application::PathfindingCommandParser::addOption(const QCommandLineOption &option, const QStringList &setIds) {
     for (const auto &id: setIds) optionSets[id].insert(OptionWrapper(option));
-    QCommandLineParser::addOption(option);
+    this->QCommandLineParser::addOption(option);
 }
 
 QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() const {

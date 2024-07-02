@@ -12,7 +12,7 @@
 namespace Application {
     class PathfindingCommandParser : public QCommandLineParser {
     public:
-        PathfindingCommandParser() = default;
+        PathfindingCommandParser():QCommandLineParser(){}
 
         void addOption(const QCommandLineOption& option, const QStringList &setIds);
 
