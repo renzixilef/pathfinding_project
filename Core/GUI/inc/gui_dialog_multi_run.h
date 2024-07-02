@@ -78,7 +78,7 @@ namespace GUI {
 
         uint32_t gridIterator = 0;
 
-        bool shouldRepeatUnsolvables = true;
+        bool shouldRepeatUnsolvables;
 
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;

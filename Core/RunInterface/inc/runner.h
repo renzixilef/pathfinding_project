@@ -40,6 +40,7 @@ namespace RunInterface {
         /// @brief Obstacle generation strategy
         GridGenerator::ObstacleGenStrategy obstacleGenStrategy{GridGenerator::ObstacleGenStrategy::OBSTACLE_RANDOM};
         std::optional<uint32_t> iterations = std::nullopt; /**< Optional iterations count */
+        std::optional<bool> repeatUnsolvables = std::nullopt; /**< Optional repeat unsolvable grid directive */
 
         bool operator<(const RunGridConfig &other) const {
             return std::tie(gridWidth, gridHeight, obstacleDensity, minStartEndDistance, obstacleGenStrategy) <
@@ -173,8 +174,7 @@ namespace RunInterface {
          * @param shouldRepeatUnsolvables A boolean to indicate whether unsolvable grids should be regenerated.
          */
         explicit MultiRun(const RunGridConfig &thisConfig,
-                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats,
-                          bool shouldRepeatUnsolvables);
+                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
 
         /**
          * @fn nextStep

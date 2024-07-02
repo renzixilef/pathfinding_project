@@ -22,11 +22,9 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
     qRegisterMetaType<int32_t>("int32_t");
     auto nextConfig = runQueue.front();
     setDisplayableStringForCurrentConfig(nextConfig);
+    shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
+    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig), std::get<1>(nextConfig));
 
-    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig),
-                                              std::get<1>(nextConfig),
-                                              shouldRepeatUnsolvables);
-    //TODO: Implement shouldRepeatUnsolvables
     runInterface->moveToThread(multiRunThread);
 
     moveToEvaluationButton->hide();
@@ -161,6 +159,7 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
         setDisplayableStringForCurrentConfig(nextConfig);
+        shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
         emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
     } else {
         finished = true;
