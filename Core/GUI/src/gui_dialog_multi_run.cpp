@@ -15,25 +15,26 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
         mainLayout(new QVBoxLayout(this)),
         buttonLayout(new QHBoxLayout()),
         runProgressView(new Widgets::RunProgressView()) {
-    toggleRunButton->setStyleSheet("background-color: green;");
+
     qRegisterMetaType<Pathfinder::PathfinderPerformanceMetric>("Pathfinder::PathfinderPerformanceMetric");
     qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
     qRegisterMetaType<int32_t>("int32_t");
+
     auto nextConfig = runQueue.front();
     setDisplayableStringForCurrentConfig(nextConfig);
     shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
-    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig), std::get<1>(nextConfig));
 
+    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig), std::get<1>(nextConfig));
     runInterface->moveToThread(multiRunThread);
+    setupConnections();
+    multiRunThread->start();
+
+    toggleRunButton->setStyleSheet("background-color: green;");
 
     moveToEvaluationButton->hide();
     moveToEvaluationButton->setStyleSheet("background-color: blue;");
     moveToEvaluationButton->setDisabled(true);
-
-    setupConnections();
-
-    multiRunThread->start();
 
     runProgressView->addNewConfig(std::get<2>(nextConfig));
     runProgressView->updateProgress(std::get<2>(nextConfig), 0);
@@ -86,58 +87,48 @@ void GUI::MultiRunDialog::toggleRunButtonHandler() {
 
 void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
                                            int32_t exitInt) {
-    //TODO: clean up this method, more readable, avoid duplicates
     using RunInterface::RunnerReturnStatus;
     auto currentConfig = runQueue.front();
     auto exit = static_cast<RunnerReturnStatus>(exitInt);
     switch (exit) {
         case RunnerReturnStatus::RETURN_UNSOLVABLE:
+            incrementUnsolvableCountForConfig(currentConfig);
             if (!shouldRepeatUnsolvables) {
-               gridIterator++;
+                gridIterator++;
                 runProgressView->updateProgress(std::get<2>(currentConfig),
                                                 static_cast<int32_t>(gridIterator * 100 /
                                                                      std::get<0>(currentConfig).iterations.value()));
             }
-            if(gridIterator < std::get<0>(currentConfig).iterations.value()){
+            if (gridIterator < std::get<0>(currentConfig).iterations.value()) {
                 emit nextGrid();
-            }else{
+            } else {
                 handleNewConfigDemand();
-                if (!finished) {
-                    currentConfig = runQueue.front();
-                    runProgressView->addNewConfig(std::get<2>(currentConfig));
-                    gridIterator = 0;
-                    emit nextGrid();
-                }
             }
-            incrementUnsolvableCountForConfig(currentConfig);
             break;
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
-            gridIterator++;
-            runProgressView->updateProgress(std::get<2>(currentConfig),
-                                            static_cast<int32_t>(gridIterator * 100 /
-                                                                 std::get<0>(currentConfig).iterations.value()));
-            handleNewConfigDemand();
-            if (!finished) {
-                currentConfig = runQueue.front();
-                runProgressView->addNewConfig(std::get<2>(currentConfig));
-                gridIterator = 0;
-                emit nextGrid();
-            }
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
+            gridIterator++;
+            runProgressView->updateProgress(std::get<2>(currentConfig), 100);
+            handleNewConfigDemand();
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
             gridIterator++;
             emit nextGrid();
-            pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
-            break;
+            [[fallthrough]];
         case RunnerReturnStatus::RETURN_NORMAL:
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
+            runProgressView->updateProgress(std::get<2>(currentConfig),
+                                            static_cast<int32_t>(gridIterator * 100 /
+                                                                 std::get<0>(currentConfig).iterations.value()));
             break;
     }
-    runProgressView->updateProgress(std::get<2>(currentConfig),
-                                    static_cast<int32_t>(gridIterator * 100 /
-                                                         std::get<0>(currentConfig).iterations.value()));
+    updateGUIAfterFinishedRun();
+    if(!finished && !runPaused){
+        emit nextRun();
+    }
+}
 
+void GUI::MultiRunDialog::updateGUIAfterFinishedRun(){
     if (finished) {
         toggleRunButton->setDisabled(true);
         toggleRunButton->setStyleSheet("background-color:gray;");
@@ -148,11 +139,8 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
     } else if (runPaused) {
         toggleRunButton->setText("Play");
         toggleRunButton->setStyleSheet("background-color: green;");
-    } else {
-        emit nextRun();
     }
 }
-
 
 void GUI::MultiRunDialog::handleNewConfigDemand() {
     runQueue.pop();
@@ -161,6 +149,10 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
         setDisplayableStringForCurrentConfig(nextConfig);
         shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
         emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
+        runProgressView->addNewConfig(std::get<2>(nextConfig));
+        runProgressView->updateProgress(std::get<2>(nextConfig), 0);
+        gridIterator = 0;
+        emit nextGrid();
     } else {
         finished = true;
     }
@@ -172,11 +164,11 @@ void GUI::MultiRunDialog::moveToEvaluationButtonHandler() {
     evalDialog->exec();
 }
 
-void GUI::MultiRunDialog::closeEvent(QCloseEvent* event){
+void GUI::MultiRunDialog::closeEvent(QCloseEvent *event) {
     runInterface->terminate();
     QThread::msleep(1000);
     multiRunThread->quit();
-    if(!multiRunThread->wait(3000)){
+    if (!multiRunThread->wait(3000)) {
         multiRunThread->terminate();
         multiRunThread->wait();
     }
