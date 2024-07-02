@@ -15,7 +15,6 @@
 
 Q_DECLARE_METATYPE(std::string)
 
-// TODO: implement bitmap/screenshot from gridGui widget video recording of solving
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT

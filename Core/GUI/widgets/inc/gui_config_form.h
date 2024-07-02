@@ -5,6 +5,7 @@
 #include <QFormLayout>
 #include <QListWidget>
 #include <QLabel>
+#include <QCheckBox>
 
 #include "runner.h"
 #include "pathfinding.h"
@@ -74,6 +75,8 @@ namespace GUI::Widgets {
         QLabel *invalidInputWarningLabel;
         QListWidget *pathfindingAlgorithmListWidget;
         QSpinBox *iterationsSpinBox;
+        QCheckBox* repeatUnsolvablesCheckBox;
+
     };
 
 }

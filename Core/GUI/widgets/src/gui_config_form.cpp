@@ -103,7 +103,8 @@ void GUI::Widgets::SingleConfigForm::disable() {
 GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormParent(parent),
                                                                   pathfindingAlgorithmListWidget(new QListWidget(this)),
                                                                   iterationsSpinBox(new QSpinBox(this)),
-                                                                  invalidInputWarningLabel(new QLabel(this)) {
+                                                                  invalidInputWarningLabel(new QLabel(this)),
+                                                                  repeatUnsolvablesCheckBox(new QCheckBox(this)) {
     using Pathfinder::PathfinderStrategyParser;
     invalidInputWarningLabel->hide();
     invalidInputWarningLabel->setStyleSheet("QLabel {color: red;}");
@@ -127,6 +128,7 @@ GUI::Widgets::MultiConfigForm::MultiConfigForm(QWidget *parent) : ConfigFormPare
 
     layout->addRow("Iterations", iterationsSpinBox);
     layout->addRow("Pathfinding Algorithm", pathfindingAlgorithmListWidget);
+    layout->addRow("Repeat Unsolvables", repeatUnsolvablesCheckBox);
     layout->addRow(invalidInputWarningLabel);
     setLayout(layout);
 }
@@ -159,7 +161,8 @@ GUI::Widgets::MultiConfigForm::getFormParams() {
             static_cast<float>(minStartEndDistanceSpinBox->value()),
             static_cast<GridGenerator::ObstacleGenStrategy>(
                     gridGeneratorAlgorithmComboBox->currentData().toUInt()),
-            iterationsSpinBox->value()
+            iterationsSpinBox->value(),
+            repeatUnsolvablesCheckBox->isChecked()
     };
 
     QList<QListWidgetItem *> selectedItems = pathfindingAlgorithmListWidget->selectedItems();
@@ -179,11 +182,16 @@ GUI::Widgets::MultiConfigForm::populate(const RunInterface::RunGridConfig &confi
     obstacleDensitySpinBox->setValue(config.obstacleDensity);
     minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
     gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy) - 1);
-    if (config.iterations.has_value()) {
+    if (config.repeatUnsolvables.has_value())
+        repeatUnsolvablesCheckBox->setChecked(config.repeatUnsolvables.value());
+    else
+        repeatUnsolvablesCheckBox->setChecked(false);
+
+    if (config.iterations.has_value())
         iterationsSpinBox->setValue(static_cast<int32_t>(config.iterations.value()));
-    } else {
+    else
         iterationsSpinBox->setValue(1);
-    }
+
 
     QItemSelectionModel *selectionModel = pathfindingAlgorithmListWidget->selectionModel();
     std::unordered_set<uint8_t> stratSet;

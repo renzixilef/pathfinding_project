@@ -59,6 +59,8 @@ namespace GUI {
 
         void moveToEvaluationButtonHandler();
 
+        void updateGUIAfterFinishedRun();
+
         inline void incrementUnsolvableCountForConfig(const auto &currentConfig) {
             std::get<1>(evalMap[std::get<0>(currentConfig)])++;
         }
@@ -78,7 +80,7 @@ namespace GUI {
 
         uint32_t gridIterator = 0;
 
-        bool shouldRepeatUnsolvables = true;
+        bool shouldRepeatUnsolvables;
 
         RunInterface::MultiRun *runInterface;
         QThread *multiRunThread;
@@ -96,7 +98,6 @@ namespace GUI {
                 std::list<Pathfinder::PathfinderStrategy>, QString>> &runQueue;
 
         EvalMapType evalMap;
-
     };
 
 }
