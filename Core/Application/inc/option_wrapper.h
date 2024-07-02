@@ -8,9 +8,9 @@ namespace Application {
 
     class OptionWrapper {
     public:
-        OptionWrapper(const QCommandLineOption &option) : option(option) {}
+        explicit OptionWrapper(const QCommandLineOption &option) : option(option) {}
 
-        const QCommandLineOption &getOption() const { return option; }
+        [[nodiscard]] const QCommandLineOption &getOption() const { return option; }
 
         bool operator==(const OptionWrapper &other) const {
             return option.names() == other.option.names();
