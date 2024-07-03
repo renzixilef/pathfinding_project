@@ -1,10 +1,9 @@
 #include "runner.h"
 
-RunInterface::MultiRun::MultiRun(const RunInterface::RunGridConfig &thisConfig,
-                                 const std::list<Pathfinder::PathfinderStrategy> &thisStrats) :
-        RunnerParent(thisConfig),
-        strats(thisStrats),
-        repeatUnsolvables(thisConfig.repeatUnsolvables.value()) {
+RunInterface::MultiRun::MultiRun(const RunInterface::MultiRunConfig &runConfig) :
+        RunnerParent(runConfig.config),
+        strats(runConfig.strats),
+        repeatUnsolvables(runConfig.config.repeatUnsolvables.value()) {
     for (const auto &strat: strats) {
         solvers.push_back(Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid));
     }
@@ -73,10 +72,9 @@ void RunInterface::MultiRun::nextRun() {
     }
 }
 
-void RunInterface::MultiRun::onNewData(const RunInterface::RunGridConfig &thisConfig,
-                                       const std::list<Pathfinder::PathfinderStrategy> &thisStrats) {
-    config = thisConfig;
-    strats = thisStrats;
+void RunInterface::MultiRun::onNewData(const RunInterface::MultiRunConfig &runConfig) {
+    config = runConfig.config;
+    strats = runConfig.strats;
     repeatUnsolvables = config.repeatUnsolvables.value();
 }
 

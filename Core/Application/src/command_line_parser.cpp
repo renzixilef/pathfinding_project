@@ -91,7 +91,7 @@ std::optional<Application::HeadlessConfigInputType> Application::PathfindingComm
 }
 
 
-std::optional<std::variant<std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>, QString>>
+std::optional<std::variant<RunInterface::MultiRunConfig, QString>>
 Application::PathfindingCommandParser::getRunConfig() const {
     if (isSet(guiOption) || isSet(headlessJSONConfigOption)) return std::nullopt;
     RunInterface::RunGridConfig thisConfig{DEFAULT_GRID_WIDTH,
@@ -116,27 +116,27 @@ Application::PathfindingCommandParser::getRunConfig() const {
     if (isSet(obstacleDensityOption)) {
         auto obstacleDensity = parseWithRegex(value(obstacleDensityOption),
                                               QRegularExpression(R"(^0(\.\d)?|0\.[0-6]\d*$|0\.7{1}0*$)"));
-        if(obstacleDensity == std::nullopt) return "Could not parse Obstacle Density, expected float in [0,0.7].";
+        if (obstacleDensity == std::nullopt) return "Could not parse Obstacle Density, expected float in [0,0.7].";
         thisConfig.obstacleDensity = obstacleDensity.value()[0].toFloat();
     }
-    if(isSet(minStartEndOption)){
+    if (isSet(minStartEndOption)) {
         auto minStartEndDistance = parseWithRegex(value(minStartEndOption),
                                                   QRegularExpression(R"(^(0(\.\d*)?|0.\d*[1-9]\d*|1(\.0*)?)$)"));
-        if(minStartEndDistance == std::nullopt) return "Could not parse min Distance, expected float in [0,1]";
+        if (minStartEndDistance == std::nullopt) return "Could not parse min Distance, expected float in [0,1]";
         thisConfig.minStartEndDistance = minStartEndDistance.value()[0].toFloat();
     }
-    if(isSet(solverOption)){
+    if (isSet(solverOption)) {
         auto solver = parseWithRegex(value(solverOption),
                                      QRegularExpression(R"(^\[\s?(?:(1|2|3)\s?,\s?){0,2}(1|2|3)?\s?\]$)"));
-        if(solver == std::nullopt) return "Could not parse Solver, expected list of unique uint in [1,3].";
+        if (solver == std::nullopt) return "Could not parse Solver, expected list of unique uint in [1,3].";
         auto uniqueStrats = QSet<QString>(solver.value().begin(), solver.value().end());
-        for(const QString& strat:uniqueStrats){
+        for (const QString &strat: uniqueStrats) {
             solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(strat.toUInt()));
         }
-    }else{
+    } else {
         solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(DEFAULT_SOLVER));
     }
-    return std::make_pair(thisConfig, solverStrats);
+    return RunInterface::MultiRunConfig(thisConfig, solverStrats);
 }
 
 std::optional<QStringList>

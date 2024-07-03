@@ -24,7 +24,6 @@ namespace Application {
     };
 
     class PathfindingCommandParser : public QCommandLineParser {
-        using configReturnType = std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>;
     public:
         static inline PathfindingCommandParser& getInstance(){
             static PathfindingCommandParser instance;
@@ -37,7 +36,7 @@ namespace Application {
 
         [[nodiscard]] std::optional<HeadlessConfigInputType> getConfigInputType() const;
 
-        [[nodiscard]] std::optional<std::variant<configReturnType, QString>> getRunConfig() const;
+        [[nodiscard]] std::optional<std::variant<RunInterface::MultiRunConfig, QString>> getRunConfig() const;
 
         PathfindingCommandParser(const PathfindingCommandParser&) = delete;
         PathfindingCommandParser& operator=(const PathfindingCommandParser&) = delete;

@@ -50,6 +50,15 @@ namespace RunInterface {
     };
 
     /**
+     * @struct MultiRunConfig
+     * @brief Data structure to hold the RunGridConfig and the solver list for multi runs.
+     */
+    struct MultiRunConfig{
+        RunGridConfig config; /**< Grid configuration */
+        std::list<Pathfinder::PathfinderStrategy> strats; /**< Solvers */
+    };
+
+    /**
      * @class RunnerParent
      * @brief Parent class for the interface.
      */
@@ -169,12 +178,9 @@ namespace RunInterface {
     public:
         /**
          * @brief Explicit constructor for the MultiRun class.
-         * @param thisConfig A RunGridConfig reference defining the configuration for pathfinding runs.
-         * @param thisStrats A list of PathfinderStrategy objects representing the multiple strategies to run.
-         * @param shouldRepeatUnsolvables A boolean to indicate whether unsolvable grids should be regenerated.
+         * @param runConfig A MultiRunConfig reference defining the configuration for pathfinding runs.
          */
-        explicit MultiRun(const RunGridConfig &thisConfig,
-                          const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+        explicit MultiRun(const MultiRunConfig& runConfig);
 
         /**
          * @fn nextStep
@@ -204,11 +210,9 @@ namespace RunInterface {
         /**
          * @fn onNewData
          * @brief Slot to handle new data transmission.
-         * @param thisConfig The RunGridConfig object defining the new run configuration.
-         * @param thisStrats List of the pathfinder strategies to utilise for the next runs.
+         * @param runConfig The MultiRunConfig object defining the new run configuration.
          */
-        void onNewData(const RunInterface::RunGridConfig &thisConfig,
-                       const std::list<Pathfinder::PathfinderStrategy> &thisStrats);
+        void onNewData(const MultiRunConfig& runConfig);
 
         /**
          * @fn nextRun

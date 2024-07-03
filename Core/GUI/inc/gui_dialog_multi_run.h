@@ -25,8 +25,7 @@ namespace GUI {
                 Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
 
     public:
-        explicit MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
+        explicit MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                 QWidget *parent = nullptr);
 
         ~MultiRunDialog() override {
@@ -45,8 +44,7 @@ namespace GUI {
 
         void nextRun();
 
-        void sendNewData(const RunInterface::RunGridConfig &,
-                         const std::list<Pathfinder::PathfinderStrategy> &);
+        void sendNewData(const RunInterface::MultiRunConfig &);
 
     private:
         void closeEvent(QCloseEvent *event) override;
@@ -61,18 +59,20 @@ namespace GUI {
 
         void updateGUIAfterFinishedRun();
 
-        inline void incrementUnsolvableCountForConfig(const auto &currentConfig) {
-            std::get<1>(evalMap[std::get<0>(currentConfig)])++;
+        inline void incrementUnsolvableCountForConfig(
+                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
+            std::get<1>(evalMap[currentConfig.first.config])++;
         }
 
         inline void pushBackPathfinderExitForCurrentConfig(
                 const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
-                const auto &currentConfig) {
-            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
+                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
+            std::get<0>(evalMap[currentConfig.first.config])[pathfinderExit.strat].push_back(pathfinderExit);
         }
 
-        inline void setDisplayableStringForCurrentConfig(const auto &currentConfig) {
-            std::get<2>(evalMap[std::get<0>(currentConfig)]) = std::get<2>(currentConfig);
+        inline void setDisplayableStringForCurrentConfig(
+                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
+            std::get<2>(evalMap[currentConfig.first.config]) = currentConfig.second;
         }
 
         bool runPaused = true;
@@ -94,8 +94,7 @@ namespace GUI {
 
         Widgets::RunProgressView *runProgressView;
 
-        std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> &runQueue;
+        std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &runQueue;
 
         EvalMapType evalMap;
     };
