@@ -126,7 +126,7 @@ namespace GridGenerator {
      * @enum GridSolvedStatus
      * @brief Enum which describes the current status of the grid.
      */
-    enum GridSolvedStatus {
+    enum class GridSolvedStatus {
         GRID_SOLVED = 0,  ///< Indicates the grid has been successfully solved
         GRID_UNSOLVABLE = 1, ///< Indicates the grid cannot be solved
         GRID_UNSOLVED = 2 ///< Indicates the grid has not yet been solved

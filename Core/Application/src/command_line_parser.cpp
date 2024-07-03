@@ -30,6 +30,7 @@ QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() 
     return qMakePair(true, QString());
 }
 
+// TODO: better description for command line options
 Application::PathfindingCommandParser::PathfindingCommandParser()
         : QCommandLineParser(),
           guiOption(QStringList() << "g" << "gui", "Starts the application in GUI mode."),
@@ -72,4 +73,22 @@ Application::PathfindingCommandParser::PathfindingCommandParser()
 
     addHelpOption();
     addVersionOption();
+}
+
+Application::UIType Application::PathfindingCommandParser::getUIType() const {
+    if(isSet(guiOption)) return Application::UIType::UI_TYPE_GUI;
+    else return Application::UIType::UI_TYPE_HEADLESS;
+}
+
+std::optional<Application::HeadlessConfigInputType> Application::PathfindingCommandParser::getConfigInputType() const {
+    if(isSet(guiOption)) return std::nullopt;
+    if(isSet(headlessJSONConfigOption)) return HeadlessConfigInputType::INPUT_JSON_PATH;
+    else return HeadlessConfigInputType::INPUT_COMMAND_LINE_FLAGS;
+
+}
+
+std::optional<RunInterface::RunGridConfig> Application::PathfindingCommandParser::getRunConfig() const {
+    if(isSet(guiOption) || isSet(headlessJSONConfigOption)) return std::nullopt;
+    RunInterface::RunGridConfig thisConfig;
+
 }

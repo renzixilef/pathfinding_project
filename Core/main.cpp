@@ -15,8 +15,8 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationVersion("1.0");
 
     auto& parser = Application::PathfindingCommandParser::getInstance();
-    // TODO: maybe move options to pathfindingParser constructor
-    // TODO: better description for command line options
+
+
 
 
     parser.process(pathfindingApp);
@@ -28,11 +28,15 @@ int main(int argc, char *argv[]) {
     }
 
 
-    if (guiMode) {
+    if (parser.getUIType() == Application::UIType::UI_TYPE_GUI) {
         QMainWindow *mainWindow = new GUI::MainWindow();
         mainWindow->show();
     } else {
-        //TODO: implement this case
+        if(parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH){
+            // TODO: handle json path reading here
+        }else{
+            auto runConfig = parser.getRunConfig();
+        }
     }
     return QCoreApplication::exec();
 }
