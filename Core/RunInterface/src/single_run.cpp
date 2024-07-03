@@ -1,10 +1,9 @@
 #include "runner.h"
 #include <memory>
 
-RunInterface::SingleRun::SingleRun(const RunInterface::RunGridConfig &thisConfig,
-                                   const Pathfinder::PathfinderStrategy &thisStrat) :
-        RunnerParent(thisConfig),
-        strat(thisStrat),
+RunInterface::SingleRun::SingleRun(const RunInterface::SingleRunConfig &runConfig) :
+        RunnerParent(runConfig.gridConfig),
+        strat(runConfig.strat),
         solver(nullptr) {
     solver = Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid);
 

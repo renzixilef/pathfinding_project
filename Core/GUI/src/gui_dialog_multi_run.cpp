@@ -21,7 +21,7 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunC
 
     auto nextConfig = runQueue.front();
     setDisplayableStringForCurrentConfig(nextConfig);
-    shouldRepeatUnsolvables = nextConfig.first.config.repeatUnsolvables.value();
+    shouldRepeatUnsolvables = nextConfig.first.gridConfig.repeatUnsolvables.value();
 
     runInterface = new RunInterface::MultiRun(nextConfig.first);
     runInterface->moveToThread(multiRunThread);
@@ -93,9 +93,9 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
                 gridIterator++;
                 runProgressView->updateProgress(currentConfig.second,
                                                 static_cast<int32_t>(gridIterator * 100 /
-                                                                     currentConfig.first.config.iterations.value()));
+                                                                     currentConfig.first.gridConfig.iterations.value()));
             }
-            if (gridIterator < currentConfig.first.config.iterations.value()) {
+            if (gridIterator < currentConfig.first.gridConfig.iterations.value()) {
                 emit nextGrid();
             } else {
                 handleNewConfigDemand();
@@ -115,7 +115,7 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             runProgressView->updateProgress(currentConfig.second,
                                             static_cast<int32_t>(gridIterator * 100 /
-                                                                 currentConfig.first.config.iterations.value()));
+                                                                 currentConfig.first.gridConfig.iterations.value()));
             break;
     }
     updateGUIAfterFinishedRun();
@@ -143,7 +143,7 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
         setDisplayableStringForCurrentConfig(nextConfig);
-        shouldRepeatUnsolvables = nextConfig.first.config.repeatUnsolvables.value();
+        shouldRepeatUnsolvables = nextConfig.first.gridConfig.repeatUnsolvables.value();
         emit sendNewData(nextConfig.first);
         runProgressView->addNewConfig(nextConfig.second);
         runProgressView->updateProgress(nextConfig.second, 0);

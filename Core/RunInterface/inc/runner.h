@@ -25,7 +25,7 @@ namespace RunInterface {
         RETURN_NORMAL = 0, /**< Normal return status. */
         RETURN_UNSOLVABLE = 1, /**< Grid unsolvable return status. */
         RETURN_LAST_SOLVER_DONE = 2, /**< Last Solver of one grid iteration done return status. */
-        RETURN_LAST_GRID_DONE = 3, /**< Last Grid of one config done return status. */
+        RETURN_LAST_GRID_DONE = 3, /**< Last Grid of one gridConfig done return status. */
     };
 
     /**
@@ -54,8 +54,17 @@ namespace RunInterface {
      * @brief Data structure to hold the RunGridConfig and the solver list for multi runs.
      */
     struct MultiRunConfig{
-        RunGridConfig config; /**< Grid configuration */
+        RunGridConfig gridConfig; /**< Grid configuration */
         std::list<Pathfinder::PathfinderStrategy> strats; /**< Solvers */
+    };
+
+    /**
+     * @struct SingleRunConfig
+     * @brief Data structure to hold the RunGridConfig and the solver for single runs.
+     */
+    struct SingleRunConfig{
+        RunGridConfig gridConfig; /**< Grid configuration */
+        Pathfinder::PathfinderStrategy strat{Pathfinder::PathfinderStrategy::PATHFINDER_DIJKSTRA}; /**< Solver */
     };
 
     /**
@@ -118,7 +127,7 @@ namespace RunInterface {
          * @param thisConfig A reference to the RunGridConfig object that defines the configuration for the runner.
          * @param thisStrat A reference to the PathfinderStrategy object that defines the strategy the pathfinder should use.
          */
-        explicit SingleRun(const RunGridConfig &thisConfig, const Pathfinder::PathfinderStrategy &thisStrat);
+        explicit SingleRun(const SingleRunConfig &runConfig);
 
         /**
          * @fn nextStep
@@ -212,7 +221,7 @@ namespace RunInterface {
          * @brief Slot to handle new data transmission.
          * @param runConfig The MultiRunConfig object defining the new run configuration.
          */
-        void onNewData(const MultiRunConfig& runConfig);
+        void onNewData(const RunInterface::MultiRunConfig& runConfig);
 
         /**
          * @fn nextRun
@@ -228,7 +237,7 @@ namespace RunInterface {
         void handleFinishedSolver();
 
         bool repeatUnsolvables; /**< indicates whether unsolvable grids should be generated again */
-        std::list<Pathfinder::PathfinderStrategy> strats; /**< List of current config solver strategies. */
+        std::list<Pathfinder::PathfinderStrategy> strats; /**< List of current gridConfig solver strategies. */
         std::list<std::unique_ptr<Pathfinder::PathfindingParent>> solvers; /**< List of current solver instances. */
         std::list<std::unique_ptr<Pathfinder::PathfindingParent>>::iterator solverIterator; /**< Iterator for solver instances. */
         uint32_t gridIterator = 0; /**< Keeping track of grid count for multi-grid scenarios. */

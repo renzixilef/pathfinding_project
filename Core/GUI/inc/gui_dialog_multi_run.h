@@ -61,18 +61,18 @@ namespace GUI {
 
         inline void incrementUnsolvableCountForConfig(
                 const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<1>(evalMap[currentConfig.first.config])++;
+            std::get<1>(evalMap[currentConfig.first.gridConfig])++;
         }
 
         inline void pushBackPathfinderExitForCurrentConfig(
                 const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
                 const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<0>(evalMap[currentConfig.first.config])[pathfinderExit.strat].push_back(pathfinderExit);
+            std::get<0>(evalMap[currentConfig.first.gridConfig])[pathfinderExit.strat].push_back(pathfinderExit);
         }
 
         inline void setDisplayableStringForCurrentConfig(
                 const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<2>(evalMap[currentConfig.first.config]) = currentConfig.second;
+            std::get<2>(evalMap[currentConfig.first.gridConfig]) = currentConfig.second;
         }
 
         bool runPaused = true;

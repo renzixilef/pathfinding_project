@@ -17,7 +17,7 @@ namespace GUI::Widgets {
     public:
         explicit ConfigFormParent(QWidget *parent = nullptr);
 
-        virtual std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() = 0;
+        virtual std::variant<RunInterface::MultiRunConfig, RunInterface::SingleRunConfig> getFormParams() = 0;
 
         virtual void resetForm();
 
@@ -39,7 +39,7 @@ namespace GUI::Widgets {
     public:
         explicit SingleConfigForm(QWidget *parent = nullptr);
 
-        std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() override;
+        std::variant<RunInterface::MultiRunConfig, RunInterface::SingleRunConfig> getFormParams() override;
 
         void resetForm() override;
 
@@ -57,7 +57,7 @@ namespace GUI::Widgets {
     public:
         explicit MultiConfigForm(QWidget *parent = nullptr);
 
-        std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>> getFormParams() override;
+        std::variant<RunInterface::MultiRunConfig, RunInterface::SingleRunConfig> getFormParams() override;
 
         void resetForm() override;
 
@@ -69,7 +69,7 @@ namespace GUI::Widgets {
 
         void handleInvalidInput();
 
-        void populate(const RunInterface::RunGridConfig& config, const std::list<Pathfinder::PathfinderStrategy>& strats);
+        void populate(const RunInterface::MultiRunConfig& config);
 
     private:
         QLabel *invalidInputWarningLabel;

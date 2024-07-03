@@ -11,11 +11,10 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-GUI::SingleRunDialog::SingleRunDialog(const RunInterface::RunGridConfig &config,
-                                      const Pathfinder::PathfinderStrategy &strat,
+GUI::SingleRunDialog::SingleRunDialog(const RunInterface::SingleRunConfig &runConfig,
                                       QWidget *parent) :
         QDialog(parent),
-        runInterface(new RunInterface::SingleRun(config, strat)),
+        runInterface(new RunInterface::SingleRun(runConfig)),
         singleRunThread(new QThread(this)),
         nextStepButton(new QPushButton("Next Step")),
         toggleRunButton(new QPushButton("Play")),

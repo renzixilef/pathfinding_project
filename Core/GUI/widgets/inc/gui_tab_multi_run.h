@@ -12,15 +12,13 @@
 namespace GUI::Widgets {
     class MultiRunItem : public QStandardItem {
     public:
-        explicit MultiRunItem(RunInterface::RunGridConfig config,
-                              std::list<Pathfinder::PathfinderStrategy> strats);
+        explicit MultiRunItem(RunInterface::MultiRunConfig itemConfig);
 
-        inline RunInterface::RunGridConfig getGridConfig(){return itemConfig;}
-        inline std::list<Pathfinder::PathfinderStrategy> getPathfinderList(){return itemStrats;}
+        inline RunInterface::MultiRunConfig getConfig(){return itemConfig;}
         void setTextBasedOnParams();
     private:
-        RunInterface::RunGridConfig itemConfig;
-        std::list<Pathfinder::PathfinderStrategy> itemStrats;
+        RunInterface::MultiRunConfig itemConfig;
+
     };
 
 

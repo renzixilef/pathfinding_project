@@ -1,9 +1,9 @@
 #include "runner.h"
 
 RunInterface::MultiRun::MultiRun(const RunInterface::MultiRunConfig &runConfig) :
-        RunnerParent(runConfig.config),
+        RunnerParent(runConfig.gridConfig),
         strats(runConfig.strats),
-        repeatUnsolvables(runConfig.config.repeatUnsolvables.value()) {
+        repeatUnsolvables(runConfig.gridConfig.repeatUnsolvables.value()) {
     for (const auto &strat: strats) {
         solvers.push_back(Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(strat, grid));
     }
@@ -73,7 +73,7 @@ void RunInterface::MultiRun::nextRun() {
 }
 
 void RunInterface::MultiRun::onNewData(const RunInterface::MultiRunConfig &runConfig) {
-    config = runConfig.config;
+    config = runConfig.gridConfig;
     strats = runConfig.strats;
     repeatUnsolvables = config.repeatUnsolvables.value();
 }

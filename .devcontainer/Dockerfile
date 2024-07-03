@@ -22,7 +22,7 @@ RUN rm -r /usr/src/gtest/build
 
 RUN apt-get upgrade -y
 
-RUN git config --global core.filemode false
-RUN git config --global core.autocrlf true
+RUN git gridConfig --global core.filemode false
+RUN git gridConfig --global core.autocrlf true
 
 WORKDIR /workspace
