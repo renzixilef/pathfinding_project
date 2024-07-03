@@ -16,11 +16,13 @@ There are three key pathfinding algorithms that are currently implemented in thi
   pathfinding algorithm guarantees the shortest path.
 
 - **A\* Algorithm**: This pathfinding algorithm employs a heuristic to guide its way towards the goal. The key
-  distinguishing factor between the A\\* and Dijkstra algorithms is that, whereas the Dijkstra's algorithm is eager and
-  makes an attempt to get to the goal as quickly as possible, the A\\* algorithm also factors in the actual cost of the
-  path alongside the heuristic, ensuring an efficient journey.
+  distinguishing factor between the A\* and Dijkstra's algorithm is that, while Dijkstra's algorithm seeks the shortest
+  path to all possible destinations, the A\* algorithm uses a heuristic to estimate the cost to the goal, which allows
+  it to focus on more promising paths and reach the goal more efficiently. In other words, A\* is more strategic in
+  terms of selecting the next node for expansion, quickly finding an optimal path in large graphs compared to Dijkstra's
+  algorithm.
 
-- **Jump Point Search**: This search algorithm is essentially an optimization of the A\\* algorithm for uniform-cost
+- **Jump Point Search**: This search algorithm is essentially an optimization of the A\* algorithm for uniform-cost
   grid maps, and this is achieved without affecting optimality. Here, instead of examining each individual cell, the
   algorithm has the liberty to "jump" in between points in the direction of the goal, bypassing any irrelevant nodes.
 
@@ -34,8 +36,8 @@ For the generation of obstacles, the project currently supports four methods, wh
 - **Wall-like**: This algorithm operates by generating either horizontal or vertical walls that span across the grid.
   The placement of these walls is randomized, and multiple walls could be created in the process.
 
-- **Drunken Walk**: The Drunken Walk algorithm simulates a 'drunk' person walking across the grid, with each random
-  direction resulting in an obstacle.
+- **Drunken Walk**: The Drunken Walk algorithm simulates a 'drunk' person wandering across the grid, with each random
+  direction resulting in a walkable cell.
 
 - **Perlin Noise**: This method generates natural-looking patterns of obstacles based on Perlin noise. It's particularly
   effective for creating random yet organic and smooth distributions of obstacles.
@@ -45,6 +47,7 @@ For the generation of obstacles, the project currently supports four methods, wh
 ### Dependencies
 
 For the building process, the project requires the following dependencies:
+
 ```console
 build-essential
 gdb
@@ -55,6 +58,7 @@ qt5-qmake
 ```
 
 For the Doxygen documentation generation, you will need to have the following dependencies:
+
 ```console
 doxygen
 graphviz
