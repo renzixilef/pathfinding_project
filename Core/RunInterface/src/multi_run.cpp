@@ -27,7 +27,7 @@ void RunInterface::MultiRun::nextStep() {
 }
 
 void RunInterface::MultiRun::handleFinishedSolver() {
-    if (grid.getStatus() == GridGenerator::GRID_SOLVED) {
+    if (grid.getStatus() == GridGenerator::GridSolvedStatus::GRID_SOLVED) {
         solverIterator++;
         if (solverIterator != solvers.end()) {
             emit solverFinished(currentSolver->getPerformanceMetric(),

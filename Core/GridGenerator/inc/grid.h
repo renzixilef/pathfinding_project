@@ -148,8 +148,8 @@ namespace GridGenerator {
          * @param minStartEndDistance The minimum distance between the start and end cells in the pathfinding problem.
          */
         Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &generator,
-             float obstacleDensity = STANDARD_OBSTACLE_DENSITY,
-             float minStartEndDistance = STANDARD_START_END_DISTANCE);
+             float obstacleDensity = DEFAULT_OBSTACLE_DENSITY,
+             float minStartEndDistance = DEFAULT_START_END_DISTANCE);
 
         /**
          * @brief Overloaded function call operator to access a cell at a specific grid coordinate.
