@@ -13,19 +13,19 @@
 
 namespace Application {
 
-    enum class UIType{
+    enum class UIType {
         UI_TYPE_GUI,
         UI_TYPE_HEADLESS
     };
 
-    enum class HeadlessConfigInputType{
+    enum class HeadlessConfigInputType {
         INPUT_JSON_PATH,
         INPUT_COMMAND_LINE_FLAGS,
     };
 
     class PathfindingCommandParser : public QCommandLineParser {
     public:
-        static inline PathfindingCommandParser& getInstance(){
+        static inline PathfindingCommandParser &getInstance() {
             static PathfindingCommandParser instance;
             return instance;
         }
@@ -38,14 +38,24 @@ namespace Application {
 
         [[nodiscard]] std::optional<std::variant<RunInterface::MultiRunConfig, QString>> getRunConfig() const;
 
-        PathfindingCommandParser(const PathfindingCommandParser&) = delete;
-        PathfindingCommandParser& operator=(const PathfindingCommandParser&) = delete;
+        [[nodiscard]] std::variant<std::list<RunInterface::MultiRunConfig>, QString> parseJSONConfig();
+
+        PathfindingCommandParser(const PathfindingCommandParser &) = delete;
+
+        PathfindingCommandParser &operator=(const PathfindingCommandParser &) = delete;
 
     private:
         PathfindingCommandParser();
-        void addOption(const QCommandLineOption& option, const QStringList &setIds);
 
-       static std::optional<QStringList> parseWithRegex(const QString& str, QRegularExpression&& regex);
+        void addOption(const QCommandLineOption &option, const QStringList &setIds);
+
+        static std::optional<QStringList> parseWithRegex(const QString &str, QRegularExpression &&regex);
+
+        static std::variant<RunInterface::RunGridConfig, QString>
+        parseJSONGridConfig(const QJsonObject &gridConfigJson);
+
+        static std::variant<std::list<Pathfinder::PathfinderStrategy>, QString>
+        parseJSONStrats(const QJsonArray &stratsJson);
 
         QHash<QString, QSet<OptionWrapper>> optionSets;
 

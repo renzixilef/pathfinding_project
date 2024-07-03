@@ -31,16 +31,19 @@ int main(int argc, char *argv[]) {
         mainWindow->show();
     } else {
         if (parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH) {
-            // TODO: handle json path reading here
+            auto configList = parser.parseJSONConfig();
+            if(std::holds_alternative<QString>(configList)){
+                qCritical() << std::get<QString>(configList) << "\nExiting the application!";
+                QApplication::exit(1);
+            }
         } else {
             auto runConfig = parser.getRunConfig();
             if (std::holds_alternative<QString>(runConfig.value())) {
                 qCritical() << std::get<QString>(runConfig.value()) << "\nExiting the application!";
                 QApplication::exit(1);
-            } else {
-                //TODO: handle headless multi runner creation etc.
             }
         }
+        //TODO: handle headless multi runner creation etc.
     }
     return QCoreApplication::exec();
 }

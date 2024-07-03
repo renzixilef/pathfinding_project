@@ -2,6 +2,11 @@
 
 #include "define.h"
 #include <QRegularExpression>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonObject>
+#include <QJsonArray>
 
 
 void Application::PathfindingCommandParser::addOption(const QCommandLineOption &option, const QStringList &setIds) {
@@ -151,3 +156,113 @@ Application::PathfindingCommandParser::parseWithRegex(const QString &str, QRegul
     }
     return matches;
 }
+
+std::variant<std::list<RunInterface::MultiRunConfig>, QString>
+Application::PathfindingCommandParser::parseJSONConfig() {
+    QString filename = value(headlessJSONConfigOption);
+    QFile jsonFile(filename);
+    if (!jsonFile.open(QFile::ReadOnly)) return QString("Failed to open JSON file: %1").arg(filename);
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonFile.readAll()));
+    if (jsonDoc.isNull() || !jsonDoc.isObject()) return QString("Failed to read from JSON file: %1").arg(filename);
+
+    QJsonValue jsonValue = jsonDoc.object();
+    std::list<RunInterface::MultiRunConfig> configList;
+    QJsonArray json;
+    if (jsonValue.isObject()) json.append(jsonValue.toObject());
+    else if (jsonValue.isArray()) json = jsonValue.toArray();
+    else return QString("Failed to parse JSON file: Invalid JSON input!");
+
+    for (const QJsonValueRef &value: json) {
+        if (!value.isObject()) return QString("Failed to parse JSON file: Invalid JSON input!");
+        QJsonObject object = value.toObject();
+        if (!object.contains("gridConfig") || !object["gridConfig"].isObject())
+            return QString("Failed to parse JSON file: gridConfig not found or is not an object");
+        if (!object.contains("strats") || !object["strats"].isArray())
+            return QString("Failed to parse JSON file: strats not found or is not an array");
+        QJsonObject gridConfigJson = object["gridConfig"].toObject();
+        QJsonArray stratsJson = object["strats"].toArray();
+
+        auto gridConfig = parseJSONGridConfig(gridConfigJson);
+        if (std::holds_alternative<QString>(gridConfig)) return std::get<QString>(gridConfig);
+        auto strats = parseJSONStrats(stratsJson);
+        if (std::holds_alternative<QString>(strats)) return std::get<QString>(strats);
+        configList.push_back({std::get<RunInterface::RunGridConfig>(gridConfig),
+                              std::get<std::list<Pathfinder::PathfinderStrategy>>(strats)});
+    }
+    return configList;
+}
+
+std::variant<RunInterface::RunGridConfig, QString>
+Application::PathfindingCommandParser::parseJSONGridConfig(const QJsonObject &gridConfigJson) {
+    RunInterface::RunGridConfig gridConfig{DEFAULT_GRID_WIDTH,
+                                           DEFAULT_GRID_HEIGHT,
+                                           DEFAULT_OBSTACLE_DENSITY,
+                                           DEFAULT_START_END_DISTANCE};
+    if (gridConfigJson.contains("gridWidth")) {
+        QJsonValue gridWidth = gridConfigJson["gridWidth"];
+        if (!gridWidth.isDouble() || gridWidth.toInt() < 0)
+            return QString("Failed to parse JSON file: gridWidth must be a positive integer.");
+        gridConfig.gridWidth = gridWidth.toInt();
+    } else {
+        gridConfig.gridWidth = DEFAULT_GRID_WIDTH;
+    }
+
+    if (gridConfigJson.contains("gridHeight")) {
+        QJsonValue gridHeight = gridConfigJson["gridHeight"];
+        if (!gridHeight.isDouble() || gridHeight.toInt() < 0)
+            return QString("Failed to parse JSON file: gridHeight  must be a positive integer.");
+        gridConfig.gridHeight = gridHeight.toInt();
+    } else {
+        gridConfig.gridHeight = DEFAULT_GRID_HEIGHT;
+    }
+
+    if (gridConfigJson.contains("obstacleDensity")) {
+        QJsonValue obstacleDensity = gridConfigJson["obstacleDensity"];
+        if (!obstacleDensity.isDouble() || obstacleDensity.toDouble() < 0.0 || obstacleDensity.toDouble() > 0.7)
+            return QString("Failed to parse JSON file: obstacleDensity must be a float between 0.0 and 0.7.");
+        gridConfig.obstacleDensity = static_cast<float>(obstacleDensity.toDouble());
+    } else {
+        gridConfig.obstacleDensity = DEFAULT_OBSTACLE_DENSITY;
+    }
+
+    if (gridConfigJson.contains("obstacleGenStrategy")) {
+        QJsonValue obstacleGenStrategy = gridConfigJson["obstacleGenStrategy"];
+        if (!obstacleGenStrategy.isDouble() || obstacleGenStrategy.toInt() < 1 || obstacleGenStrategy.toInt() > 4)
+            return QString("Failed to parse JSON file: obstacleGenStrategy must be a uint between 1-4.");
+        gridConfig.obstacleGenStrategy =
+                static_cast<GridGenerator::ObstacleGenStrategy>(obstacleGenStrategy.toInt());
+    }
+
+    if (gridConfigJson.contains("iterations")) {
+        QJsonValue iterations = gridConfigJson["iterations"];
+        if (!iterations.isDouble() || iterations.toInt() <= 0)
+            return QString("'iterations' should be a positive integer.");
+        gridConfig.iterations = iterations.toInt();
+    }
+
+    if (gridConfigJson.contains("minStartEndDistance")) {
+        QJsonValue startEndDist = gridConfigJson["minStartEndDistance"];
+        if (!startEndDist.isDouble() || startEndDist.toDouble() < 0.0 || startEndDist.toDouble() > 1.0)
+            return QString("'minStartEndDistance' must be a float between 0.0 and 1.0.");
+        gridConfig.minStartEndDistance = static_cast<float>(startEndDist.toDouble());
+    }
+    return gridConfig;
+}
+
+std::variant<std::list<Pathfinder::PathfinderStrategy>, QString>
+Application::PathfindingCommandParser::parseJSONStrats(const QJsonArray &stratsJson) {
+    std::list<Pathfinder::PathfinderStrategy> strats;
+    for (const QJsonValue &strat: stratsJson) {
+        if (!strat.isDouble())
+            return QString("strat value should be an integer.");
+
+        int stratInt = strat.toInt();
+        if (stratInt < 1 || stratInt > 3)
+            return QString("strat value should be between 1 and 3.");
+        strats.push_back(static_cast<Pathfinder::PathfinderStrategy>(stratInt));
+    }
+    return strats;
+}
+
+
+
