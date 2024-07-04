@@ -4,7 +4,6 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QDebug>
-#include <memory>
 
 #include "command_line_parser.h"
 #include "gui_main_window.h"
