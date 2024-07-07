@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
         std::variant<std::list<RunInterface::MultiRunConfig>, RunInterface::MultiRunConfig> runConfig;
         if (parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH) {
             auto configList = parser.parseJSONConfig();
-            if(std::holds_alternative<QString>(configList)){
+            if (std::holds_alternative<QString>(configList)) {
                 qCritical() << std::get<QString>(configList) << "\nExiting the application!";
                 return 1;
             }
@@ -45,12 +45,12 @@ int main(int argc, char *argv[]) {
             }
             runConfig = std::get<RunInterface::MultiRunConfig>(config.value());
         }
-        std::visit([](auto&& arg){
+        std::visit([](auto &&arg) {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, RunInterface::MultiRunConfig>){
+            if constexpr (std::is_same_v<T, RunInterface::MultiRunConfig>) {
 
-            }
-            else if constexpr (std::is_same_v<T, std::list<RunInterface::MultiRunConfig>>){
+
+            } else if constexpr (std::is_same_v<T, std::list<RunInterface::MultiRunConfig>>) {
 
             }
         }, runConfig);
