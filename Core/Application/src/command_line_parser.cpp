@@ -16,24 +16,21 @@ void Application::PathfindingCommandParser::addOption(const QCommandLineOption &
 
 QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() const {
     QSet<QString> sharedSets;
-    bool isFirstOption = true;
+    bool isFirstOption = false;
 
     for (auto it = optionSets.constBegin(); it != optionSets.constEnd(); it++) {
         QSet<QString> currentOptionSets;
         for (const OptionWrapper &opt: it.value()) {
             if (this->isSet(opt.getOption())) {
                 currentOptionSets.insert(it.key());
-                if (!isFirstOption && !sharedSets.intersects(currentOptionSets)) {
+                if (isFirstOption && !sharedSets.intersects(currentOptionSets)) {
                     return qMakePair(false, opt.getOption().names().first());
                 }
+                isFirstOption = true;
             }
         }
-        if (isFirstOption) {
-            sharedSets.swap(currentOptionSets);
-            isFirstOption = false;
-        } else {
-            sharedSets.intersect(currentOptionSets);
-        }
+        if (isFirstOption)
+            sharedSets = sharedSets.isEmpty() ? currentOptionSets : sharedSets.intersect(currentOptionSets);
     }
     return qMakePair(true, QString());
 }
@@ -42,7 +39,7 @@ QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() 
 Application::PathfindingCommandParser::PathfindingCommandParser()
         : QCommandLineParser(),
           guiOption(QStringList() << "g" << "gui", "Starts the application in GUI mode."),
-          headlessOption(QStringList() << "he" << "headless", "Starts the application in headless mode."),
+          headlessOption(QStringList() << "t" << "headless", "Starts the application in headless mode."),
           headlessJSONConfigOption(QStringList() << "j" << "json-path",
                                    "Specify the path to a json file containing the run configuration.",
                                    "json-path"),

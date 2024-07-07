@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
     if (!parserInputValid.first) {
         qCritical() << "Incompatible flag set: " << parserInputValid.second << "\nExiting the application!";
-        QApplication::exit(1);
+        return 1;
     }
 
 
@@ -29,19 +29,34 @@ int main(int argc, char *argv[]) {
         QMainWindow *mainWindow = new GUI::MainWindow();
         mainWindow->show();
     } else {
+        std::variant<std::list<RunInterface::MultiRunConfig>, RunInterface::MultiRunConfig> runConfig;
         if (parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH) {
             auto configList = parser.parseJSONConfig();
             if(std::holds_alternative<QString>(configList)){
                 qCritical() << std::get<QString>(configList) << "\nExiting the application!";
-                QApplication::exit(1);
+                return 1;
             }
+            runConfig = std::get<std::list<RunInterface::MultiRunConfig>>(configList);
         } else {
-            auto runConfig = parser.getRunConfig();
-            if (std::holds_alternative<QString>(runConfig.value())) {
-                qCritical() << std::get<QString>(runConfig.value()) << "\nExiting the application!";
-                QApplication::exit(1);
+            auto config = parser.getRunConfig();
+            if (std::holds_alternative<QString>(config.value())) {
+                qCritical() << std::get<QString>(config.value()) << "\nExiting the application!";
+                return 1;
             }
+            runConfig = std::get<RunInterface::MultiRunConfig>(config.value());
         }
+        std::visit([](auto&& arg){
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, RunInterface::MultiRunConfig>){
+
+            }
+            else if constexpr (std::is_same_v<T, std::list<RunInterface::MultiRunConfig>>){
+
+            }
+        }, runConfig);
+
+
+
         //TODO: handle headless multi runner creation etc.
     }
     return QCoreApplication::exec();
