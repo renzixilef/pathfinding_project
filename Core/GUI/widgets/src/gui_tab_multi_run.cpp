@@ -41,7 +41,7 @@ GUI::Widgets::MultiRunTab::MultiRunTab(QWidget *parent) :
     mainLayout->addWidget(startButton);
 
     setLayout(mainLayout);
-
+    //TODO: implement JSON config reading
 
 }
 
