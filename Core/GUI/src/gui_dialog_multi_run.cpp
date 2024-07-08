@@ -6,7 +6,7 @@
 GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                     QWidget *parent) :
         QDialog(parent),
-        runQueue(queue),
+        Application::HeadlessRunner(queue),
         multiRunThread(new QThread(this)),
         toggleRunButton(new QPushButton("Play")),
         moveToEvaluationButton(new QPushButton("Evaluation")),

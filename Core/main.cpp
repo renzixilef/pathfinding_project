@@ -7,27 +7,8 @@
 
 #include "command_line_parser.h"
 #include "gui_main_window.h"
+#include "headless_multi_run.h"
 
-void headlessSolveAllNoWait(std::list<RunInterface::MultiRunConfig> &configList) {
-    using obstacleParser = GridGenerator::ObstacleGenStrategyParser;
-    using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
-            Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
-    EvalMapType evalMap;
-    for (const auto & config : configList) {
-        GridGenerator::Grid thisGrid(config.gridConfig.gridWidth, config.gridConfig.gridHeight,
-                                     *obstacleParser::parseObstacleGenStrategy(config.gridConfig.obstacleGenStrategy),
-                                     config.gridConfig.obstacleDensity, config.gridConfig.minStartEndDistance);
-        for(const auto& pathfinder : config.strats){
-            auto solver = Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(pathfinder, thisGrid);
-            solver->solveNoWait();
-            if(thisGrid.getStatus() == GridGenerator::GridSolvedStatus::GRID_UNSOLVABLE) break;
-            else{
-                std::get<2>(solver->getPerformanceMetric();
-                thisGrid.resetGrid();
-            }
-        }
-    }
-}
 
 int main(int argc, char *argv[]) {
     QApplication pathfindingApp(argc, argv);
@@ -66,7 +47,14 @@ int main(int argc, char *argv[]) {
             }
             runConfig.push_back(std::get<RunInterface::MultiRunConfig>(config));
         }
-        headlessSolveAllNoWait(runConfig);
+        std::queue<std::pair<RunInterface::MultiRunConfig, QString>> runQueue;
+        for (const auto& singleConfig: runConfig) {
+            QString itemText = Application::HeadlessRunner::generateConfigQString(singleConfig);
+            runQueue.emplace(singleConfig, itemText);
+        }
+        Application::HeadlessRunner headlessRunner(runQueue);
+
+        //headlessRunner.headlessSolveAllNoWait();
     }
     return QCoreApplication::exec();
 }

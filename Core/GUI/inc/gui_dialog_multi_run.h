@@ -7,6 +7,7 @@
 #include "runner.h"
 #include "pathfinding.h"
 #include "gui_run_progress_view.h"
+#include "headless_multi_run.h"
 
 
 Q_DECLARE_METATYPE(Pathfinder::PathfinderPerformanceMetric)
@@ -19,13 +20,10 @@ Q_DECLARE_METATYPE(int32_t)
 
 
 namespace GUI {
-    class MultiRunDialog : public QDialog {
+    class MultiRunDialog : public QDialog, public Application::HeadlessRunner {
     Q_OBJECT
 
     public:
-        using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
-                Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
-
         explicit MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                 QWidget *parent = nullptr);
 
@@ -33,6 +31,8 @@ namespace GUI {
             multiRunThread->quit();
             multiRunThread->wait();
         }
+
+        void headlessSolveAllNoWait() override {};
 
     public slots:
 
@@ -60,22 +60,6 @@ namespace GUI {
 
         void updateGUIAfterFinishedRun();
 
-        inline void incrementUnsolvableCountForConfig(
-                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<1>(evalMap[currentConfig.first.gridConfig])++;
-        }
-
-        inline void pushBackPathfinderExitForCurrentConfig(
-                const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
-                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<0>(evalMap[currentConfig.first.gridConfig])[pathfinderExit.strat].push_back(pathfinderExit);
-        }
-
-        inline void setDisplayableStringForCurrentConfig(
-                const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
-            std::get<2>(evalMap[currentConfig.first.gridConfig]) = currentConfig.second;
-        }
-
         bool runPaused = true;
         bool finished = false;
 
@@ -95,9 +79,6 @@ namespace GUI {
 
         Widgets::RunProgressView *runProgressView;
 
-        std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &runQueue;
-
-        EvalMapType evalMap;
     };
 
 }

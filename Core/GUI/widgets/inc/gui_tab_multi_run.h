@@ -8,6 +8,7 @@
 #include <QStandardItem>
 
 #include "gui_config_form.h"
+#include "headless_multi_run.h"
 
 namespace GUI::Widgets {
     class MultiRunItem : public QStandardItem {
@@ -15,10 +16,11 @@ namespace GUI::Widgets {
         explicit MultiRunItem(RunInterface::MultiRunConfig itemConfig);
 
         inline RunInterface::MultiRunConfig getConfig(){return itemConfig;}
-        void setTextBasedOnParams();
+        inline void setTextBasedOnParams(){
+            setText(Application::HeadlessRunner::generateConfigQString(itemConfig));
+        }
     private:
         RunInterface::MultiRunConfig itemConfig;
-
     };
 
 

@@ -154,36 +154,3 @@ GUI::Widgets::MultiRunItem::MultiRunItem(RunInterface::MultiRunConfig itemConfig
         itemConfig(std::move(itemConfig)) {
     setTextBasedOnParams();
 }
-
-void GUI::Widgets::MultiRunItem::setTextBasedOnParams() {
-    QString gridWidthHeightString = QString("%1 x %2")
-            .arg(itemConfig.gridConfig.gridHeight)
-            .arg(itemConfig.gridConfig.gridWidth);
-    QString obstacleGenString = QString::fromStdString(
-            GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
-                    itemConfig.gridConfig.obstacleGenStrategy));
-    QString obstacleDensityString = QString("OD: %1%").arg(itemConfig.gridConfig.obstacleDensity * 100.0);
-    QString minStartEndDistanceString = QString("SE: %1%").arg(itemConfig.gridConfig.minStartEndDistance * 100.0);
-    QString pathfinderString = "[";
-    for (auto iter = itemConfig.strats.begin(); iter != itemConfig.strats.end(); iter++) {
-        if (iter != itemConfig.strats.begin()) {
-            pathfinderString += ", ";
-        }
-        if (Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.find(*iter) !=
-            Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.end()) {
-            pathfinderString += QString::fromStdString(
-                    Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.at(*iter));
-        }
-    }
-    pathfinderString += "]";
-
-    QString iterationsString = QString("IT: %1").arg(itemConfig.gridConfig.iterations.value());
-    QString itemText = QString("%1, %2, %3, %4, %5, %6")
-            .arg(gridWidthHeightString,
-                 obstacleGenString,
-                 obstacleDensityString,
-                 minStartEndDistanceString,
-                 pathfinderString,
-                 iterationsString);
-    setText(itemText);
-}
