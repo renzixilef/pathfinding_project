@@ -21,10 +21,11 @@ Q_DECLARE_METATYPE(int32_t)
 namespace GUI {
     class MultiRunDialog : public QDialog {
     Q_OBJECT
+
+    public:
         using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
                 Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
 
-    public:
         explicit MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                 QWidget *parent = nullptr);
 

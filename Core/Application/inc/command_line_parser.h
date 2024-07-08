@@ -36,7 +36,7 @@ namespace Application {
 
         [[nodiscard]] std::optional<HeadlessConfigInputType> getConfigInputType() const;
 
-        [[nodiscard]] std::optional<std::variant<RunInterface::MultiRunConfig, QString>> getRunConfig() const;
+        [[nodiscard]] std::variant<RunInterface::MultiRunConfig, QString> getRunConfig() const;
 
         [[nodiscard]] std::variant<std::list<RunInterface::MultiRunConfig>, QString> parseJSONConfig();
 

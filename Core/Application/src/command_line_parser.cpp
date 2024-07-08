@@ -93,9 +93,8 @@ std::optional<Application::HeadlessConfigInputType> Application::PathfindingComm
 }
 
 
-std::optional<std::variant<RunInterface::MultiRunConfig, QString>>
+std::variant<RunInterface::MultiRunConfig, QString>
 Application::PathfindingCommandParser::getRunConfig() const {
-    if (isSet(guiOption) || isSet(headlessJSONConfigOption)) return std::nullopt;
     RunInterface::RunGridConfig thisConfig{DEFAULT_GRID_WIDTH,
                                            DEFAULT_GRID_HEIGHT,
                                            DEFAULT_OBSTACLE_DENSITY,

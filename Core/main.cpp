@@ -8,6 +8,27 @@
 #include "command_line_parser.h"
 #include "gui_main_window.h"
 
+void headlessSolveAllNoWait(std::list<RunInterface::MultiRunConfig> &configList) {
+    using obstacleParser = GridGenerator::ObstacleGenStrategyParser;
+    using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
+            Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
+    EvalMapType evalMap;
+    for (const auto & config : configList) {
+        GridGenerator::Grid thisGrid(config.gridConfig.gridWidth, config.gridConfig.gridHeight,
+                                     *obstacleParser::parseObstacleGenStrategy(config.gridConfig.obstacleGenStrategy),
+                                     config.gridConfig.obstacleDensity, config.gridConfig.minStartEndDistance);
+        for(const auto& pathfinder : config.strats){
+            auto solver = Pathfinder::PathfinderStrategyParser::parsePathfinderStrategy(pathfinder, thisGrid);
+            solver->solveNoWait();
+            if(thisGrid.getStatus() == GridGenerator::GridSolvedStatus::GRID_UNSOLVABLE) break;
+            else{
+                std::get<2>(solver->getPerformanceMetric();
+                thisGrid.resetGrid();
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     QApplication pathfindingApp(argc, argv);
     QApplication::setApplicationName("Pathfinding");
@@ -29,7 +50,7 @@ int main(int argc, char *argv[]) {
         QMainWindow *mainWindow = new GUI::MainWindow();
         mainWindow->show();
     } else {
-        std::variant<std::list<RunInterface::MultiRunConfig>, RunInterface::MultiRunConfig> runConfig;
+        std::list<RunInterface::MultiRunConfig> runConfig;
         if (parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH) {
             auto configList = parser.parseJSONConfig();
             if (std::holds_alternative<QString>(configList)) {
@@ -39,25 +60,14 @@ int main(int argc, char *argv[]) {
             runConfig = std::get<std::list<RunInterface::MultiRunConfig>>(configList);
         } else {
             auto config = parser.getRunConfig();
-            if (std::holds_alternative<QString>(config.value())) {
-                qCritical() << std::get<QString>(config.value()) << "\nExiting the application!";
+            if (std::holds_alternative<QString>(config)) {
+                qCritical() << std::get<QString>(config) << "\nExiting the application!";
                 return 1;
             }
-            runConfig = std::get<RunInterface::MultiRunConfig>(config.value());
+            runConfig.push_back(std::get<RunInterface::MultiRunConfig>(config));
         }
-        std::visit([](auto &&arg) {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, RunInterface::MultiRunConfig>) {
-
-
-            } else if constexpr (std::is_same_v<T, std::list<RunInterface::MultiRunConfig>>) {
-
-            }
-        }, runConfig);
-
-
-
-        //TODO: handle headless multi runner creation etc.
+        headlessSolveAllNoWait(runConfig);
     }
     return QCoreApplication::exec();
 }
+
