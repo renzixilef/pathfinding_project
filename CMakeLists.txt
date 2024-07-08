@@ -24,6 +24,7 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # include project-own libraries
+add_subdirectory(Core/Application)
 add_subdirectory(Core/GridGenerator)
 add_subdirectory(Core/Pathfinder)
 add_subdirectory(Core/RunInterface)
@@ -32,7 +33,7 @@ add_subdirectory(Core/GUI)
 
 # main executable setup
 add_executable(Pathfinding_Bench_Program Core/main.cpp)
-target_link_libraries(Pathfinding_Bench_Program GridGenerator Pathfinder GUI RunInterface GUI_widgets)
+target_link_libraries(Pathfinding_Bench_Program Application GridGenerator Pathfinder GUI RunInterface GUI_widgets)
 
 # doxygen documentation
 find_package(Doxygen)

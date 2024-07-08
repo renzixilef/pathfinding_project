@@ -8,19 +8,19 @@
 #include <QStandardItem>
 
 #include "gui_config_form.h"
+#include "headless_multi_run.h"
 
 namespace GUI::Widgets {
     class MultiRunItem : public QStandardItem {
     public:
-        explicit MultiRunItem(RunInterface::RunGridConfig config,
-                              std::list<Pathfinder::PathfinderStrategy> strats);
+        explicit MultiRunItem(RunInterface::MultiRunConfig itemConfig);
 
-        inline RunInterface::RunGridConfig getGridConfig(){return itemConfig;}
-        inline std::list<Pathfinder::PathfinderStrategy> getPathfinderList(){return itemStrats;}
-        void setTextBasedOnParams();
+        inline RunInterface::MultiRunConfig getConfig(){return itemConfig;}
+        inline void setTextBasedOnParams(){
+            setText(Application::HeadlessRunner::generateConfigQString(itemConfig));
+        }
     private:
-        RunInterface::RunGridConfig itemConfig;
-        std::list<Pathfinder::PathfinderStrategy> itemStrats;
+        RunInterface::MultiRunConfig itemConfig;
     };
 
 

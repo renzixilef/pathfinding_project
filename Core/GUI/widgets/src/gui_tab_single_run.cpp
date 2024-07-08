@@ -19,7 +19,6 @@ GUI::Widgets::SingleRunTab::SingleRunTab(QWidget *parent) :
 void GUI::Widgets::SingleRunTab::startRun() {
     auto configParams = configForm->getFormParams();
 
-    QDialog *singleRunDialog = new GUI::SingleRunDialog(configParams.first, *configParams.second.begin());
+    QDialog *singleRunDialog = new GUI::SingleRunDialog(std::get<RunInterface::SingleRunConfig>(configParams));
     singleRunDialog->exec();
-
 }

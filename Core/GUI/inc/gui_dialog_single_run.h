@@ -20,9 +20,8 @@ namespace GUI {
     Q_OBJECT
 
     public:
-        SingleRunDialog(const RunInterface::RunGridConfig& config,
-                        const Pathfinder::PathfinderStrategy& strat,
-                        QWidget *parent = nullptr);
+        explicit SingleRunDialog(const RunInterface::SingleRunConfig &runConfig,
+                                 QWidget *parent = nullptr);
 
         ~SingleRunDialog() override {
             singleRunThread->quit();
@@ -32,11 +31,15 @@ namespace GUI {
     signals:
 
         void nextStep();
+
         void resetRun();
-        void serialize(const std::string&);
+
+        void serialize(const std::string &);
+
         void startEndChanged();
 
     public slots:
+
         void onGridFinished();
 
         void onStepFinished();
@@ -44,7 +47,7 @@ namespace GUI {
         void onSaveDone();
 
     private:
-        void closeEvent(QCloseEvent* event) override;
+        void closeEvent(QCloseEvent *event) override;
 
         void toggleRunButtonHandler();
 
@@ -75,10 +78,10 @@ namespace GUI {
         QPushButton *toggleStartEndRedefinitionButton;
 
         QVBoxLayout *mainLayout;
-        QHBoxLayout* gridWidgetLayout;
+        QHBoxLayout *gridWidgetLayout;
         QHBoxLayout *buttonLayout;
 
-        QTimer* nextStepTimer;
+        QTimer *nextStepTimer;
 
         QFuture<void> exportVideoFuture;
         QFutureWatcher<void> exportVideoWatcher;

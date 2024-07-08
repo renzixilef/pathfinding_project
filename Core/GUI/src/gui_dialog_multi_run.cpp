@@ -3,12 +3,10 @@
 #include <QPushButton>
 #include "gui_dialog_evaluation.h"
 
-GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
-        std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
+GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                     QWidget *parent) :
-
         QDialog(parent),
-        runQueue(queue),
+        Application::HeadlessRunner(queue),
         multiRunThread(new QThread(this)),
         toggleRunButton(new QPushButton("Play")),
         moveToEvaluationButton(new QPushButton("Evaluation")),
@@ -23,9 +21,9 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
 
     auto nextConfig = runQueue.front();
     setDisplayableStringForCurrentConfig(nextConfig);
-    shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
+    shouldRepeatUnsolvables = nextConfig.first.gridConfig.repeatUnsolvables.value();
 
-    runInterface = new RunInterface::MultiRun(std::get<0>(nextConfig), std::get<1>(nextConfig));
+    runInterface = new RunInterface::MultiRun(nextConfig.first);
     runInterface->moveToThread(multiRunThread);
     setupConnections();
     multiRunThread->start();
@@ -36,8 +34,8 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridC
     moveToEvaluationButton->setStyleSheet("background-color: blue;");
     moveToEvaluationButton->setDisabled(true);
 
-    runProgressView->addNewConfig(std::get<2>(nextConfig));
-    runProgressView->updateProgress(std::get<2>(nextConfig), 0);
+    runProgressView->addNewConfig(nextConfig.second);
+    runProgressView->updateProgress(nextConfig.second, 0);
 
     buttonLayout->addWidget(toggleRunButton);
     mainLayout->addLayout(buttonLayout);
@@ -56,10 +54,8 @@ void GUI::MultiRunDialog::setupConnections() {
             this, SLOT(onSolverFinished(const Pathfinder::PathfinderPerformanceMetric&,
                                int32_t)));
 
-    connect(this, SIGNAL(sendNewData(const RunInterface::RunGridConfig &,
-                                 const std::list<Pathfinder::PathfinderStrategy> & )),
-            runInterface, SLOT(onNewData(const RunInterface::RunGridConfig &,
-                                       const std::list<Pathfinder::PathfinderStrategy> & )));
+    connect(this, SIGNAL(sendNewData(const RunInterface::MultiRunConfig &)),
+            runInterface, SLOT(onNewData(const RunInterface::MultiRunConfig &)));
 
     connect(this, SIGNAL(nextGrid()),
             runInterface, SLOT(createNewGridWithCurrentConfig()));
@@ -95,11 +91,11 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
             incrementUnsolvableCountForConfig(currentConfig);
             if (!shouldRepeatUnsolvables) {
                 gridIterator++;
-                runProgressView->updateProgress(std::get<2>(currentConfig),
+                runProgressView->updateProgress(currentConfig.second,
                                                 static_cast<int32_t>(gridIterator * 100 /
-                                                                     std::get<0>(currentConfig).iterations.value()));
+                                                                     currentConfig.first.gridConfig.iterations.value()));
             }
-            if (gridIterator < std::get<0>(currentConfig).iterations.value()) {
+            if (gridIterator < currentConfig.first.gridConfig.iterations.value()) {
                 emit nextGrid();
             } else {
                 handleNewConfigDemand();
@@ -108,7 +104,7 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
         case RunnerReturnStatus::RETURN_LAST_GRID_DONE:
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
             gridIterator++;
-            runProgressView->updateProgress(std::get<2>(currentConfig), 100);
+            runProgressView->updateProgress(currentConfig.second, 100);
             handleNewConfigDemand();
             break;
         case RunnerReturnStatus::RETURN_LAST_SOLVER_DONE:
@@ -117,18 +113,18 @@ void GUI::MultiRunDialog::onSolverFinished(const Pathfinder::PathfinderPerforman
             [[fallthrough]];
         case RunnerReturnStatus::RETURN_NORMAL:
             pushBackPathfinderExitForCurrentConfig(pathfinderExit, currentConfig);
-            runProgressView->updateProgress(std::get<2>(currentConfig),
+            runProgressView->updateProgress(currentConfig.second,
                                             static_cast<int32_t>(gridIterator * 100 /
-                                                                 std::get<0>(currentConfig).iterations.value()));
+                                                                 currentConfig.first.gridConfig.iterations.value()));
             break;
     }
     updateGUIAfterFinishedRun();
-    if(!finished && !runPaused){
+    if (!finished && !runPaused) {
         emit nextRun();
     }
 }
 
-void GUI::MultiRunDialog::updateGUIAfterFinishedRun(){
+void GUI::MultiRunDialog::updateGUIAfterFinishedRun() {
     if (finished) {
         toggleRunButton->setDisabled(true);
         toggleRunButton->setStyleSheet("background-color:gray;");
@@ -147,10 +143,10 @@ void GUI::MultiRunDialog::handleNewConfigDemand() {
     if (!runQueue.empty()) {
         auto nextConfig = runQueue.front();
         setDisplayableStringForCurrentConfig(nextConfig);
-        shouldRepeatUnsolvables = std::get<0>(nextConfig).repeatUnsolvables.value();
-        emit sendNewData(std::get<0>(nextConfig), std::get<1>(nextConfig));
-        runProgressView->addNewConfig(std::get<2>(nextConfig));
-        runProgressView->updateProgress(std::get<2>(nextConfig), 0);
+        shouldRepeatUnsolvables = nextConfig.first.gridConfig.repeatUnsolvables.value();
+        emit sendNewData(nextConfig.first);
+        runProgressView->addNewConfig(nextConfig.second);
+        runProgressView->updateProgress(nextConfig.second, 0);
         gridIterator = 0;
         emit nextGrid();
     } else {

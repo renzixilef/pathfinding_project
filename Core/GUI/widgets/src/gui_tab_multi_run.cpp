@@ -41,7 +41,7 @@ GUI::Widgets::MultiRunTab::MultiRunTab(QWidget *parent) :
     mainLayout->addWidget(startButton);
 
     setLayout(mainLayout);
-
+    //TODO: implement JSON config reading
 
 }
 
@@ -54,7 +54,7 @@ void GUI::Widgets::MultiRunTab::onSelectionChanged(const QItemSelection &selecte
         addConfigButton->setStyleSheet("background-color: blue;");
         startButton->setDisabled(true);
         configForm->enable();
-        configForm->populate(selectedItem->getGridConfig(), selectedItem->getPathfinderList());
+        configForm->populate(selectedItem->getConfig());
         removeConfigButton->setEnabled(true);
         removeConfigButton->setStyleSheet("background-color: red;");
         dummyRowIndex = row;
@@ -111,7 +111,7 @@ void GUI::Widgets::MultiRunTab::addOrSaveConfiguration() {
             configForm->disable();
             auto params = configForm->getFormParams();
             configForm->resetForm();
-            auto *item = new MultiRunItem(params.first, params.second);
+            auto *item = new MultiRunItem(std::get<RunInterface::MultiRunConfig>(params));
             itemModel->setItem(dummyRowIndex, item);
             configTable->clearSelection();
             removeConfigButton->setEnabled(false);
@@ -138,55 +138,19 @@ void GUI::Widgets::MultiRunTab::removeSelectedConfiguration() {
 }
 
 void GUI::Widgets::MultiRunTab::startRuns() {
-    std::queue<std::tuple<RunInterface::RunGridConfig,
-            std::list<Pathfinder::PathfinderStrategy>, QString>> runQueue;
+    std::queue<std::pair<RunInterface::MultiRunConfig, QString>> runQueue;
     uint32_t rows = itemModel->rowCount();
     for (uint32_t i = 0; i < rows; i++) {
         auto item = dynamic_cast<MultiRunItem *>(itemModel->item(static_cast<int>(i)));
-        runQueue.emplace(item->getGridConfig(), item->getPathfinderList(), item->text());
+        runQueue.emplace(item->getConfig(), item->text());
     }
     QDialog *multiRunDialog = new GUI::MultiRunDialog(runQueue, this);
 
     multiRunDialog->exec();
 }
 
-GUI::Widgets::MultiRunItem::MultiRunItem(RunInterface::RunGridConfig config,
-                                std::list<Pathfinder::PathfinderStrategy> strats) :
+GUI::Widgets::MultiRunItem::MultiRunItem(RunInterface::MultiRunConfig itemConfig) :
         QStandardItem(),
-        itemConfig(config),
-        itemStrats(std::move(strats)) {
+        itemConfig(std::move(itemConfig)) {
     setTextBasedOnParams();
-}
-
-void GUI::Widgets::MultiRunItem::setTextBasedOnParams() {
-    QString gridWidthHeightString = QString("%1 x %2")
-            .arg(itemConfig.gridHeight)
-            .arg(itemConfig.gridWidth);
-    QString obstacleGenString = QString::fromStdString(
-            GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText.at(
-                    itemConfig.obstacleGenStrategy));
-    QString obstacleDensityString = QString("OD: %1%").arg(itemConfig.obstacleDensity * 100.0);
-    QString minStartEndDistanceString = QString("SE: %1%").arg(itemConfig.minStartEndDistance * 100.0);
-    QString pathfinderString = "[";
-    for (auto iter = itemStrats.begin(); iter != itemStrats.end(); iter++) {
-        if (iter != itemStrats.begin()) {
-            pathfinderString += ", ";
-        }
-        if (Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.find(*iter) !=
-            Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.end()) {
-            pathfinderString += QString::fromStdString(
-                    Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.at(*iter));
-        }
-    }
-    pathfinderString += "]";
-
-    QString iterationsString = QString("IT: %1").arg(itemConfig.iterations.value());
-    QString itemText = QString("%1, %2, %3, %4, %5, %6")
-            .arg(gridWidthHeightString,
-                 obstacleGenString,
-                 obstacleDensityString,
-                 minStartEndDistanceString,
-                 pathfinderString,
-                 iterationsString);
-    setText(itemText);
 }

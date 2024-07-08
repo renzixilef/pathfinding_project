@@ -126,7 +126,7 @@ namespace GridGenerator {
      * @enum GridSolvedStatus
      * @brief Enum which describes the current status of the grid.
      */
-    enum GridSolvedStatus {
+    enum class GridSolvedStatus {
         GRID_SOLVED = 0,  ///< Indicates the grid has been successfully solved
         GRID_UNSOLVABLE = 1, ///< Indicates the grid cannot be solved
         GRID_UNSOLVED = 2 ///< Indicates the grid has not yet been solved
@@ -148,8 +148,8 @@ namespace GridGenerator {
          * @param minStartEndDistance The minimum distance between the start and end cells in the pathfinding problem.
          */
         Grid(uint32_t sizeX, uint32_t sizeY, ObstacleGenerator &generator,
-             float obstacleDensity = STANDARD_OBSTACLE_DENSITY,
-             float minStartEndDistance = STANDARD_START_END_DISTANCE);
+             float obstacleDensity = DEFAULT_OBSTACLE_DENSITY,
+             float minStartEndDistance = DEFAULT_START_END_DISTANCE);
 
         /**
          * @brief Overloaded function call operator to access a cell at a specific grid coordinate.

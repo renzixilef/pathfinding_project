@@ -7,6 +7,7 @@
 #include "runner.h"
 #include "pathfinding.h"
 #include "gui_run_progress_view.h"
+#include "headless_multi_run.h"
 
 
 Q_DECLARE_METATYPE(Pathfinder::PathfinderPerformanceMetric)
@@ -19,20 +20,19 @@ Q_DECLARE_METATYPE(int32_t)
 
 
 namespace GUI {
-    class MultiRunDialog : public QDialog {
+    class MultiRunDialog : public QDialog, public Application::HeadlessRunner {
     Q_OBJECT
-        using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
-                Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
 
     public:
-        explicit MultiRunDialog(std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> &queue,
+        explicit MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue,
                                 QWidget *parent = nullptr);
 
         ~MultiRunDialog() override {
             multiRunThread->quit();
             multiRunThread->wait();
         }
+
+        void headlessSolveAllNoWait() override {};
 
     public slots:
 
@@ -45,8 +45,7 @@ namespace GUI {
 
         void nextRun();
 
-        void sendNewData(const RunInterface::RunGridConfig &,
-                         const std::list<Pathfinder::PathfinderStrategy> &);
+        void sendNewData(const RunInterface::MultiRunConfig &);
 
     private:
         void closeEvent(QCloseEvent *event) override;
@@ -60,20 +59,6 @@ namespace GUI {
         void moveToEvaluationButtonHandler();
 
         void updateGUIAfterFinishedRun();
-
-        inline void incrementUnsolvableCountForConfig(const auto &currentConfig) {
-            std::get<1>(evalMap[std::get<0>(currentConfig)])++;
-        }
-
-        inline void pushBackPathfinderExitForCurrentConfig(
-                const Pathfinder::PathfinderPerformanceMetric &pathfinderExit,
-                const auto &currentConfig) {
-            std::get<0>(evalMap[std::get<0>(currentConfig)])[pathfinderExit.strat].push_back(pathfinderExit);
-        }
-
-        inline void setDisplayableStringForCurrentConfig(const auto &currentConfig) {
-            std::get<2>(evalMap[std::get<0>(currentConfig)]) = std::get<2>(currentConfig);
-        }
 
         bool runPaused = true;
         bool finished = false;
@@ -94,10 +79,6 @@ namespace GUI {
 
         Widgets::RunProgressView *runProgressView;
 
-        std::queue<std::tuple<RunInterface::RunGridConfig,
-                std::list<Pathfinder::PathfinderStrategy>, QString>> &runQueue;
-
-        EvalMapType evalMap;
     };
 
 }

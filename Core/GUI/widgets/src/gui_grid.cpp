@@ -106,7 +106,7 @@ void GUI::Widgets::GridDrawerWidget::exportPixmapQueue(const std::string &filena
 
 cv::Mat GUI::Widgets::GridDrawerWidget::pixmapToMat(const QPixmap &pixmap, int32_t width, int32_t height) {
     QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB888);
-    cv::Mat mat(image.height(), image.width(), CV_8UC3, image.bits(), image.bytesPerLine());
+    cv::Mat mat(height, width, CV_8UC3, image.bits(), image.bytesPerLine());
     cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
     return mat.clone();
 }

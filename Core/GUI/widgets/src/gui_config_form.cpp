@@ -68,7 +68,7 @@ GUI::Widgets::SingleConfigForm::SingleConfigForm(QWidget *parent) : ConfigFormPa
     setLayout(layout);
 }
 
-std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
+std::variant<RunInterface::MultiRunConfig, RunInterface::SingleRunConfig>
 GUI::Widgets::SingleConfigForm::getFormParams() {
     RunInterface::RunGridConfig thisGridConfig = {
             static_cast<uint32_t>(gridWidthSpinBox->value()),
@@ -78,10 +78,9 @@ GUI::Widgets::SingleConfigForm::getFormParams() {
             static_cast<GridGenerator::ObstacleGenStrategy>(
                     gridGeneratorAlgorithmComboBox->currentData().toUInt())
     };
-    std::list<Pathfinder::PathfinderStrategy> thisPathfinderStratList;
-    thisPathfinderStratList.push_back(static_cast<Pathfinder::PathfinderStrategy>(
-                                              pathfindingAlgorithmComboBox->currentData().toUInt()));
-    return std::make_pair(thisGridConfig, thisPathfinderStratList);
+
+    auto thisStrat = static_cast<Pathfinder::PathfinderStrategy>(pathfindingAlgorithmComboBox->currentData().toUInt());
+    return RunInterface::SingleRunConfig(thisGridConfig, thisStrat);
 
 }
 
@@ -152,7 +151,7 @@ void GUI::Widgets::MultiConfigForm::resetForm() {
     iterationsSpinBox->setValue(1);
 }
 
-std::pair<RunInterface::RunGridConfig, std::list<Pathfinder::PathfinderStrategy>>
+std::variant<RunInterface::MultiRunConfig, RunInterface::SingleRunConfig>
 GUI::Widgets::MultiConfigForm::getFormParams() {
     RunInterface::RunGridConfig thisGridConfig = {
             static_cast<uint32_t>(gridWidthSpinBox->value()),
@@ -171,31 +170,30 @@ GUI::Widgets::MultiConfigForm::getFormParams() {
         thisPathfinderStratList.push_back(
                 static_cast<Pathfinder::PathfinderStrategy>(item->data(Qt::UserRole).toUInt()));
     }
-    return std::make_pair(thisGridConfig, thisPathfinderStratList);
+    return RunInterface::MultiRunConfig(thisGridConfig, thisPathfinderStratList);
 }
 
 void
-GUI::Widgets::MultiConfigForm::populate(const RunInterface::RunGridConfig &config,
-                                        const std::list<Pathfinder::PathfinderStrategy> &strats) {
-    gridHeightSpinBox->setValue(static_cast<int32_t>(config.gridHeight));
-    gridWidthSpinBox->setValue(static_cast<int32_t>(config.gridWidth));
-    obstacleDensitySpinBox->setValue(config.obstacleDensity);
-    minStartEndDistanceSpinBox->setValue(config.minStartEndDistance);
-    gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.obstacleGenStrategy) - 1);
-    if (config.repeatUnsolvables.has_value())
-        repeatUnsolvablesCheckBox->setChecked(config.repeatUnsolvables.value());
+GUI::Widgets::MultiConfigForm::populate(const RunInterface::MultiRunConfig &config) {
+    gridHeightSpinBox->setValue(static_cast<int32_t>(config.gridConfig.gridHeight));
+    gridWidthSpinBox->setValue(static_cast<int32_t>(config.gridConfig.gridWidth));
+    obstacleDensitySpinBox->setValue(config.gridConfig.obstacleDensity);
+    minStartEndDistanceSpinBox->setValue(config.gridConfig.minStartEndDistance);
+    gridGeneratorAlgorithmComboBox->setCurrentIndex(static_cast<uint8_t>(config.gridConfig.obstacleGenStrategy) - 1);
+    if (config.gridConfig.repeatUnsolvables.has_value())
+        repeatUnsolvablesCheckBox->setChecked(config.gridConfig.repeatUnsolvables.value());
     else
         repeatUnsolvablesCheckBox->setChecked(false);
 
-    if (config.iterations.has_value())
-        iterationsSpinBox->setValue(static_cast<int32_t>(config.iterations.value()));
+    if (config.gridConfig.iterations.has_value())
+        iterationsSpinBox->setValue(static_cast<int32_t>(config.gridConfig.iterations.value()));
     else
         iterationsSpinBox->setValue(1);
 
 
     QItemSelectionModel *selectionModel = pathfindingAlgorithmListWidget->selectionModel();
     std::unordered_set<uint8_t> stratSet;
-    for (const auto &strat: strats) {
+    for (const auto &strat: config.strats) {
         stratSet.insert(static_cast<uint8_t>(strat));
     }
     for (int32_t i = 0; i < pathfindingAlgorithmListWidget->count(); i++) {
