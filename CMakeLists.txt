@@ -68,6 +68,7 @@ find_package(GTest)
 if (GTEST_FOUND)
     include_directories(${GTEST_INCLUDE_DIRS})
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Tests/ModuleTests")
 
     # A-Star unit-Tests
     add_executable(AStarPathfinder_UnitTest Tests/UnitTests/a_star_unit_test.cpp)
@@ -95,6 +96,13 @@ if (GTEST_FOUND)
     add_test(NAME JPSUnitTest
             COMMAND JPSPathfinder_UnitTest
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/UnitTests)
+
+    # Headless Runner Module Test
+    add_executable(HeadlessRunner_ModuleTest Tests/ModuleTests/headless_runner_module_test.cpp)
+    target_link_libraries(HeadlessRunner_ModuleTest gtest_main gtest pthread GridGenerator Pathfinder Application)
+    add_test(NAME HeadlessRunnerModuleTest
+            COMMAND HeadlessRunner_ModuleTest
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Tests/ModuleTests)
 
 else (GTEST_FOUND)
     message("Could not find gtest, skipping tests.")
