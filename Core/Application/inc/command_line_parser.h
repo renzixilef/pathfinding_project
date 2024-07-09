@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QSet>
+#include <QDebug>
 #include <iterator>
 #include <variant>
 
@@ -46,6 +47,10 @@ namespace Application {
 
     private:
         PathfindingCommandParser();
+
+        inline static void printDefaultingToMessage(const QCommandLineOption& option, const QString&& defaultValue){
+            qDebug() << option.names() << " not set. Defaulting to: " << defaultValue;
+        }
 
         void addOption(const QCommandLineOption &option, const QStringList &setIds);
 

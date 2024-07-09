@@ -112,26 +112,32 @@ Application::PathfindingCommandParser::getRunConfig() const {
         if (gridDims == std::nullopt) return "Could not parse Grid dimensions, expected input 'width:height'.";
         thisConfig.gridWidth = gridDims.value()[0].toUInt();
         thisConfig.gridHeight = gridDims.value()[1].toUInt();
-    }
+    } else
+        printDefaultingToMessage(gridDimensionsOption,
+                                 QString("Width: %1 Height: %2.").arg(DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT));
+
     if (isSet(obstacleGenOption)) {
         auto obstacleGen = parseWithRegex(value(obstacleGenOption),
                                           QRegularExpression(R"(^\b[1-4]\b$)"));
         if (obstacleGen == std::nullopt) return "Could not parse Obstacle Generator, expected uint in [1,4].";
         thisConfig.obstacleGenStrategy = static_cast<GridGenerator::ObstacleGenStrategy>(
                 obstacleGen.value()[0].toUInt());
-    }
+    } else printDefaultingToMessage(gridDimensionsOption, QString("Random Obstacle Generator."));
+
     if (isSet(obstacleDensityOption)) {
         auto obstacleDensity = parseWithRegex(value(obstacleDensityOption),
                                               QRegularExpression(R"(^0(\.\d)?|0\.[0-6]\d*$|0\.7{1}0*$)"));
         if (obstacleDensity == std::nullopt) return "Could not parse Obstacle Density, expected float in [0,0.7].";
         thisConfig.obstacleDensity = obstacleDensity.value()[0].toFloat();
-    }
+    } else printDefaultingToMessage(gridDimensionsOption, QString("%1").arg(DEFAULT_OBSTACLE_DENSITY));
+
     if (isSet(minStartEndOption)) {
         auto minStartEndDistance = parseWithRegex(value(minStartEndOption),
                                                   QRegularExpression(R"(^(0(\.\d*)?|0.\d*[1-9]\d*|1(\.0*)?)$)"));
         if (minStartEndDistance == std::nullopt) return "Could not parse min Distance, expected float in [0,1]";
         thisConfig.minStartEndDistance = minStartEndDistance.value()[0].toFloat();
-    }
+    } else printDefaultingToMessage(gridDimensionsOption, QString("%1").arg(DEFAULT_START_END_DISTANCE));
+
     if (isSet(solverOption)) {
         auto solver = parseWithRegex(value(solverOption),
                                      QRegularExpression(R"(^\[\s?(?:(1|2|3)\s?,\s?){0,2}(1|2|3)?\s?\]$)"));
@@ -141,14 +147,23 @@ Application::PathfindingCommandParser::getRunConfig() const {
             solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(strat.toUInt()));
         }
     } else {
-        solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(DEFAULT_SOLVER));
+        auto strat = static_cast<Pathfinder::PathfinderStrategy>(DEFAULT_SOLVER);
+        const std::string
+                &stratText = Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText.at(strat);
+        printDefaultingToMessage(gridDimensionsOption, QString::fromStdString(stratText));
+        solverStrats.push_back(strat);
     }
+
     if (isSet(iterationsOption)) {
         auto iterations = parseWithRegex(value(iterationsOption),
                                          QRegularExpression(R"(^[1-9]\\d*$)"));
         if (iterations == std::nullopt) return "Could not parse iterations, expected uint";
         thisConfig.iterations = iterations.value()[0].toUInt();
+    }else{
+        thisConfig.iterations = DEFAULT_ITERATIONS;
+        printDefaultingToMessage(gridDimensionsOption, QString("%1").arg(1));
     }
+
     return RunInterface::MultiRunConfig(thisConfig, solverStrats);
 }
 
@@ -271,6 +286,7 @@ Application::PathfindingCommandParser::parseJSONStrats(const QJsonArray &stratsJ
     }
     return strats;
 }
+
 
 
 
