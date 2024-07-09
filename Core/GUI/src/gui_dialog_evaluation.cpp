@@ -1,4 +1,5 @@
 #include "gui_dialog_evaluation.h"
+#include "headless_multi_run.h"
 
 GUI::EvaluationDialog::EvaluationDialog(const GUI::EvaluationDialog::EvalMapType &map, QWidget *parent) :
         QDialog(parent),
@@ -20,8 +21,8 @@ GUI::EvaluationDialog::EvaluationDialog(const GUI::EvaluationDialog::EvalMapType
         labelText += "UNSOLVABLE GRIDS GENERATED: " + QString::number(std::get<1>(evalPair.second)) + "<br/>";
         for(auto& pathfinderEval: std::get<0>(evalPair.second)){
             labelText += "Pathfinder: " +
-                    QString::fromStdString(stratToText.at(pathfinderEval.first));
-            labelText+= generateEvalString(pathfinderEval.second);
+                    QString::fromStdString(stratToText.at(pathfinderEval.first)) + "\n";
+            labelText+= Application::HeadlessRunner::generateEvalString(pathfinderEval.second);
         }
         evalLabel->setText(labelText);
         evalLabel->setWordWrap(true);
@@ -39,32 +40,3 @@ GUI::EvaluationDialog::EvaluationDialog(const GUI::EvaluationDialog::EvalMapType
 
 }
 
-QString GUI::EvaluationDialog::generateEvalString(const auto& evalList) {
-    QString evalString{};
-    double absoluteSolvingUSeconds = 0;
-    uint32_t totalClosedCells = 0;
-    uint32_t totalVisitedCells = 0;
-    uint32_t absoluteStepsTaken = 0;
-    uint32_t numberOfGrids = evalList.size();
-
-    for(const auto& pathfinderReturn: evalList){
-        absoluteSolvingUSeconds += pathfinderReturn.solvingUSeconds;
-        absoluteStepsTaken += pathfinderReturn.stepCount;
-        totalClosedCells += pathfinderReturn.closedCells;
-        totalVisitedCells += pathfinderReturn.visitedCells;
-    }
-    double avgSolvingMSeconds = (absoluteSolvingUSeconds/1000)/numberOfGrids;
-    double avgUSecondsPerStep = absoluteSolvingUSeconds/absoluteStepsTaken;
-    double absoluteSolvingSeconds = absoluteSolvingUSeconds/(1000*1000);
-    double avgStepsTaken = static_cast<double>(absoluteStepsTaken)/numberOfGrids;
-
-    evalString += "<pre>      ABSOLUTE SOLVING TIME [s]: " + QString::number(absoluteSolvingSeconds) + "</pre>";
-    evalString += "<pre>      AVG SOLVING TIME [ms]: " + QString::number(avgSolvingMSeconds) + "</pre>";
-    evalString += "<pre>      AVG STEP TIME [us]: " + QString::number(avgUSecondsPerStep) + "</pre>";
-    evalString += "<pre>      AVG STEP COUNT [-]: " + QString::number(avgStepsTaken) + "</pre>";
-    evalString += "<pre>      TOTAL CLOSED CELLS [-]: " + QString::number(totalClosedCells) + "</pre>";
-    evalString += "<pre>      TOTAL VISITED CELLS [-]: " + QString::number(totalVisitedCells) + "</pre><br/>";
-    return evalString;
-
-
-}

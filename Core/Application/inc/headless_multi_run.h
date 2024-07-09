@@ -9,11 +9,14 @@ namespace Application {
         using EvalMapType = std::map<RunInterface::RunGridConfig, std::tuple<std::unordered_map<
                 Pathfinder::PathfinderStrategy, std::list<Pathfinder::PathfinderPerformanceMetric>>, uint32_t, QString>>;
 
-        explicit HeadlessRunner(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue): runQueue(queue){}
+        explicit HeadlessRunner(std::queue<std::pair<RunInterface::MultiRunConfig, QString>> &queue) : runQueue(
+                queue) {}
 
-        static QString generateConfigQString(const RunInterface::MultiRunConfig& configItem);
+        static QString generateConfigQString(const RunInterface::MultiRunConfig &configItem);
 
         virtual void headlessSolveAllNoWait();
+
+        static QString generateEvalString(const auto& evalList, bool formatForGui = true);
 
     protected:
         inline void incrementUnsolvableCountForConfig(
@@ -37,6 +40,12 @@ namespace Application {
         std::queue<std::pair<RunInterface::MultiRunConfig, QString>> runQueue;
 
     private:
-        void headlessSolveOneConfigNoWait(std::pair<RunInterface::MultiRunConfig, QString>& itemConfig);
+        void headlessSolveOneConfigNoWait(std::pair<RunInterface::MultiRunConfig, QString> &itemConfig);
+
+        void headlessPrintEvaluation();
+
+        static void updateProgressBar(uint16_t percent);
+
+        static uint32_t getConsoleWidth();
     };
 }
