@@ -9,12 +9,12 @@ TEST(Application, HeadlessRunnerModuleTest) {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint16_t> distWidth(50, 500); // replace with your range
-    std::uniform_int_distribution<uint16_t> distHeight(50, 500); // replace with your range
-    std::uniform_real_distribution<float> distDensity(0.2, 0.7); // replace with your range
+    std::uniform_int_distribution<uint16_t> distWidth(50, 500);
+    std::uniform_int_distribution<uint16_t> distHeight(50, 500);
+    std::uniform_real_distribution<float> distDensity(0.2, 0.7);
     std::uniform_real_distribution<float> distDistance(0.5, 0.9);
-    std::uniform_int_distribution<uint8_t> distObstacleStrategy(1, 4); // replace with your range
-    std::uniform_int_distribution<uint16_t> distIterations(20, 100); // replace with your range
+    std::uniform_int_distribution<uint8_t> distObstacleStrategy(1, 4);
+    std::uniform_int_distribution<uint16_t> distIterations(20, 100);
     std::vector<Pathfinder::PathfinderStrategy> solverStrats{Pathfinder::PathfinderStrategy::PATHFINDER_DIJKSTRA,
                                                              Pathfinder::PathfinderStrategy::PATHFINDER_JUMP_POINT_SEARCH,
                                                              Pathfinder::PathfinderStrategy::PATHFINDER_A_STAR};
@@ -26,7 +26,7 @@ TEST(Application, HeadlessRunnerModuleTest) {
         RunInterface::RunGridConfig config{distWidth(gen), distHeight(gen),
                                              distDensity(gen), distDistance(gen),
                                              static_cast<GridGenerator::ObstacleGenStrategy>(distObstacleStrategy(gen)),
-                                             distIterations(gen), true};
+                                             distIterations(gen), false};
         std::list<Pathfinder::PathfinderStrategy> stratSublist(solverStrats.begin(),
                                                                solverStrats.begin() + distSize(gen));
         RunInterface::MultiRunConfig multiConfig{config, stratSublist};
