@@ -17,7 +17,6 @@ void Application::PathfindingCommandParser::addOption(const QCommandLineOption &
 QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() const {
     QSet<QString> sharedSets;
     bool isFirstOption = false;
-
     for (auto it = optionSets.constBegin(); it != optionSets.constEnd(); it++) {
         QSet<QString> currentOptionSets;
         for (const OptionWrapper &opt: it.value()) {
@@ -35,28 +34,33 @@ QPair<bool, QString> Application::PathfindingCommandParser::inputOptionsValid() 
     return qMakePair(true, QString());
 }
 
-// TODO: better description for command line options
 Application::PathfindingCommandParser::PathfindingCommandParser()
         : QCommandLineParser(),
           guiOption(QStringList() << "g" << "gui", "Starts the application in GUI mode."),
-          headlessOption(QStringList() << "t" << "headless", "Starts the application in headless mode."),
+          headlessOption(QStringList() << "headless", "Starts the application in headless mode."),
           headlessJSONConfigOption(QStringList() << "j" << "json-path",
                                    "Specify the path to a json file containing the run configuration.",
                                    "json-path"),
-          gridDimensionsOption(QStringList() << "gd" << "grid-dimensions",
+          gridDimensionsOption(QStringList() << "grid-dimensions",
                                "Specify the grids dimensions as 'width:height'", "dimensions"),
-          obstacleGenOption(QStringList() << "oa" << "obstacle-algorithm",
-                            "Specify the algorithm to use for obstacle generation.",
+          obstacleGenOption(QStringList() << "obstacle-algorithm",
+                            "Specify the algorithm to use for obstacle generation as an uint in [1,4].\n"
+                            "1: Random Obstacle Generator\n2: Wall-like Obstacle Generator\n"
+                            "3: Drunken-Walk Obstacle Generator\n4: Perlin-Noise Obstacle Generator",
                             "obstacle-algorithm"),
-          obstacleDensityOption(QStringList() << "od" << "obstacle-density",
+          obstacleDensityOption(QStringList() << "obstacle-density",
                                 "Specify the obstacle-density between 0-1 for obstacle generation.",
                                 "obstacle-density"),
-          minStartEndOption(QStringList() << "se" << "start-end",
-                            "Specify the minimum start to end distance, 0-1 (times shorter side len).",
+          minStartEndOption(QStringList() << "start-end",
+                            "Specify the minimum start to end distance, 0-1 (times shorter side length).",
                             "start-end-distance"),
-          solverOption(QStringList() << "pa" << "pathfinding-algorithm",
-                       "Specify the pathfinding algorithm to use for the generated grid.",
-                       "pathfinding-algorithm") {
+          solverOption(QStringList() << "pathfinding-algorithm",
+                       "Specify the pathfinding algorithm to use for the generated grid as uint in [1,3].\n"
+                       "1: Dijkstra's Algorithm\n2: A* Algorithm\n3: Jump-Point-Search Algorithm",
+                       "pathfinding-algorithm"),
+          iterationsOption(QStringList() << "i" << "iterations"
+                                         << "Specify the number of iterations for the input configuration as uint."
+                                         << "iterations") {
     setApplicationDescription(
             "Command-line and GUI Application for pathfinding algorithm benchmarking");
 
@@ -75,6 +79,8 @@ Application::PathfindingCommandParser::PathfindingCommandParser()
     addOption(minStartEndOption, QStringList() << "headless" << "single-run");
 
     addOption(solverOption, QStringList() << "headless" << "single-run");
+
+    addOption(iterationsOption, QStringList() << "headless" << "single-run");
 
     addHelpOption();
     addVersionOption();
@@ -102,14 +108,14 @@ Application::PathfindingCommandParser::getRunConfig() const {
     std::list<Pathfinder::PathfinderStrategy> solverStrats;
     if (isSet(gridDimensionsOption)) {
         auto gridDims = parseWithRegex(value(gridDimensionsOption),
-                                       QRegularExpression(R"((\d+):(\d+))"));
+                                       QRegularExpression(R"(^(\d+):(\d+)$)"));
         if (gridDims == std::nullopt) return "Could not parse Grid dimensions, expected input 'width:height'.";
         thisConfig.gridWidth = gridDims.value()[0].toUInt();
         thisConfig.gridHeight = gridDims.value()[1].toUInt();
     }
     if (isSet(obstacleGenOption)) {
         auto obstacleGen = parseWithRegex(value(obstacleGenOption),
-                                          QRegularExpression(R"(\b[1-4]\b)"));
+                                          QRegularExpression(R"(^\b[1-4]\b$)"));
         if (obstacleGen == std::nullopt) return "Could not parse Obstacle Generator, expected uint in [1,4].";
         thisConfig.obstacleGenStrategy = static_cast<GridGenerator::ObstacleGenStrategy>(
                 obstacleGen.value()[0].toUInt());
@@ -129,13 +135,19 @@ Application::PathfindingCommandParser::getRunConfig() const {
     if (isSet(solverOption)) {
         auto solver = parseWithRegex(value(solverOption),
                                      QRegularExpression(R"(^\[\s?(?:(1|2|3)\s?,\s?){0,2}(1|2|3)?\s?\]$)"));
-        if (solver == std::nullopt) return "Could not parse Solver, expected list of unique uint in [1,3].";
+        if (solver == std::nullopt) return "Could not parse Solver, expected list of unique uints in [1,3].";
         auto uniqueStrats = QSet<QString>(solver.value().begin(), solver.value().end());
         for (const QString &strat: uniqueStrats) {
             solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(strat.toUInt()));
         }
     } else {
         solverStrats.push_back(static_cast<Pathfinder::PathfinderStrategy>(DEFAULT_SOLVER));
+    }
+    if (isSet(iterationsOption)) {
+        auto iterations = parseWithRegex(value(iterationsOption),
+                                         QRegularExpression(R"(^[1-9]\\d*$)"));
+        if (iterations == std::nullopt) return "Could not parse iterations, expected uint";
+        thisConfig.iterations = iterations.value()[0].toUInt();
     }
     return RunInterface::MultiRunConfig(thisConfig, solverStrats);
 }

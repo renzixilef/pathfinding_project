@@ -67,6 +67,7 @@ namespace Application {
         QCommandLineOption obstacleDensityOption;
         QCommandLineOption minStartEndOption;
         QCommandLineOption solverOption;
+        QCommandLineOption iterationsOption;
     };
 
 }
