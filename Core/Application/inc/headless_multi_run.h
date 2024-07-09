@@ -16,6 +16,8 @@ namespace Application {
 
         virtual void headlessSolveAllNoWait();
 
+        static QString generateEvalString(const auto& evalList, bool formatForGui = true);
+
     protected:
         inline void incrementUnsolvableCountForConfig(
                 const std::pair<RunInterface::MultiRunConfig, QString> &currentConfig) {
@@ -39,6 +41,8 @@ namespace Application {
 
     private:
         void headlessSolveOneConfigNoWait(std::pair<RunInterface::MultiRunConfig, QString> &itemConfig);
+
+        void headlessPrintEvaluation();
 
         static void updateProgressBar(uint16_t percent);
 

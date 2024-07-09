@@ -18,7 +18,6 @@ namespace GUI {
         explicit EvaluationDialog(const EvalMapType& map, QWidget* parent);
 
     private:
-        static QString generateEvalString(const auto& evalList);
 
         const EvalMapType& evalMap;
 
