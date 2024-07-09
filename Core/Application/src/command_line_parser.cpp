@@ -286,7 +286,3 @@ Application::PathfindingCommandParser::parseJSONStrats(const QJsonArray &stratsJ
     }
     return strats;
 }
-
-
-
-
