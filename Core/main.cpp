@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     if (parser.getUIType() == Application::UIType::UI_TYPE_GUI) {
         QMainWindow *mainWindow = new GUI::MainWindow();
         mainWindow->show();
+        return QCoreApplication::exec();
     } else {
         std::list<RunInterface::MultiRunConfig> runConfig;
         if (parser.getConfigInputType() == Application::HeadlessConfigInputType::INPUT_JSON_PATH) {
@@ -53,9 +54,8 @@ int main(int argc, char *argv[]) {
             runQueue.emplace(singleConfig, itemText);
         }
         Application::HeadlessRunner headlessRunner(runQueue);
-
-        //headlessRunner.headlessSolveAllNoWait();
+        headlessRunner.headlessSolveAllNoWait();
+        return 0;
     }
-    return QCoreApplication::exec();
 }
 
