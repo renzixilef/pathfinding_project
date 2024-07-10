@@ -8,6 +8,8 @@ GUI::EvaluationDialog::EvaluationDialog(const GUI::EvaluationDialog::EvalMapType
         scrollWidget(new QWidget()),
         mainLayout(new QVBoxLayout()),
         scrollAreaLayout(new QVBoxLayout()) {
+    setWindowTitle("Pathfinder 1.0 - Multi Run - Evaluation");
+
     overviewScrollArea->setWidgetResizable(true);
     auto &stratToText =  Pathfinder::PathfinderStrategyParser::pathfindingStrategyToDisplayableText;
 

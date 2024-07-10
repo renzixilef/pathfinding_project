@@ -4,7 +4,7 @@
 
 GUI::MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), tabWidget(new QTabWidget(this)) {
     setCentralWidget(tabWidget);
-
+    setWindowTitle("Pathfinder 1.0");
     auto* tabSingleRun = new GUI::Widgets::SingleRunTab();
     tabWidget->addTab(tabSingleRun, "Single Run");
 

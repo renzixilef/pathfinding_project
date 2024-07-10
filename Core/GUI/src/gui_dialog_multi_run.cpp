@@ -19,6 +19,8 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunC
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
     qRegisterMetaType<int32_t>("int32_t");
 
+    setWindowTitle("Pathfinder 1.0 - MultiRun");
+
     auto nextConfig = runQueue.front();
     setDisplayableStringForCurrentConfig(nextConfig);
     shouldRepeatUnsolvables = nextConfig.first.gridConfig.repeatUnsolvables.value();

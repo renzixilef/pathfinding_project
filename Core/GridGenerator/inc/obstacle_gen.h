@@ -91,10 +91,10 @@ namespace GridGenerator {
          * @param thisCoord The coordinate that gets checked
          * @return True if Coordinate can be marked, false otherwise.
          */
-        static inline bool isValidToMarkAsObstacle(const Grid& grid, const GridCoordinate& thisCoord) {
+        static inline bool isValidToMarkAsObstacle(const Grid &grid, const GridCoordinate &thisCoord) {
             return grid(thisCoord).getState() != GridGenerator::CellState::CELL_OBSTACLE &&
-                    thisCoord != grid.getStartCoordinates() &&
-                    thisCoord != grid.getEndCoordinates();
+                   thisCoord != grid.getStartCoordinates() &&
+                   thisCoord != grid.getEndCoordinates();
         }
 
 

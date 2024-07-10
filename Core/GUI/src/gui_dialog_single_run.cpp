@@ -29,6 +29,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::SingleRunConfig &runCo
 
     qRegisterMetaType<std::string>("std::string");
     showMaximized();
+    setWindowTitle("Pathfinder 1.0 - Single Run");
 
     toggleRunButton->setStyleSheet("background-color: green; color: white;");
 
@@ -155,7 +156,7 @@ void GUI::SingleRunDialog::serializeButtonHandler() {
                                                     "/home", tr("Binary Files (*.bin);; All Files(*)"));
     std::string filenameStd = filename.toStdString();
 
-    if(!filenameStd.empty()){
+    if (!filenameStd.empty()) {
         emit serialize(filenameStd);
         toggleRunButton->setDisabled(true);
     }
@@ -167,27 +168,29 @@ void GUI::SingleRunDialog::onSaveDone() {
 }
 
 void GUI::SingleRunDialog::toggleStartEndRedefinitionButtonHandler() {
-    if(gridWidget->getRedefinitionStatus()){
+    if (gridWidget->getRedefinitionStatus()) {
         toggleStartEndRedefinitionButton->setStyleSheet("");
         toggleStartEndRedefinitionButton->setText("Choose Start/End");
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setEnabled(true);
         nextStepButton->setEnabled(true);
-        if(!exportRunMenuButton->isHidden()){
+        if (!exportRunMenuButton->isHidden()) {
             exportRunMenuButton->setEnabled(true);
         }
         emit startEndChanged();
         gridWidget->resetPixmapQueue();
-    }else{
+    } else {
         toggleStartEndRedefinitionButton->setText("Done");
         toggleStartEndRedefinitionButton->setStyleSheet("background-color: red;");
         gridWidget->toggleStartEndRedefinitionPhase();
         toggleRunButton->setDisabled(true);
         nextStepButton->setDisabled(true);
-        if(!exportRunMenuButton->isHidden()){
+        if (!exportRunMenuButton->isHidden()) {
             exportRunMenuButton->setDisabled(true);
         }
         QMessageBox redefinitionExplainerBox;
+        redefinitionExplainerBox.setWindowTitle("Info");
+        redefinitionExplainerBox.setMinimumWidth(800);
         redefinitionExplainerBox.setText("How to redefine Start/End");
         redefinitionExplainerBox.setInformativeText("Set start position: Left Click on the new node\n"
                                                     "Set end position: Right Click on the new node");
@@ -200,16 +203,17 @@ void GUI::SingleRunDialog::exportVideoHandler() {
                                                     "/home", tr("AVI Files (*.avi);; All Files(*)"));
     std::string filenameStd = filename.toStdString();
 
-    if(!filenameStd.empty()){
-        auto msgBox = new QMessageBox;
-        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
-        msgBox->setWindowModality(Qt::ApplicationModal);
-        msgBox->setText("Please wait...");
-        msgBox->setStandardButtons(QMessageBox::NoButton);
-        msgBox->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowTitleHint);
-        msgBox->show();
-        QObject::connect(&exportVideoWatcher, &QFutureWatcher<void>::finished, msgBox, &QMessageBox::accept);
-        exportVideoFuture = QtConcurrent::run([this, filenameStd](){
+    if (!filenameStd.empty()) {
+        auto waitForVideoExportBox = new QMessageBox;
+        waitForVideoExportBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        waitForVideoExportBox->setWindowModality(Qt::ApplicationModal);
+        waitForVideoExportBox->setText("Please wait...");
+        waitForVideoExportBox->setStandardButtons(QMessageBox::NoButton);
+        waitForVideoExportBox->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowTitleHint);
+        waitForVideoExportBox->show();
+        QObject::connect(&exportVideoWatcher, &QFutureWatcher<void>::finished,
+                         waitForVideoExportBox, &QMessageBox::accept);
+        exportVideoFuture = QtConcurrent::run([this, filenameStd]() {
             gridWidget->exportPixmapQueue(filenameStd);
         });
         exportVideoWatcher.setFuture(exportVideoFuture);
@@ -221,7 +225,7 @@ void GUI::SingleRunDialog::closeEvent(QCloseEvent *event) {
     runInterface->terminate();
     QThread::msleep(1000);
     singleRunThread->quit();
-    if(!singleRunThread->wait(3000)){
+    if (!singleRunThread->wait(3000)) {
         singleRunThread->terminate();
         singleRunThread->wait();
     }
