@@ -39,7 +39,8 @@ namespace Application {
 
         [[nodiscard]] std::variant<RunInterface::MultiRunConfig, QString> getRunConfig() const;
 
-        [[nodiscard]] std::variant<std::list<RunInterface::MultiRunConfig>, QString> parseJSONConfig();
+        [[nodiscard]] std::variant<std::list<RunInterface::MultiRunConfig>, QString>
+        parseJSONConfig(std::optional<QString> inputFile = std::nullopt);
 
         PathfindingCommandParser(const PathfindingCommandParser &) = delete;
 
@@ -48,7 +49,7 @@ namespace Application {
     private:
         PathfindingCommandParser();
 
-        inline static void printDefaultingToMessage(const QCommandLineOption& option, const QString&& defaultValue){
+        inline static void printDefaultingToMessage(const QCommandLineOption &option, const QString &&defaultValue) {
             qDebug() << option.names() << " not set. Defaulting to: " << defaultValue;
         }
 

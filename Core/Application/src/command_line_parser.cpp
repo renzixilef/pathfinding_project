@@ -181,8 +181,10 @@ Application::PathfindingCommandParser::parseWithRegex(const QString &str, QRegul
 }
 
 std::variant<std::list<RunInterface::MultiRunConfig>, QString>
-Application::PathfindingCommandParser::parseJSONConfig() {
-    QString filename = value(headlessJSONConfigOption);
+Application::PathfindingCommandParser::parseJSONConfig(std::optional<QString> inputFile) {
+    QString filename;
+    if(inputFile != std::nullopt) filename = inputFile.value();
+    else filename = value(headlessJSONConfigOption);
     QFile jsonFile(filename);
     if (!jsonFile.open(QFile::ReadOnly)) return QString("Failed to open JSON file: %1").arg(filename);
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonFile.readAll()));
@@ -260,7 +262,7 @@ Application::PathfindingCommandParser::parseJSONGridConfig(const QJsonObject &gr
         if (!startEndDist.isDouble() || startEndDist.toDouble() < 0.0 || startEndDist.toDouble() > 1.0)
             return QString("'minStartEndDistance' must be a float between 0.0 and 1.0.");
         gridConfig.minStartEndDistance = static_cast<float>(startEndDist.toDouble());
-    } else  return QString("Failed to parse JSON file: Field minStartEndDistance not present");
+    } else return QString("Failed to parse JSON file: Field minStartEndDistance not present");
 
     if (gridConfigJson.contains("repeatUnsolvables")) {
         QJsonValue repeatUnsolvables = gridConfigJson["repeatUnsolvables"];

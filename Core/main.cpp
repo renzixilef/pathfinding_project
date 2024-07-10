@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-#include <QDebug>
-
 #include "command_line_parser.h"
 #include "gui_main_window.h"
 #include "headless_multi_run.h"
@@ -50,7 +48,7 @@ int main(int argc, char *argv[]) {
             runConfig.push_back(std::get<RunInterface::MultiRunConfig>(config));
         }
         std::queue<std::pair<RunInterface::MultiRunConfig, QString>> runQueue;
-        for (const auto& singleConfig: runConfig) {
+        for (const auto &singleConfig: runConfig) {
             QString itemText = Application::HeadlessRunner::generateConfigQString(singleConfig);
             runQueue.emplace(singleConfig, itemText);
         }

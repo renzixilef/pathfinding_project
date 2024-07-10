@@ -29,7 +29,7 @@ namespace GUI::Widgets {
     public:
         explicit MultiRunTab(QWidget *parent = nullptr);
 
-    private slots:
+    private:
 
         void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
@@ -39,7 +39,7 @@ namespace GUI::Widgets {
 
         void startRuns();
 
-    private:
+        void importJson();
 
         void setupConnections();
 
@@ -54,6 +54,7 @@ namespace GUI::Widgets {
         QPushButton *startButton;
         QPushButton *addConfigButton;
         QPushButton *removeConfigButton;
+        QPushButton *importJsonButton;
 
         MultiConfigForm *configForm;
 
