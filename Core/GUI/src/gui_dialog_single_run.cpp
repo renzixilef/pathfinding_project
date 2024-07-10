@@ -29,6 +29,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::SingleRunConfig &runCo
 
     qRegisterMetaType<std::string>("std::string");
     showMaximized();
+    setWindowTitle("Pathfinder 1.0 - Single Run");
 
     toggleRunButton->setStyleSheet("background-color: green; color: white;");
 
