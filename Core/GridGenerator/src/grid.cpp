@@ -1,9 +1,9 @@
 #include "grid.h"
 
-#include "obstacle_gen.h"
-
 #include <functional>
 #include <fstream>
+
+#include "obstacle_gen.h"
 
 const std::vector<std::pair<int8_t, int8_t>> GridGenerator::Grid::offsets = {
         {-1, 0},

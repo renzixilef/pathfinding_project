@@ -1,6 +1,5 @@
 #include "timer.h"
 
-
 void Pathfinder::PathfinderTimer::stepBegin() {
     stepStartTime = std::chrono::high_resolution_clock::now();
 }

@@ -5,10 +5,8 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
 #include <random>
+#include <map>
 #include <memory>
 
 #include "grid.h"

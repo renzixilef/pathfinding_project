@@ -1,4 +1,5 @@
 #include "runner.h"
+
 #include <memory>
 
 RunInterface::SingleRun::SingleRun(const RunInterface::SingleRunConfig &runConfig) :
