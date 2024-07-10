@@ -9,6 +9,7 @@
 #include "gui_main_window.h"
 #include "headless_multi_run.h"
 
+// TODO: repeatUnsolvables, error message if over MAX_TRIES maybe?
 
 int main(int argc, char *argv[]) {
     QApplication pathfindingApp(argc, argv);
