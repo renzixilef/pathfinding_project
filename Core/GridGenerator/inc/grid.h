@@ -96,16 +96,6 @@ namespace GridGenerator {
         }
 
         /**
-         * @fn getHash
-         * @brief Function to compute a hash code for a GridCoordinate object.
-         * @param c GridCoordinate object to compute hash code for.
-         * @return Hash code as a size_t object.
-         */
-        static std::size_t getHash(const GridCoordinate &c) {
-            return std::hash<uint32_t>()(c.x) ^ (std::hash<uint32_t>()(c.y) << 1);
-        }
-
-        /**
          * @fn getDirection
          * @brief Function to obtain the direction between two GridCoordinate objects as a pair of integers.
          * @param first First GridCoordinate object.
@@ -217,15 +207,6 @@ namespace GridGenerator {
          * @return A vector of GridCoordinate objects representing the neighboring cells' coordinates, if any.
          */
         [[nodiscard]] std::vector<GridCoordinate> getNeighborsCoordinates(const GridCoordinate &coords) const;
-
-
-        /**
-         * @fn getStartCell
-         * @brief Retrieve the start cell.
-         *
-         * @return Pointer to the start cell of the path.
-         */
-        [[nodiscard]] inline Cell *getStartCell() const { return startCell; }
 
         /**
          * @fn getStartCoordinates
