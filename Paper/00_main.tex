@@ -1,0 +1,200 @@
+%***********************************************************************************************%
+%===============================================================================================%
+% 																								%
+%										Ausarbeitung zum Thema  								%
+% 																								%
+%               "Implementierung einer GUI-basierten Pathfinding-Algorithmen Benchmarking       %
+%                            Software im Modul 'Effizient Programmieren'" 					    %
+% 																								%
+%									 von Felix Renzikowski, 2024							    %
+% 																								%
+%===============================================================================================%
+%***********************************************************************************************%
+
+
+% ============= Klassendefinition ============= %
+
+\documentclass[
+	%draft, 		% Entwurfsstadium
+	final, 			% fertiges Dokument
+	paper=a4,
+	pagesize=auto,
+	fontsize=12pt,
+	ngerman,
+	openright,
+	twoside,		% Aktivieren, falls doppelseitiger Druck
+	numbers=noendperiod,
+]{scrreprt}
+
+% ============= Verwendete Pakete ============= %
+
+% Dokumentinformationen
+\usepackage{hyperref}
+\hypersetup{
+	pdftitle={Implementierung einer GUI-basierten Pathfinding-Algorithmen Benchmarking Software im Modul 'Effizient Programmieren'},
+	pdfsubject={Abschlussausarbeitung},
+	pdfauthor={Felix Renzikowski},
+	pdfkeywords={C++, CMake, Qt5, Effizient programmieren},
+	pdfborder={0 0 0},
+	colorlinks=true,
+	breaklinks=true,
+	linktocpage=true,
+	citecolor=black,
+	linkcolor=black,	
+	menucolor=black,	
+	urlcolor=black
+}
+\urlstyle{same}
+
+% Allgemeine Pakete
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}	% Sonderzeichen
+\usepackage{graphicx,color}
+\usepackage[ngerman]{babel}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{acronym}
+\usepackage[labelfont=bf]{caption}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[headsepline,automark,nouppercase]{scrlayer-scrpage}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfkeys{/pgf/number format/.cd, use comma, 1000 sep={.}}
+\usepgfplotslibrary{groupplots}
+\usepackage{pgfgantt}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\pgfplotsset{compat=newest}
+\usepackage{grffile}
+\usepackage{subcaption}
+\usepackage[nottoc]{tocbibind}
+\usepackage{lmodern}
+\usepackage{siunitx}
+\usepackage[export]{adjustbox}
+\sisetup{output-decimal-marker = {,}}
+\usepackage{mathtools}
+\usepackage[mode=buildnew]{standalone}
+\usepackage{wrapfig}
+\usepackage[ngerman=ngerman-x-latest]{hyphsubst}
+\raggedbottom 
+
+\makeatletter
+\renewcommand{\fnum@figure}{Abb. \thefigure}
+\makeatother
+
+% Einstellungen der Kopf- und Fußzeilen
+\ohead{\headmark}									% Oben Rechts etwas angeben
+\chead{}											% Keine Ausgabe oben in der Mitte
+\cfoot[]{}											% Keine Seitenzahl in der Mitte
+\ofoot[\pagemark]{\pagemark}						% Seitenzahlen rechts
+%\automark{section}									% Sektionen in Kopfzeile (Einseitiger Modus)
+\renewcommand*{\headfont}{\normalfont}				% Kein kursiver Text in Kopfzeile
+\pagestyle{scrheadings}
+
+% Absätze und Abstände
+\renewcommand{\baselinestretch}{1}\normalsize		% Zeilenabstand
+\setlength{\parindent}{0pt}							% Kein Einrücken nach Absatz
+\geometry{inner=31.5mm,outer=31.5mm,bottom=3cm}		% Abstand zu unterem Seitenrand
+\textwidth147mm
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ============= 	 Beginn des Dokuments  	   ============= %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\pagenumbering{Roman}							% Römische Seitenzahlen bis zum Hauptteil
+% ============= Titelseite =========== %
+\newpage
+\input{95_titelseite}
+\addtocounter{page}{-1}
+
+% ============= Vorspann ============= %
+
+\chapter*{Kurzfassung}
+\addcontentsline{toc}{chapter}{Kurzfassung}
+\input{93_kurzfassung}
+\newpage
+
+\pagestyle{scrheadings}
+\renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
+\pdfbookmark[0]{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
+\renewcommand{\baselinestretch}{1.2}\normalsize						% Zeilenabstand
+\tableofcontents													% Inhaltsverzeichnis
+\renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
+\renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
+
+% ============= Symbolverzeichnis ============= %
+% \chapter*{Nomenklatur}
+% \addcontentsline{toc}{chapter}{Nomenklatur}
+% \renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
+% \input{97_nomenklatur}
+% \renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
+% \markleft{Nomenklatur}
+
+%\renewcommand*{\listoffigures}{
+%	\begingroup
+%	%\tocchapter
+%	\tocfile{\listfigurename}{lof}
+%	\endgroup
+%}
+
+%\cleardoublepage
+%\setlength{\cftfigindent}{0em}
+%\renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
+%\pdfbookmark{Abbildungsverzeichnis}{lof}
+%\listoffigures 														% Abbildungsverzeichnis
+%\markleft{Abbildungsverzeichnis}
+
+%\renewcommand*{\listoftables}{
+%	\begingroup
+	%\tocchapter
+%	\tocfile{\listtablename}{lot}
+%	\endgroup
+%}
+
+\pdfbookmark[0]{Tabellenverzeichnis}{tbv}							% Tabellenverzeichnis im pdf als Bookmark anzeigen
+\setlength{\cfttabindent}{0em}
+\listoftables														% Tabellenverzeichnis
+\renewcommand{\baselinestretch}{1}\normalsize						% Zeilenabstand
+
+% ============= Hauptteil ============= %
+\cleardoubleoddpage
+
+\pagenumbering{arabic}  											% Arabische Zahlen im Hauptteil bis zum Anhang
+
+\include{01_einleitung}
+
+%\include{02_grundlagen}
+
+%\include{03_hauptteil}
+
+%\include{04_ergebnisse}
+
+%\include{09_zusammenfassung_und_ausblick}
+
+% ============= Literaturverzeichnis ============= %
+\renewcommand{\baselinestretch}{1.2}\normalsize
+\clearpage						% Zeilenabstand
+\bibliographystyle{plaindin}
+%\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\bibliography{bibluS}
+\renewcommand{\baselinestretch}{1}\normalsize						% Zeilenabstand
+
+% =============Anhang ============= %
+%\appendix
+%\input{10_anhang}
+
+% ============= Leerseite ============= %
+\newpage
+\pagestyle{empty}
+\phantom{t}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ============= 	  Ende des Dokuments  	   ============= %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
