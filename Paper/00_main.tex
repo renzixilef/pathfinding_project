@@ -61,7 +61,7 @@
 \usepackage{float}
 \usepackage[headsepline,automark,nouppercase]{scrlayer-scrpage}
 \usepackage{pdfpages}
-\usepackage{tikz}
+\usepackage{tikz, tikz-uml}
 \usepackage{pgfplots}
 \pgfkeys{/pgf/number format/.cd, use comma, 1000 sep={.}}
 \usepgfplotslibrary{groupplots}
@@ -113,12 +113,6 @@
 \addtocounter{page}{-1}
 
 % ============= Vorspann ============= %
-
-\chapter*{Kurzfassung}
-\addcontentsline{toc}{chapter}{Kurzfassung}
-\input{93_kurzfassung}
-\newpage
-
 \pagestyle{scrheadings}
 \renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
 \pdfbookmark[0]{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
@@ -128,12 +122,12 @@
 \renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
 
 % ============= Symbolverzeichnis ============= %
-% \chapter*{Nomenklatur}
-% \addcontentsline{toc}{chapter}{Nomenklatur}
-% \renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
-% \input{97_nomenklatur}
-% \renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
-% \markleft{Nomenklatur}
+\chapter*{Nomenklatur}
+\addcontentsline{toc}{chapter}{Nomenklatur}
+\renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
+\input{97_nomenklatur}
+\renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
+\markleft{Nomenklatur}
 
 %\renewcommand*{\listoffigures}{
 %	\begingroup

@@ -7,9 +7,50 @@
 \section{Zielsetzung}
 \label{sec:motivation}
 %********************************
-% TODO: Inhalt...
+Im Rahmen des Moduls `Effizient Programmieren' im Masterstudiengang Luft- und Raumfahrttechnik an der Universität Stuttgart
+wurde ein GUI-basiertes Programm zur Lösung von 2D Grids mithilfe diverser Pathfinding-Algorithmen in C++ entwickelt.
+Ziel des Projekts war es, die effiziente Gestaltung von Codeprojekten und Entwicklungsprozessen zu erlernen und anzuwenden.
+Der Schwerpunkt lag hierbei sowohl auf der algorithmischen Optimierung als auch auf der Implementierung moderner Softwareentwicklungsmethoden und -werkzeuge.
 
 %********************************
-\section{Gliederung der Arbeit}
-\label{sec:gliederung}
+\section{Projektbeschreibung}
+\label{sec:beschreibung}
 %********************************
+Das entwickelte Programm ermöglicht die Visualisierung und Lösung von 2D Grids unter Verwendung verschiedener Pathfinding-Algorithmen wie A*, Dijkstra und \ac{JPS}.
+Über ein \ac{GUI} können Anwender Start- und Zielpunkte definieren.
+Die Algorithmen berechnen den optimalen Pfad und visualisieren diesen in Echtzeit.
+Außerdem können im Multi-Run Modus des Programms laufzeitoptimierte Benchmarks der implementierten Algorithmen mit verschiedenen Grid-Konfigurationen durchgeführt werden.
+%********************************
+\subsection*{Verwendete Tools und Technologien}
+%********************************
+Zur Umsetzung des Projekts kamen unter anderem folgende Tools und Technologien zum Einsatz:
+\begin{itemize}
+\item CMake: Einsatz als plattformunabhängiges Build-System zur effizienten Verwaltung von Abhängigkeiten und Compiler-Optionen.
+\item \ac{CI}: Einrichtung einer CI-Pipeline zur kontinuierlichen Überprüfung des Codes und Ausführung automatisierter Tests.
+\item \ac{IDE}: Verwendung von CLion (JetBrains).
+\item Versionskontrolle: Verwendung von Git und GitHub zur Versionskontrolle und zum nahtlosen Arbeiten auf verschiedenen Geräten.
+\end{itemize}
+
+%********************************
+\subsection*{Optimierungen}
+%********************************
+Im Entwicklungsprozess wurden mehrere Optimierungstechniken angewendet, um die Effizienz des Programms zu steigern:
+\begin{itemize}
+\item Algorithmische Optimierungen: Verbesserung des A*- und \ac{JPS}-Algorithmus durch eine geeignete Wahl der Heuristikfunktion und den Einsatz effizienter Datenstrukturen.
+\item Speicheroptimierungen: Reduktion des Speicherverbrauchs durch den Einsatz von smarten Zeigern und das Vermeiden unnötiger Kopien.
+\item Parallelisierung: Parallelisierung von Berechnungsteilen und \ac{GUI}-Event-Loop zur Aufrechterhaltung der \ac{GUI}-Interaktion.
+\end{itemize}
+
+\subsection*{Lerneffekte}
+Das Projekt ermöglichte wertvolle Erkenntnisse in verschiedenen Bereichen der effizienten Softwareentwicklung:
+\begin{itemize}
+\item Vertiefung moderner C++-Techniken und Best Practices.
+\item Erfahrungen in der Einrichtung und Nutzung von CI-Pipelines zur Verbesserung der Codequalität und -stabilität.
+\item Verbesserung der Fähigkeiten im Schreiben und Strukturieren von Tests.
+\item Effiziente Nutzung von Entwicklungswerkzeugen und -umgebungen zur Steigerung der Produktivität.
+\end{itemize}
+Zusammenfassend hat das Projekt nicht nur zur Verbesserung der technischen Fähigkeiten beigetragen, sondern auch die Kompetenz in der Anwendung effizienter Entwicklungsprozesse und -methoden gestärkt.
+In den folgenden Kapiteln werden die einzelnen Komponenten, Optimierungstechniken und Lerneffekte detailliert erläutert.
+
+
+
