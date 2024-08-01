@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{GridGenerator}
+
+            \umlclass[x=0, y=-4, type=enum]{CellState}
+            {
+                CELL\_OBSTACLE \\
+                CELL\_OPEN \\
+                CELL\_VISITED \\
+                CELL\_CLOSED \\
+                CELL\_PATH
+            }
+            {}
+
+            \umlclass[x=0, y=0, type=struct]{CellStateParser}
+            {
+            }
+            {
+                \umlstatic{parseCellStateToQColor(state : CellState, startEnd : bool = false) : QColor} \\
+            }
+
+            \umlclass[x=0, y=-8, type=struct]{CellCost}
+            {
+                gCost : double \\
+                hCost : double \\
+            }
+            {
+                totalCost() : double \\
+            }
+
+            \umlclass[x=8, y=-6]{Cell}
+            {
+                - state : CellState \\
+                - cost : CellCost \\
+            }
+            {
+            + markObstacle() : void \\
+            + markOpen() : void \\
+            + markVisited() : void \\
+            + markClosed() : void \\
+            + markPath() : void \\
+            + setGCost(gCost : double) : void \\
+            + setHCost(hCost : double) : void \\
+            + setParentCellPointer(parentCell : Cell*) : void \\
+            + setParentCoordinates(parentCoords : pair) : void \\
+            + getParentIfCellPointer() : Cell** \\
+            + getParentIfCoord() : pair* \\
+            + getState() : CellState \\
+            + getCost() : CellCost \\
+            }
+
+            \umlunicompo[anchor1=-154, mult2=1]{Cell}{CellCost}
+            \umlunicompo[anchor1=154, mult2=1]{Cell}{CellState}
+            \umldep{CellStateParser}{CellState}
+
+        \end{umlpackage}
+    \end{tikzpicture}
+
+\end{document}

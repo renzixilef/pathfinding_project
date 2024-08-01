@@ -24,6 +24,8 @@
 	openright,
 	twoside,		% Aktivieren, falls doppelseitiger Druck
 	numbers=noendperiod,
+	bibliography=totoc,
+	listof=totoc
 ]{scrreprt}
 
 % ============= Verwendete Pakete ============= %
@@ -59,9 +61,9 @@
 \usepackage{tocloft}
 \usepackage{enumitem}
 \usepackage{float}
-\usepackage[headsepline,automark,nouppercase]{scrlayer-scrpage}
+\usepackage[headsepline,automark,markcase=ignoreuppercase]{scrlayer-scrpage}
 \usepackage{pdfpages}
-\usepackage{tikz, tikz-uml}
+\usepackage{tikz}
 \usepackage{pgfplots}
 \pgfkeys{/pgf/number format/.cd, use comma, 1000 sep={.}}
 \usepgfplotslibrary{groupplots}
@@ -71,13 +73,13 @@
 \pgfplotsset{compat=newest}
 \usepackage{grffile}
 \usepackage{subcaption}
-\usepackage[nottoc]{tocbibind}
 \usepackage{lmodern}
 \usepackage{siunitx}
+\usepackage{listing}
 \usepackage[export]{adjustbox}
 \sisetup{output-decimal-marker = {,}}
 \usepackage{mathtools}
-\usepackage[mode=buildnew]{standalone}
+\usepackage[mode=buildnew, subpreambles=true]{standalone}
 \usepackage{wrapfig}
 \usepackage[ngerman=ngerman-x-latest]{hyphsubst}
 \raggedbottom 
@@ -164,7 +166,7 @@
 
 %\include{02_grundlagen}
 
-%\include{03_hauptteil}
+\include{03_hauptteil}
 
 %\include{04_ergebnisse}
 

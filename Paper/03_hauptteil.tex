@@ -1,0 +1,36 @@
+%********************************
+\chapter{Programmaufbau und -struktur}
+\label{ch:aufbau}
+%********************************
+
+%********************************
+\section{Aufbau des Backends}
+\label{sec:aufbau_backend}
+%********************************
+In diesem Abschnitt soll ein Überblick über den Aufbau und die Strukturierung des Backends gegeben werden.
+`Backend' bezeichnet hierbei den ausführenden Teil des Programms, also Objekte und Strukturen die zur Berechnung/Lösung des Grids notwendig sind und keinen direkten User-Kontakt haben.
+
+%********************************
+\subsection{Überblick}
+\label{subsec:aufbau_backend_ueberblick}
+%********************************
+Das Backend ist in zwei Namespaces unterteilt: `GridGenerator' und `Pathfinder'.
+Ersterer beinhaltet jegliche Funktionalität die zur Erstellung der Grid-Objekte, zum Platzieren der Hindernisse und zur Positionierung des Start- und Endpunkts notwendig sind.
+Der Namespace `Pathfinder' gruppiert Komponenten die zur Berechnung und Lösung ebendieser Objekte notwendig sind, sowie Funktionen zur Überwachung dieses Prozesses.
+Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf den Namespace `Pathfinder' eingegangen werden.
+%********************************
+\subsubsection{Namespace: GridGenerator}
+\label{subsubsec:aufbau_backend_ueberblick_gridgen}
+%********************************
+Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{ObstacleGenerator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
+%\begin{itemize}
+%    \item \textttt{Cell}
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/cell_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{Cell}}
+        \label{fig:uml_cell}
+        %\vspace{-0.5cm}
+    \end{figure}
+%\end{itemize}
