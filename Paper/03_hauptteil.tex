@@ -23,8 +23,8 @@ Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf d
 \label{subsubsec:aufbau_backend_ueberblick_gridgen}
 %********************************
 Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{ObstacleGenerator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
-%\begin{itemize}
-%    \item \textttt{Cell}
+\begin{itemize}
+    \item \textttt{Cell} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -33,4 +33,18 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_cell}
         %\vspace{-0.5cm}
     \end{figure}
-%\end{itemize}
+    Die \texttt{Cell}-Klasse hält Informationen und Funktionalität einer spezifischen Gridzelle.
+    Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{CellState}: Hindernis, begehbar, etc.).
+    Außerdem enthält die \texttt{Cell}-Klasse deskriptive Helferfunktionen für die Interaktion mit den Gitterzellen.
+
+    \item \textttt{Cell} \\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/grid_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{Cell}}
+        \label{fig:uml_grid}
+        %\vspace{-0.5cm}
+    \end{figure}
+
+\end{itemize}
