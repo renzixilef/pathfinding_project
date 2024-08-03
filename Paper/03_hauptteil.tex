@@ -35,9 +35,9 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
     \end{figure}
     Die \texttt{Cell}-Klasse hält Informationen und Funktionalität einer spezifischen Gridzelle.
     Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{CellState}: Hindernis, begehbar, etc.).
-    Außerdem enthält die \texttt{Cell}-Klasse deskriptive Helferfunktionen für die Interaktion mit den Gitterzellen.
+    Außerdem enthält die \texttt{Cell}-Klasse mehrere Helferfunktionen für die Interaktion mit den Gitterzellen.
 
-    \item \textttt{Cell} \\
+    \item \textttt{Grid} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -46,5 +46,11 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_grid}
         %\vspace{-0.5cm}
     \end{figure}
+    Die \texttt{Grid}-Klasse hält Informationen und Funktionalität die Interaktionen mit dem Grid ermöglichen.
+    Das tatsächliche Grid ist als \textttt{std::vector<std::vector<Cell>>} aufgebaut, der Zugrif findet über den \texttt{()}
+    Operator und die Struktur \texttt{GridCoordinate} statt.
+    Bei Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{GridGenerator}-Objekt (ähnlich eines Decorator-Pattern)
+    welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
+
 
 \end{itemize}

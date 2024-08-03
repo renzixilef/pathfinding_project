@@ -10,11 +10,11 @@
 
             \umlclass[x=0, y=-4, type=enum]{CellState}
             {
-                CELL\_OBSTACLE \\
-                CELL\_OPEN \\
-                CELL\_VISITED \\
-                CELL\_CLOSED \\
-                CELL\_PATH
+                CELL\_OBSTACLE: 0 \\
+                CELL\_OPEN: 1 \\
+                CELL\_VISITED: 2 \\
+                CELL\_CLOSED: 3 \\
+                CELL\_PATH: 4
             }
             {}
 
@@ -57,7 +57,7 @@
 
             \umlunicompo[anchor1=-154, mult2=1]{Cell}{CellCost}
             \umlunicompo[anchor1=154, mult2=1]{Cell}{CellState}
-            \umldep{CellStateParser}{CellState}
+            \umlassoc{CellStateParser}{CellState}
 
         \end{umlpackage}
     \end{tikzpicture}
