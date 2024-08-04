@@ -847,7 +847,11 @@ recursive direction end/.get=\tikzumlRelationRecursiveDirectionEnd%
 \ifthenelse{\equal{\tikzumlRelationStereoType}{}}{%
 \def\stereotype{}%
 }{%
-\def\stereotype{$\ll$\tikzumlRelationStereoType$\gg$}%
+\def\stereotypel{$\ll$\tikzumlRelationStereoType$\gg$\noexpand\noexpand\noexpand\phantom{~$\ll$\tikzumlRelationStereoType$\gg$~}}%
+\def\stereotyper{\noexpand\noexpand\noexpand\phantom{~$\ll$\tikzumlRelationStereoType$\gg$~}$\ll$\tikzumlRelationStereoType$\gg$}%
+\def\stereotypec{$\ll$\tikzumlRelationStereoType$\gg$}%
+\def\stereotype{\csname stereotype\stereoalignment\endcsname}%
+\@ifundefined{stereoalignment}{\def\stereoalignment{c}}{}%
 }%
 
 % def anchors macros

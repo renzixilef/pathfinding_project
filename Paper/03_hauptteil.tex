@@ -31,7 +31,6 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \includestandalone[width=0.7\textwidth]{assets/uml/cell_class_uml}
         \caption{UML-Klassendiagramm der Klasse \texttt{Cell}}
         \label{fig:uml_cell}
-        %\vspace{-0.5cm}
     \end{figure}
     Die \texttt{Cell}-Klasse hält Informationen und Funktionalität einer spezifischen Gridzelle.
     Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{CellState}: Hindernis, begehbar, etc.).
@@ -42,15 +41,30 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \vspace{-0.5cm}
         \centering
         \includestandalone[width=0.7\textwidth]{assets/uml/grid_class_uml}
-        \caption{UML-Klassendiagramm der Klasse \texttt{Cell}}
+        \caption{UML-Klassendiagramm der Klasse \texttt{Grid}}
         \label{fig:uml_grid}
-        %\vspace{-0.5cm}
     \end{figure}
     Die \texttt{Grid}-Klasse hält Informationen und Funktionalität die Interaktionen mit dem Grid ermöglichen.
     Das tatsächliche Grid ist als \textttt{std::vector<std::vector<Cell>>} aufgebaut, der Zugrif findet über den \texttt{()}
     Operator und die Struktur \texttt{GridCoordinate} statt.
-    Bei Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{GridGenerator}-Objekt (ähnlich eines Decorator-Pattern)
+    Bei Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern)
     welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
 
-
+    \item \textttt{ObstacleGenerator} \\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/obstacleGen_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{ObstacleGen}}
+        \label{fig:uml_obstacle_gen}
+    \end{figure}
+    Die \texttt{ObstacleGen}-Klasse und ihre Subklassen sind nach einem Strategy-Pattern aufgebaut.
+    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{ObstacleGen} gehalten.
+    Zudem wird hier eine virtuelle Methode \texttt{generateObstacles()} definiert, die von den Subklassen mit dem jeweiligen Algorithmus überschrieben wird.
+    Für den Kontext ist der tatsächliche Algorithmus dadurch irrelevant, es kann mit einem generischen Objekt vom Typ \texttt{ObstacleGen} gearbeitet werden.
+    Zusätzlich wird in der gleichen Header-Datei ein \texttt{enum} und ein dazugehöriger Parser-\texttt{struct} für die verschiedenen Algorithmen definiert.
 \end{itemize}
+%********************************
+    \subsubsection{Namespace: Pathfinder}
+    \label{subsubsec:aufbau_backend_ueberblick_pathfinder}
+%********************************

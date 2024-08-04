@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\usepackage{textcomp}
+\newcommand{\textapprox}{\raisebox{0.5ex}{\texttildelow}}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{GridGenerator}
+
+            \umlclass[x=12, y=0, type=enum]{ObstacleGenStrategy}{
+                OBSTACLE\_RANDOM: 1\\
+                OBSTACLE\_WALL\_LIKE: 2\\
+                OBSTACLE\_DRUNKEN\_WALK: 3\\
+                OBSTACLE\_PERLIN\_NOISE: 4
+            }{
+            }
+
+            \umlclass[x=0, y=0, type=struct]{ObstacleGenStrategyParser}{
+                \umlstatic{obstacleGenStrategyToDisplayableText: map\textless ObstacleGenStrategy, string\textgreater}
+            }{
+                \umlstatic{parseObstacleGenStrategy(strat: ObstacleGenStrategy): unique\_ptr\textless ObstacleGenerator\textgreater}
+            }
+
+            \umlclass[x=0, y=-4, type=abstract]{ObstacleGenerator}{
+                \# rd: random\_device\\
+                \# gen: mt19937\\
+            }{
+                + ObstacleGenerator(): ObstacleGenerator\\
+                \umlvirt{+ \textapprox ObstacleGenerator()}\\
+                \umlvirt{+ generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float): void}\\
+                \# setStartAndEndCoordinate(grid: Grid\&, minStartEndDistance: float): bool\\
+                \umlstatic{- generateWalkableVector(grid: Grid\&): vector\textless GridCoordinate\textgreater}\\
+                \umlstatic{\# isValidToMarkAsObstacle(grid: Grid\&, GridCoordinate\&): bool}\\
+            }
+
+            \umlclass[x=17, y=-3]{RandomObstacleGenerator}{
+            }{
+                + RandomObstacleGenerator(): RandomObstacleGenerator\\
+                + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override:  void\\
+            }
+
+            \umlclass[x=17, y=-5.5]{RandomWallLikeGenerator}{
+            }{
+                + RandomWallLikeGenerator(): RandomWallLikeGenerator\\
+                + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override: void\\
+            }
+
+            \umlclass[x=17, y=-9]{PerlinNoise}{
+                - permutation: vector\textless uint8\_t\textgreater
+            }{
+                + PerlinNoise(): PerlinNoise\\
+                + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override: void\\
+                - noise(x: double, y: double): double\\
+                \umlstatic{- fade(t: double): double}\\
+                \umlstatic{- grad(hash: uint32\_t, x: double, y: double): double}\\
+            }
+
+            \umlclass[x=17, y=-12.5]{DrunkenWalk}{
+            }{
+                + DrunkenWalk(): DrunkenWalk\\
+                + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override: void\\
+            }
+            \umlassoc{ObstacleGenStrategyParser}{ObstacleGenStrategy}
+            \umlinherit[anchor2=8]{RandomObstacleGenerator}{ObstacleGenerator}
+            \umlinherit[anchor2=-12]{RandomWallLikeGenerator}{ObstacleGenerator}
+            \umlinherit[geometry=-|]{PerlinNoise}{ObstacleGenerator}
+            \umlinherit[geometry=-|]{DrunkenWalk}{ObstacleGenerator}
+        \end{umlpackage}
+    \end{tikzpicture}
+
+\end{document}

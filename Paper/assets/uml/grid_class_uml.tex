@@ -62,14 +62,15 @@
             }{
             }
 
-            \umlsimpleclass[x=10, y=2]{ObstacleGenerator}
+            \umlsimpleclass[x=10, y=4]{ObstacleGenerator}
 
             \umlsimpleclass[x=-8.1, y=10]{Cell}
 
-            \umluniassoc[anchor1=67, mult2=2..*]{Grid}{GridCoordinate}
-            \umlunicompo[anchor1=131, mult2=width$\cdot$height]{Grid}{Cell}
+            \umluniassoc[anchor1=67, mult=2..*]{Grid}{GridCoordinate}
+            \umlunicompo[anchor1=131, mult=width$\cdot$height]{Grid}{Cell}
             \umlassoc[anchor1=-13]{Grid}{GridSolvedStatus}
-            \umldep[anchor1=13]{Grid}{ObstacleGenerator}
+            \def\stereoalignment{l}
+            \umldep[anchor1=13, geometry=-|, stereo=calls, pos stereo=1.2]{Grid}{ObstacleGenerator}
         \end{umlpackage}
     \end{tikzpicture}
 \end{document}
