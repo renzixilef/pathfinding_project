@@ -49,7 +49,7 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
     Operator und die Struktur \texttt{GridCoordinate} statt.
     Bei Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern)
     welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
-
+    \newpage
     \item \textttt{ObstacleGenerator} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
@@ -65,6 +65,35 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
     Zusätzlich wird in der gleichen Header-Datei ein \texttt{enum} und ein dazugehöriger Parser-\texttt{struct} für die verschiedenen Algorithmen definiert.
 \end{itemize}
 %********************************
-    \subsubsection{Namespace: Pathfinder}
-    \label{subsubsec:aufbau_backend_ueberblick_pathfinder}
+\subsubsection{Namespace: Pathfinder}
+\label{subsubsec:aufbau_backend_ueberblick_pathfinder}
 %********************************
+Der Namespace `Pathfinder' beeinhaltet die Klasse \texttt{PathfindingParent} und ihre Subklassen, sowie die Klasse \texttt{PathfinderTimer}.
+Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände und Interaktionen mit dem Frontend definiert.
+\begin{itemize}
+    \item \texttt{PathfindingParent}
+    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut.
+    In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
+    Der Instanz einer \texttt{PathinderParent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
+    Dieses Objekt repräsentiert den Handlungsrahmen des jeweiligen Pathfinding-Algorithmus.
+    Über die virtuelle Methode \texttt{nextStep()} kann nach Initialisierung der nächste Schritt des jeweiligen Algorithmus durchgeführt werden.
+    Zu Debugging-Zwecken wurde außerdem eine Methode \texttt{solveNoWait()} implementiert, die bis zum Ende des Lösungsprozesses
+    iterativ die \texttt{nextStep()}-Methode aufruft.
+    Auch hier wird noch ein zusätzlicher Parsing-\texttt{struct} zur Interaktion des Frontends definiert.
+    \begin{figure}[H]
+              \vspace{-0.5cm}
+              \centering
+              \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingParent_class_uml}
+              \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingParent}}
+              \label{fig:uml_pathfinder}
+    \end{figure}
+    \item \texttt{PathfinderTimer}
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingTimer_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{PathfinderTimer}}
+        \label{fig:uml_pathfinder_timer}
+    \end{figure}
+    Die Klasse \texttt{PathfinderTimer} implementiert Metriken und Funktionalität zum rechenzeitbasierten Benchmarking der \texttt{PathfinderParent}-Subklasseninstanzen.
+\end{itemize}

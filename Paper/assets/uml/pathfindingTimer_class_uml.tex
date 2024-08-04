@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\usepackage{textcomp}
+\newcommand{\textapprox}{\raisebox{0.5ex}{\texttildelow}}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{Pathfinder}
+            \umlclass[x=0, y=0]{PathfinderTimer}{
+                - avgUSecondsPerStep: double\\
+                - absoluteUSecondsTime: double\\
+                - stepStartTime: chrono::time\_point\textless chrono::high\_resolution\_clock\textgreater\\
+                - uint32\_t stepCount
+            }{
+                + PathfinderTimer(): PathfinderTimer \\
+                + stepBegin(): void\\
+                + stepEnd(): void\\
+                + getAvgUSecondsPerStep() const: double \\
+                + getAbsoluteTime() const: double \\
+                + getStepCount() const: uint32\_t
+            }
+        \end{umlpackage}
+    \end{tikzpicture}
+
+\end{document}

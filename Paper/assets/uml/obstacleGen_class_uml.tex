@@ -29,11 +29,11 @@
                 \# gen: mt19937\\
             }{
                 + ObstacleGenerator(): ObstacleGenerator\\
-                \umlvirt{+ \textapprox ObstacleGenerator()}\\
-                \umlvirt{+ generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float): void}\\
+                + \umlvirt{\textapprox ObstacleGenerator() = default}\\
+                + \umlvirt{generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float): void}\\
                 \# setStartAndEndCoordinate(grid: Grid\&, minStartEndDistance: float): bool\\
-                \umlstatic{- generateWalkableVector(grid: Grid\&): vector\textless GridCoordinate\textgreater}\\
-                \umlstatic{\# isValidToMarkAsObstacle(grid: Grid\&, GridCoordinate\&): bool}\\
+                - \umlstatic{generateWalkableVector(grid: Grid\&): vector\textless GridCoordinate\textgreater}\\
+                \# \umlstatic{isValidToMarkAsObstacle(grid: Grid\&, GridCoordinate\&): bool}\\
             }
 
             \umlclass[x=17, y=-3]{RandomObstacleGenerator}{
@@ -54,8 +54,8 @@
                 + PerlinNoise(): PerlinNoise\\
                 + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override: void\\
                 - noise(x: double, y: double): double\\
-                \umlstatic{- fade(t: double): double}\\
-                \umlstatic{- grad(hash: uint32\_t, x: double, y: double): double}\\
+                - \umlstatic{fade(t: double): double}\\
+                - \umlstatic{grad(hash: uint32\_t, x: double, y: double): double}\\
             }
 
             \umlclass[x=17, y=-12.5]{DrunkenWalk}{
@@ -64,10 +64,10 @@
                 + generateObstacles(grid: Grid\&, obstacleDensity: float, minStartEndDistance: float) override: void\\
             }
             \umlassoc{ObstacleGenStrategyParser}{ObstacleGenStrategy}
-            \umlinherit[anchor2=8]{RandomObstacleGenerator}{ObstacleGenerator}
-            \umlinherit[anchor2=-12]{RandomWallLikeGenerator}{ObstacleGenerator}
-            \umlinherit[geometry=-|]{PerlinNoise}{ObstacleGenerator}
-            \umlinherit[geometry=-|]{DrunkenWalk}{ObstacleGenerator}
+            \umlinherit[geometry=-|-]{RandomObstacleGenerator}{ObstacleGenerator}
+            \umlinherit[geometry=-|-]{RandomWallLikeGenerator}{ObstacleGenerator}
+            \umlinherit[geometry=-|-]{PerlinNoise}{ObstacleGenerator}
+            \umlinherit[geometry=-|-]{DrunkenWalk}{ObstacleGenerator}
         \end{umlpackage}
     \end{tikzpicture}
 

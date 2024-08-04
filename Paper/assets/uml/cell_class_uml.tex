@@ -8,8 +8,7 @@
     \begin{tikzpicture}
         \begin{umlpackage}{GridGenerator}
 
-            \umlclass[x=0, y=-4, type=enum]{CellState}
-            {
+            \umlclass[x=0, y=-4, type=enum]{CellState}{
                 CELL\_OBSTACLE: 0 \\
                 CELL\_OPEN: 1 \\
                 CELL\_VISITED: 2 \\
@@ -18,15 +17,13 @@
             }
             {}
 
-            \umlclass[x=0, y=0, type=struct]{CellStateParser}
-            {
+            \umlclass[x=0, y=0, type=struct]{CellStateParser}{
             }
             {
                 \umlstatic{parseCellStateToQColor(state : CellState, startEnd : bool = false) : QColor} \\
             }
 
-            \umlclass[x=0, y=-8, type=struct]{CellCost}
-            {
+            \umlclass[x=0, y=-8, type=struct]{CellCost}{
                 gCost : double \\
                 hCost : double \\
             }
@@ -34,25 +31,24 @@
                 totalCost() : double \\
             }
 
-            \umlclass[x=8, y=-6]{Cell}
-            {
+            \umlclass[x=8, y=-6]{Cell}{
                 - state : CellState \\
                 - cost : CellCost \\
             }
             {
-            + markObstacle() : void \\
-            + markOpen() : void \\
-            + markVisited() : void \\
-            + markClosed() : void \\
-            + markPath() : void \\
-            + setGCost(gCost : double) : void \\
-            + setHCost(hCost : double) : void \\
-            + setParentCellPointer(parentCell : Cell*) : void \\
-            + setParentCoordinates(parentCoords : pair) : void \\
-            + getParentIfCellPointer() : Cell** \\
-            + getParentIfCoord() : pair* \\
-            + getState() : CellState \\
-            + getCost() : CellCost \\
+                + markObstacle() : void \\
+                + markOpen() : void \\
+                + markVisited() : void \\
+                + markClosed() : void \\
+                + markPath() : void \\
+                + setGCost(gCost : double) : void \\
+                + setHCost(hCost : double) : void \\
+                + setParentCellPointer(parentCell : Cell*) : void \\
+                + setParentCoordinates(parentCoords : pair) : void \\
+                + getParentIfCellPointer() : Cell** \\
+                + getParentIfCoord() : pair* \\
+                + getState() : CellState \\
+                + getCost() : CellCost \\
             }
 
             \umlunicompo[anchor1=-154, mult2=1]{Cell}{CellCost}

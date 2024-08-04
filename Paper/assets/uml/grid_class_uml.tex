@@ -31,7 +31,7 @@
                 - closedCellCount: uint32\_t \\
                 - visitedCellCount: uint32\_t
             }{
-                + Grid(width, height: uint32\_t, obstacleGen: ObstacleGenerator \&, obstacleDensity, startEndDistance: float): Grid \\
+                + Grid(width, height: uint32\_t, obstacleGen: ObstacleGenerator\&, obstacleDensity, startEndDistance: float): Grid \\
                 + operator()(coord: GridCoordinate): Cell\& \\
                 + isInBounds(x: int64\_t, y: int64\_t) const: bool \\
                 + markPathByParentCells(markByCellPointer: bool) \\
@@ -51,8 +51,8 @@
                 + getVisitedCellCount() const: uint32\_t \\
                 + getClosedCellCount() const: uint32\_t \\
                 + resetGrid() \\
-                + serialize(filepath: std::string\&) const \\
-                \umlstatic{+ deserialize(filepath: std::string\&): Grid}
+                + serialize(filepath: string\&) const \\
+                + \umlstatic{deserialize(filepath: string\&): Grid}
             }
 
             \umlclass[x=10, y=-2, type=enum]{GridSolvedStatus}{
