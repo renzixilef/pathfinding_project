@@ -45,9 +45,9 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_grid}
     \end{figure}
     Die \texttt{Grid}-Klasse hält Informationen und Funktionalität die Interaktionen mit dem Grid ermöglichen.
-    Das tatsächliche Grid ist als \textttt{std::vector<std::vector<Cell>>} aufgebaut, der Zugrif findet über den \texttt{()}
+    Das tatsächliche Grid ist als \textttt{vector<vector<Cell> >} aufgebaut, der Zugriff findet über den \texttt{()}
     Operator und die Struktur \texttt{GridCoordinate} statt.
-    Bei Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern)
+    Bei der Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern \cite{nesteruk2021})
     welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
     \newpage
     \item \textttt{ObstacleGenerator} \\
@@ -55,13 +55,13 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \vspace{-0.5cm}
         \centering
         \includestandalone[width=0.7\textwidth]{assets/uml/obstacleGen_class_uml}
-        \caption{UML-Klassendiagramm der Klasse \texttt{ObstacleGen}}
+        \caption{UML-Klassendiagramm der Klasse \texttt{ObstacleGenerator}}
         \label{fig:uml_obstacle_gen}
     \end{figure}
-    Die \texttt{ObstacleGen}-Klasse und ihre Subklassen sind nach einem Strategy-Pattern aufgebaut.
-    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{ObstacleGen} gehalten.
+    Die \texttt{ObstacleGenerator}-Klasse und ihre Subklassen sind nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
+    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{ObstacleGenerator} gehalten.
     Zudem wird hier eine virtuelle Methode \texttt{generateObstacles()} definiert, die von den Subklassen mit dem jeweiligen Algorithmus überschrieben wird.
-    Für den Kontext ist der tatsächliche Algorithmus dadurch irrelevant, es kann mit einem generischen Objekt vom Typ \texttt{ObstacleGen} gearbeitet werden.
+    Für den Kontext ist der tatsächliche Algorithmus dadurch irrelevant, es kann mit einem generischen Objekt vom Typ \texttt{ObstacleGenerator} gearbeitet werden.
     Zusätzlich wird in der gleichen Header-Datei ein \texttt{enum} und ein dazugehöriger Parser-\texttt{struct} für die verschiedenen Algorithmen definiert.
 \end{itemize}
 %********************************
@@ -72,7 +72,7 @@ Der Namespace `Pathfinder' beeinhaltet die Klasse \texttt{PathfindingParent} und
 Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände und Interaktionen mit dem Frontend definiert.
 \begin{itemize}
     \item \texttt{PathfindingParent}
-    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut.
+    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
     In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
     Der Instanz einer \texttt{PathinderParent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
     Dieses Objekt repräsentiert den Handlungsrahmen des jeweiligen Pathfinding-Algorithmus.
@@ -97,3 +97,43 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     \end{figure}
     Die Klasse \texttt{PathfinderTimer} implementiert Metriken und Funktionalität zum rechenzeitbasierten Benchmarking der \texttt{PathfinderParent}-Subklasseninstanzen.
 \end{itemize}
+%********************************
+\subsection{Algorithmen und Konzepte}
+\label{subsec:aufbau_backend_konzepte}
+%********************************
+\begin{itemize}
+    \item \texttt{ObstacleGenerator}
+    In den \texttt{ObstacleGenerator}-Subklassen werden verschiedene Algorithmen definiert, die zur prozeduralen Generierung von
+    Hindernissen auf den 2D-\texttt{Grid}-Objekten eingesetzt werden.
+    So definiert die Subklase \texttt{RandomObstacleGenerator} einen Algorithmus der bis zur gewünschten \texttt{obstacleDensity}
+    pseudozufällig Hindernisse auf dem Gitter verteilt.
+    In diesem Abschnitt soll allerdings kurz auf die in der Literatur bekannten Algorithmen `Drunken Walk' und `Perlin Noise' eingegangen werden.
+    Diese Algorithmen werden auch im Design von Computerspielen eingesetzt um prozedural Level zu generieren \cite{koesnaedi2022, andrian2023},
+    was einen sehr ähnlichen Use-Case zu diesem Projekt darstellt.\\\\
+    \textbf{Drunken Walk}\\
+    Der `Drunken Walk'-Algorithmus (auch `Random Walk' oder `Drunkard's Walk'), stellt einen simplen aber effektiven Algorithmus
+    zur Erstellung von zufälligen Pfaden auf einem Gitter beliebiger Dimension dar.
+    Mathematisch betrachtet bildet dieser Algorithmus einen stochastischen Prozess, welcher eine Spur bestehend aus
+    einer Folge von Zufallsschritten beschreibt ab. \cite{pearson1905}
+    In der vorliegenden Implementation wird dafür zunächst das komplette Gitter mit Hindernissen gefüllt, anschließend wird
+    eine zufällige Zelle für den Startpunkt des Pfades ausgewählt.
+    Daraufhin wird mit zufälligen Schritten (basierend auf einem \textit{Mersenne Twister}-Generator) so lange ein begehbares Gebiet aus den Hindernissen heraus``gemeißelt'', bis der
+    spezifizierte Hindernisanteil erreicht ist.
+    \lstinputlisting[language=C++, firstline=1, title={Drunken Walk-Algorithmus},label={lst:obstacle_drunken_walk}]
+        {assets/listings/obstacle_drunken_walk.txt}
+    Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebieten wie der Physik, Psychologie oder auch Wirtschaftswissenschaft. \cite{weiss1982, nosofsky1997, kodde1984}
+    \textbf{Perlin Noise}
+    `Perlin Noise' ist eine pseudozufällige Rauschfunktion basierend auf Gradientenwerten in einem äquidistanten Gitter.
+    Diese Funktion wird häufig zur Bildsynthese zur Generierung natürlicher Texturen für z.B. Wolken oder Gewässer eingesetzt.
+    Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
+    prozeduralen Generierung von Landschaftstopologien.
+    %TODO: finish this
+\end{itemize}
+%********************************
+\section{Aufbau des Frontends}
+\label{sec:aufbau_frontend}
+%********************************
+%********************************
+\subsection{Überblick}
+\label{subsec:aufbau_frontend_ueberblick}
+%********************************

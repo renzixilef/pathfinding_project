@@ -75,14 +75,28 @@
 \usepackage{subcaption}
 \usepackage{lmodern}
 \usepackage{siunitx}
-\usepackage{listing}
+\usepackage{listings}
 \usepackage[export]{adjustbox}
 \sisetup{output-decimal-marker = {,}}
 \usepackage{mathtools}
 \usepackage[mode=buildnew, subpreambles=true]{standalone}
 \usepackage{wrapfig}
+\usepackage{anyfontsize}
 \usepackage[ngerman=ngerman-x-latest]{hyphsubst}
-\raggedbottom 
+\raggedbottom
+
+\lstset{ % Global setup
+	basicstyle=\fontsize{6}{7}\selectfont\ttfamily,
+	numbers=left,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green},
+	stringstyle=\color{red},
+	frame=tb,
+	columns=fullflexible,
+	breaklines=true,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
+}
 
 \makeatletter
 \renewcommand{\fnum@figure}{Abb. \thefigure}
