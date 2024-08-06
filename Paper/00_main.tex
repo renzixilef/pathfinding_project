@@ -131,9 +131,12 @@
 % ============= Vorspann ============= %
 \pagestyle{scrheadings}
 \renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
+\begingroup
 \pdfbookmark[0]{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
 \renewcommand{\baselinestretch}{1.2}\normalsize						% Zeilenabstand
+\let\clearpage\relax
 \tableofcontents													% Inhaltsverzeichnis
+\endgroup
 \renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
 \renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
 
@@ -145,31 +148,29 @@
 \renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
 \markleft{Nomenklatur}
 
-%\renewcommand*{\listoffigures}{
-%	\begingroup
-%	%\tocchapter
-%	\tocfile{\listfigurename}{lof}
-%	\endgroup
-%}
+\clearpage
+\setlength{\cftfigindent}{0em}
+\renewcommand{\baselinestretch}{1.1}\normalsize
+\pdfbookmark{Abbildungsverzeichnis}{lof}
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\listoffigures 														% Abbildungsverzeichnis
+\markleft{Abbildungsverzeichnis}
 
-%\cleardoublepage
-%\setlength{\cftfigindent}{0em}
-%\renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
-%\pdfbookmark{Abbildungsverzeichnis}{lof}
-%\listoffigures 														% Abbildungsverzeichnis
-%\markleft{Abbildungsverzeichnis}
-
-%\renewcommand*{\listoftables}{
-%	\begingroup
-	%\tocchapter
-%	\tocfile{\listtablename}{lot}
-%	\endgroup
-%}
-
-\pdfbookmark[0]{Tabellenverzeichnis}{tbv}							% Tabellenverzeichnis im pdf als Bookmark anzeigen
+\clearpage
+\pdfbookmark[0]{Tabellenverzeichnis}{tbv}
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
 \setlength{\cfttabindent}{0em}
 \listoftables														% Tabellenverzeichnis
-\renewcommand{\baselinestretch}{1}\normalsize						% Zeilenabstand
+\renewcommand{\baselinestretch}{1}\normalsize
+
+\renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
+\begingroup
+\pdfbookmark{Quelltextverzeichnis}{qtv}
+\setlength{\cfttabindent}{0em}
+\let\cleardoublepage\clearpage
+\lstlistoflistings  % Code-Verzeichnis
+\endgroup
+\renewcommand{\baselinestretch}{1}\normalsize
 
 % ============= Hauptteil ============= %
 \cleardoubleoddpage

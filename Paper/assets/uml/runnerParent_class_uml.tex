@@ -1,0 +1,95 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{RunInterface}
+            \umlclass[x=0, y=-13, type=struct]{RunGridConfig}{
+                gridWidth: uint32\_t \\
+                gridHeight: uint32\_t \\
+                obstacleDensity: float \\
+                minStartEndDistance: float \\
+                obstacleGenStrategy: ObstacleGenStrategy \\
+                iterations: optional\textless uint32\_t\textgreater \\
+                repeatUnsolvables: optional\textless bool\textgreater
+            }{
+                operator \textless (other: RunGridConfig\&): bool
+            }
+
+            \umlclass[x=-7, y=-13]{SingleRunConfig}{
+                gridConfig: RunGridConfig \\
+                strat: PathfinderStrategy
+            }{
+            }
+
+            \umlclass[x=7, y=-13]{MultiRunConfig}{
+                gridConfig: RunGridConfig \\
+                strats: list\textless PathfinderStrategy\textgreater
+            }{
+            }
+
+            \umlenum[x=9.56, y=0, fill=white]{RunnerReturnStatus}{
+                RETURN\_NORMAL = 0, \\
+                RETURN\_UNSOLVABLE = 1, \\
+                RETURN\_LAST\_SOLVER\_DONE = 2, \\
+                RETURN\_LAST\_GRID\_DONE = 3 \\
+            }{
+            }
+
+
+            \umlclass[x=0, y=0, type=abstract]{RunnerParent}{
+                \# config: RunGridConfig\\
+                \# grid: Grid\\
+                \# atomicCloseFlag: atomic\textless bool\textgreater
+            }{
+                + RunnerParent(thisConfig: RunGridConfig\&)\\
+                + getGridRef(): const Grid\&\\
+                + terminate(): void\\
+                + \umlvirt{nextStep() slot: void}\\
+                + stepFinished() signal: void\\
+                + gridFinished() signal: void
+            }
+
+            \umlclass[x=-7, y=-7]{SingleRun}{
+                - strat: PathfinderStrategy\\
+                - solver: unique\_ptr\textless PathfindingParent\textgreater
+            }{
+                + SingleRun(runConfig: SingleRunConfig\&)\\
+                + nextStep() slot: void\\
+                + getSolverRef(): const PathfindingParent\&\\
+                + onRunReset() slot: void\\
+                + onSerializeRequest(filename: string\&) slot: void\\
+                + onStartEndChanged() slot: void\\
+                + saveDone() signal: void
+            }
+
+            \umlclass[x=7, y=-7]{MultiRun}{
+                - repeatUnsolvables: bool\\
+                - strats: list\textless PathfinderStrategy\textgreater\\
+                - solvers: list\textless unique\_ptr\textless PathfindingParent\textgreater\textgreater\\
+                - solverIterator: list\textless unique\_ptr\textless PathfindingParent\textgreater\textgreater::iterator\\
+                - gridIterator: uint32\_t\\
+                - currentSolver: PathfindingParent*
+            }{
+                + MultiRun(runConfig: MultiRunConfig\&)\\
+                + solverFinished(PathfinderPerformanceMetric\&, RunnerReturnStatus) signal: void\\
+                + nextStep() slot: void\\
+                + createNewGridWithCurrentConfig() slot: void\\
+                + onNewData(runConfig: MultiRunConfig) slot: void\\
+                + nextRun() slot: void\\
+                - handleFinishedSolver(): void
+            }
+
+            \umlinherit[geometry=|-|]{SingleRun}{RunnerParent}
+            \umlinherit[geometry=|-|]{MultiRun}{RunnerParent}
+            \umluniaggreg[mult=1]{SingleRun}{SingleRunConfig}
+            \umluniaggreg[mult=1..*]{MultiRun}{MultiRunConfig}
+            \umldep{SingleRunConfig}{RunGridConfig}
+            \umldep{MultiRunConfig}{RunGridConfig}
+            \umldep[anchor1=50]{MultiRun}{RunnerReturnStatus}
+        \end{umlpackage}
+    \end{tikzpicture}
+\end{document}

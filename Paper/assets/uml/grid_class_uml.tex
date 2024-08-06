@@ -7,7 +7,7 @@
     \begin{tikzpicture}
         \begin{umlpackage}{GridGenerator}
 
-            \umlclass[x=1, y=11, type=struct]{GridCoordinate}{
+            \umlclass[x=0.96, y=11, type=struct]{GridCoordinate}{
                 x: uint32\_t \\
                 y: uint32\_t
             }{
@@ -55,16 +55,16 @@
                 + \umlstatic{deserialize(filepath: string\&): Grid}
             }
 
-            \umlclass[x=10, y=-2, type=enum]{GridSolvedStatus}{
-                GRID\_SOLVED: 0 \\
-                GRID\_UNSOLVABLE: 1 \\
-                GRID\_UNSOLVED: 2
+            \umlenum[x=10, y=-1.975, fill=white]{GridSolvedStatus}{
+                GRID\_SOLVED = 0 \\
+                GRID\_UNSOLVABLE = 1 \\
+                GRID\_UNSOLVED = 2
             }{
             }
 
             \umlsimpleclass[x=10, y=4]{ObstacleGenerator}
 
-            \umlsimpleclass[x=-8.1, y=10]{Cell}
+            \umlsimpleclass[x=-8.06, y=10]{Cell}
 
             \umluniassoc[anchor1=67, mult=2..*]{Grid}{GridCoordinate}
             \umlunicompo[anchor1=131, mult=width$\cdot$height]{Grid}{Cell}

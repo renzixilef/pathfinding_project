@@ -71,7 +71,7 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
 Der Namespace `Pathfinder' beeinhaltet die Klasse \texttt{PathfindingParent} und ihre Subklassen, sowie die Klasse \texttt{PathfinderTimer}.
 Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände und Interaktionen mit dem Frontend definiert.
 \begin{itemize}
-    \item \texttt{PathfindingParent}
+    \item \texttt{PathfindingParent}\\
     Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
     In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
     Der Instanz einer \texttt{PathinderParent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
@@ -87,7 +87,7 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
               \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingParent}}
               \label{fig:uml_pathfinder}
     \end{figure}
-    \item \texttt{PathfinderTimer}
+    \item \texttt{PathfinderTimer}\\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -102,7 +102,7 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
 \label{subsec:aufbau_backend_konzepte}
 %********************************
 \begin{itemize}
-    \item \texttt{ObstacleGenerator}
+    \item \texttt{ObstacleGenerator}\\
     In den \texttt{ObstacleGenerator}-Subklassen werden verschiedene Algorithmen definiert, die zur prozeduralen Generierung von
     Hindernissen auf den 2D-\texttt{Grid}-Objekten eingesetzt werden.
     So definiert die Subklase \texttt{RandomObstacleGenerator} einen Algorithmus der bis zur gewünschten \texttt{obstacleDensity}
@@ -119,21 +119,39 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     eine zufällige Zelle für den Startpunkt des Pfades ausgewählt.
     Daraufhin wird mit zufälligen Schritten (basierend auf einem \textit{Mersenne Twister}-Generator) so lange ein begehbares Gebiet aus den Hindernissen heraus``gemeißelt'', bis der
     spezifizierte Hindernisanteil erreicht ist.
-    \lstinputlisting[language=C++, firstline=1, title={Drunken Walk-Algorithmus},label={lst:obstacle_drunken_walk}]
+    \lstinputlisting[language=C++, firstline=1, caption={Drunken Walk-Algorithmus},label={lst:obstacle_drunken_walk}]
         {assets/listings/obstacle_drunken_walk.txt}
-    Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebieten wie der Physik, Psychologie oder auch Wirtschaftswissenschaft. \cite{weiss1982, nosofsky1997, kodde1984}
-    \textbf{Perlin Noise}
+    Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebieten wie der Physik, Psychologie oder auch Wirtschaftswissenschaft. \cite{weiss1982, nosofsky1997, kodde1984}\\\\
+    \textbf{Perlin Noise}\\
     `Perlin Noise' ist eine pseudozufällige Rauschfunktion basierend auf Gradientenwerten in einem äquidistanten Gitter.
     Diese Funktion wird häufig zur Bildsynthese zur Generierung natürlicher Texturen für z.B. Wolken oder Gewässer eingesetzt.
     Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
     prozeduralen Generierung von Landschaftstopologien.
-    %TODO: finish this
+    %TODO: finish this and add part for pathfinding algorithms
 \end{itemize}
 %********************************
 \section{Aufbau des Frontends}
 \label{sec:aufbau_frontend}
 %********************************
+Im Folgenden soll ein kurzer Überblick über den Aufbau des Frontends und des Interfaces zwischen Front- und Backend gegeben werden.
+Das Frontend beinhaltet hierbei vor allem Funktionalität der \ac{GUI} (Widgets, Fenster, Layouts, etc.) und des \ac{CLI}.
+Zunächst wird allerdings eine Übersicht über die Interfaceklassen gegeben.
 %********************************
-\subsection{Überblick}
-\label{subsec:aufbau_frontend_ueberblick}
+\subsection{Überblick - Interfaces}
+\label{subsec:aufbau_frontend_ueberblick_interfaces}
 %********************************
+Die Funktionalität des Interfaces beschränkt sich auf die Klasse \texttt{RunnerParent} und ihre Subklassen \texttt{SingleRun} und \texttt{MultiRun}.
+Direkt nach Initialisierung dieser Klassen werden die resultierenden Objekte auf einen neuen Thread verschoben, um den Event-Loop der \ac{GUI} nicht zu blockieren.
+Zur Kommunikation mit der \ac{GUI} wird das threadsichere \texttt{SIGNAL-SLOT}-Prinzip des \textit{Qt5}-Frameworks eingesetzt.
+\begin{itemize}
+    \item \texttt{RunnerParent}\\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/runnerParent_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{RunnerParent}}
+        \label{fig:uml_runner_parent}
+    \end{figure}
+    Die Subklassen der \texttt{RunnerParent}-Klasse bieten Funktionalität für einzelne Durchläufe über Instanzen der \texttt{SingleRun}-Klasse
+    oder Benchmarking-Durchläufe mit mehreren Gridkonfigurationen und Lösealgorithmen über die \texttt{MultiRun}-Klasse.
+\end{itemize}
