@@ -45,7 +45,7 @@
                 \# grid: Grid\\
                 \# atomicCloseFlag: atomic\textless bool\textgreater
             }{
-                + RunnerParent(thisConfig: RunGridConfig\&)\\
+                + RunnerParent(thisConfig: RunGridConfig\&): RunnerParent\\
                 + getGridRef(): const Grid\&\\
                 + terminate(): void\\
                 + \umlvirt{nextStep() slot: void}\\
@@ -57,7 +57,7 @@
                 - strat: PathfinderStrategy\\
                 - solver: unique\_ptr\textless PathfindingParent\textgreater
             }{
-                + SingleRun(runConfig: SingleRunConfig\&)\\
+                + SingleRun(runConfig: SingleRunConfig\&): SingleRun\\
                 + nextStep() slot: void\\
                 + getSolverRef(): const PathfindingParent\&\\
                 + onRunReset() slot: void\\
@@ -74,7 +74,7 @@
                 - gridIterator: uint32\_t\\
                 - currentSolver: PathfindingParent*
             }{
-                + MultiRun(runConfig: MultiRunConfig\&)\\
+                + MultiRun(runConfig: MultiRunConfig\&): MultiRun\\
                 + solverFinished(PathfinderPerformanceMetric\&, RunnerReturnStatus) signal: void\\
                 + nextStep() slot: void\\
                 + createNewGridWithCurrentConfig() slot: void\\

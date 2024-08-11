@@ -128,6 +128,142 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
     prozeduralen Generierung von Landschaftstopologien.
     %TODO: finish this and add part for pathfinding algorithms
+    \item \texttt{PathfinderParent}\\
+    In den Subklassen der \texttt{PathfinderParent}-Klasse werden verschiedenen Algorithmen implementiert um für gegebene
+    \texttt{Grid}-Objekte einen möglichen Pfad von Startpunkt zu Endpunkt zu identifizieren.
+    Die eingesetzten Algorithmen unterscheiden sich hauptsächlich im Hinblick auf die Laufzeiteffizienz (Dauer eines Berechnungsschritts)
+    und die Ressourceneffizienz (Anzahl der untersuchten \texttt{Cell}-Objekte während der kompletten Berechnung).
+    Im Folgenden soll zunächst auf allgemeine Überlegungen für die Implementierung dieser Algorithmen und danach kurz auf
+    jeden eingesetzten Algorithmus im Detail eingegangen werden.\\\\
+    \textbf{Allgemeine Überlegungen}\\
+    Die in diesem Projekt eingesetzten Algorithmen benötigen alle eine über die Rechenschritte persistente Datenstruktur,
+    welche die \texttt{Cell}-Objekte hält, die als nächstes untersucht werden müssen.
+    Da in jedem der Algorithmen eine konstante Entwicklung des Pfades vom Startpunkt aus durchgeführt wird, wächst diese
+    Datenstruktur mit jedem Berechnungsschritt und muss demnach dynamisch angelegt sein.
+    Die Performanz der Algorithmen hängt stark von der Effizienz des Zugriffs auf und der Manipulation dieser Datenstruktur an bestimmten Indices ab.
+    Ein gutes Datenmanagement und optimierte Datenstrukturen können somit die Laufzeiteffizienz erheblich steigern.
+    Ein sorgfältiges Ausbalancieren zwischen Speichernutzung und Rechenleistung ist elementar, da eine zu hohe Speicherkomplexität
+    das System vor allem für sehr große Gitter stark belasten könnte.
+    Bei der Implementierung von Wegfindungsalgorithmen in C++ stehen uns eine Vielzahl von Datenstrukturen zur Verfügung,
+    die jeweils ihre eigenen Vor- und Nachteile mitbringen. \cite{iso2020}
+    \begin{itemize}
+        \item \texttt{std::vector}\\
+        Eine gängige Wahl ist \texttt{std::vector}.
+        Diese Struktur bietet schnellen Zugriff ($\mathcal{O}(1)$) auf Elemente durch direkte Indizierung, allerdings ist
+        das Einfügen und Entfernen von Elementen in der Mitte des Vektors eine kostspieligere Operation ($\mathcal{O}(n)$).
+        \item \texttt{std::list}\\
+        \texttt{std::list}, eine doppelt verkettete Liste, erlaubt schnelles Einfügen und Entfernen von Elementen ($\mathcal{O}(1)$),
+        da lediglich Zeiger umgestellt werden müssen.
+        Der Zugriff auf ein bestimmtes Element ist allerdings langsamer und benötigt im Allgemeinen eine Durchquerung der Liste (($\mathcal{O}(n)$)).
+        \item \texttt{std::dequeue}\\
+        Diese Datenstruktur bietet ähnliche Eigenschaften wie \texttt{std::vector}, erlaubt aber zusätzlich das Einfügen
+        und Entfernen von Elementen in konstanter Zeit ($\mathcal{O}(1)$) am Anfang, wie auch am Ende des Containers.
+        \item \texttt{std::priority\_queue}\\
+        \texttt{std::priority\_queue} (Implementierung eines \textit{Binary Heap}) ermöglicht das Einfügen von Elementen und das Extrahieren des größten Elements jeweils
+        mit Komplexität $\mathcal{O}(n\cdot\log n)$.
+        Die zugrundeliegende Datenstruktur ist auch hier normalerweise ein \texttt{std::vector}, kann aber bei Bedarf angepasst werden.
+        Für die Objekte, die von der \texttt{std::priority\_queue} gehalten werden, muss eine Methode zur Bestimmung des
+        größeren zweier Elemente definiert sein.
+        \item \texttt{std::set} und \texttt{std::map}\\
+        \texttt{std::set} und \texttt{std::map} erlauben das Einfügen, Löschen und Suchen von Elementen in $\mathcal{O}(\log n)$ Zeit
+        dank ihrer Implementierung als balancierte binäre Suchbäume.
+        In der Praxis kann jedoch die konstante Faktorzeit erheblich sein, aufgrund der Rot-Schwarz-Baum-Balancierungsschritte.
+        \item \texttt{std::unordered\_set} und \texttt{std::unordered\_map}\\
+        \texttt{std::unordered\_set} und \texttt{std::unordered\_map}, die hashbasierte Datenstrukturen sind, bieten im
+        Idealfall konstante Zeit ($\mathcal{O}(1)$) für Einfügen, Löschen und Suchen, jedoch kann dies im Worst-Case auf $\mathcal{O}(n)$
+        ansteigen, z.B. bei ungünstigen Hashfunktionen.
+    \end{itemize}
+    Für die Anforderungen von Pfadfindealgorithmen, insbesondere von Algorithmen wie A* und Dijkstra's Algorithmus,
+    stellt die Datenstruktur \texttt{std::priority\_queue} in diesem Projekt eine optimale Wahl dar.
+    Diese Algorithmen arbeiten nach einem `Greedy'-Ansatz \cite{korte2006}, indem sie immer den Pfad mit den geringsten angesammelten Kosten wählen.
+    Daher ist eine Datenstruktur, die einen effizienten Zugriff auf das Element mit der höchsten Priorität (in diesem Fall
+    das Element mit den geringsten Kosten) ermöglicht, von großem Nutzen.\\
+    Bei der Verwendung einer \texttt{std::priority\_queue} ist es, wie bereits erwähnt, entscheidend, eine geeignete Vergleichsfunktion
+    zu implementieren, um die Priorität der Elemente zu bestimmen.
+    Im Kontext von Pfadfindealgorithmen wäre diese Funktion typischerweise so gestaltet, dass sie die geringsten angesammelten
+    Kosten als höchste Priorität behandelt.
+    In diesem Projekt werden Objekte vom primitiven Typ \texttt{GridCoordinate} gehalten (siehe \ref{subsubsec:aufbau_backend_ueberblick_gridgen}),
+    daher wurde die Vergleichsmethode wie folgt implementiert:
+    \lstinputlisting[language=C++, firstline=1, caption={Vergleichsmethode für die \texttt{std::priority\_queue}},
+    label={lst:queue_compare_method}]{assets/listings/priority_queue_compare_method.txt}
+    Diese Implementation ermöglicht den Erhalt des Kontexts durch Rückgabe einer Lambda-Funktion von \texttt{compareCells()}.
+    Der Erhalt des Kontextes spielt hier eine wichtige Rolle, da \texttt{compareCells()} eine Instanzfunktionalität der
+    \texttt{Grid}-Klasse ist und über den \texttt{(*this)(GridCoordinate\&)}-Operator auf die jeweiligen \texttt{Cell}-Objekte
+    zugegriffen wird.
+    Zusätzlich kann die Laufzeiteffizienz auch durch eine gute Vorverarbeitung der Daten, zum Beispiel durch eine geeignete
+    kartografische Abstraktion oder das Einbringen von Heuristiken, optimiert werden.
+    Diese Techniken können jedoch unter Umständen die Qualität der Lösung beeinträchtigen, sodass immer ein Kompromiss zwischen
+    der Qualität der Lösung und der erforderlichen Berechnungszeit gefunden werden muss.
+    Auf die verwendeten Heuristiken soll im Folgenden noch genauer eingegangen werden.\\
+    Mathematisch betrachtet basieren alle hier implementierten Algorithmen \cite{morin1982} auf dem Optimalitätsprinzip von Bellman, nach
+    dem sich eine optimale Lösung aus optimalen Teillösungen zusammensetzt:
+    \begin{quotation}
+    An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions
+    must constitute an optimal policy with regard to the state resulting from the first decision.\\
+    -- BELLMANN, 1957 \cite{bellman2010}
+    \end{quotation}
+    Im Kontext der implementierten Algorithmen lässt sich das folgendermaßen ausdrücken:
+    Angenommen, zwischen Knoten $v$ und Startknoten $s$, existiert der Pfad $P$ von $s$ zu $v$ mit $P = [s, \dots, v]$.
+    Wenn nun ein Knoten $u$ und eine Kante $(v, u)$ eingefügt werden, um einen neuen Pfad $P' = [s, \dots, v, u]$ zu
+    bilden, dann ist $P'$ der kürzeste Pfad von $s$ zu $u$, wenn $P$ der kürzeste Pfad von $s$ zu $v$ war. \\\\
+    \textbf{Distanzberechnung und Heuristiken}\\\\
+    %TODO: write this
+    \textbf{Dijkstra's Algorithmus}\\
+    Dijkstra's Algorithmus, benannt nach seinem Entwickler Edsger W. Dijkstra, ist ein prominenter Vertreter der Graphenalgorithmen,
+    speziell der kürzesten-Pfad-Algorithmen. \cite{dijkstra1959}\\
+    Der Algorithmus funktioniert folgendermaßen: Zunächst wird dem Startknoten der Abstandswert $0$ zugewiesen.
+    Für den aktuellen Knoten betrachtet man nun dessen ungeprüfte Nachbarknoten und summiert den Abstandswert des aktuellen
+    Knotens und das Gewicht der Kante, die zum Nachbarknoten führt (Distanz zum Nachbarknoten).
+    Diese Summe wird auch als $G(n)$ (G-Kosten) bezeichnet.
+    Wenn die eben berechnete Summe kleiner ist als der aktuelle Wert für $G(n)$ des Nachbarknotens, aktualisiert man diesen Wert.
+    Wenn alle Nachbarn des aktuellen Knotens geprüft wurden, kennzeichnet man ihn als geprüft.
+    Anschließend wird der Knoten mit dem geringsten vorläufigen Wert, der noch nicht geprüft wurde, als neuer aktueller Knoten gewählt.
+    Dieser Vorgang wird wiederholt, bis der zu prüfende Knoten der Endknoten ist.
+    Am Ende des Algorithmus ist/sind der kürzeste Pfad/die kürzesten Pfade von Startknoten zu Endknoten bekannt.
+    Die Laufzeit von Dijkstra's Algorithmus ist im Allgemeinen abhängig von der Implementierung der verwendeten Datenstrukturen
+    und des Abstandes von Start- und Endknoten. \cite{dijkstra1959}
+    Im schlechtesten Fall ist die Zeitkomplexität $\mathcal{O}((V+E)\cdot\log V)$, wobei $V$ die Menge der Knoten und $E$
+    die Menge der Kanten des Graphen ist. \cite{cormen2022}\\\\
+    \textbf{A* Algorithmus}\\
+    Der A*-Algorithmus ist, ähnlich wie Dijkstra's Algorithmus, ein prominenter Vertreter der Graphenalgorithmen und speziell
+    der kürzesten-Pfad-Algorithmen.
+    Entwickelt von Peter Hart, Nils Nilsson und Bertram Raphael, löst er das Problem des kürzesten Pfads von einem Startknoten
+    zu einem Zielknoten in einem gewichteten Graphen mit nichtnegativen Kantengewichten. \cite{hart1968}\\
+    Der A*-Algorithmus ist eine Erweiterung des Dijkstra-Algorithmus, der zusätzlich eine sogenannte Heuristik verwendet,
+    um die Suche zum Zielknoten zu leiten.
+    Bei der A*-Methode werden zu jedem Knoten zunächst, wie bei Dijkstra, Abstandswerte oder $G(n)$ berechnet.
+    Die Besonderheit ist jedoch, dass zusätzlich die erwartete Reststrecke zum Zielknoten, auch $H(n)$ (H-Kosten) genannt, berücksichtigt wird.
+    Die Gesamtstrecke, auch $F(n)$ (F-Kosten), setzt sich also aus dem aktuellen Abstandswert und der heuristisch geschätzten
+    Distanz vom betrachteten Knoten zum Ziel zusammen.
+    Anstatt den Knoten mit den geringsten G-Kosten (wie bei Dijkstra) als nächsten Knoten auszuwählen, wird der
+    Knoten mit den geringsten F-Kosten als nächster zu überprüfender Knoten gewählt.
+    Dies ermöglicht A*, effizienter als Dijkstra den kürzesten Weg zu einem gegebenen Zielknoten zu finden, ohne jeden
+    möglichen Knoten betrachten zu müssen.\\
+    Damit ist A* besonders geeignet für Probleme, bei denen der Zielzustand bekannt ist, sodass eine sinnvolle Heuristik angewendet werden kann. \cite{hart1968}
+    Eine Heuristik für den A*-Algorithmus sollte die tatsächlichen Kosten zum Ziel nie überschätzen, eine solche Heuristik
+    wird als optimistisch bezeichnet.
+    Ist die Heuristik optimistisch, kann garantiert werden, dass der A*-Algorithmus immer die optimale Lösung findet.
+    Im Gegensatz dazu, wenn eine Heuristik die tatsächlichen Kosten überschätzt, kann der A*-Algorithmus eine suboptimale
+    Lösung finden, obwohl er möglicherweise schneller eine Lösung findet als Dijkstra's Algorithmus.\\
+    Im schlechtesten Fall, wenn die Heuristik keine nützliche Information liefert (zum Beispiel immer null zurückgibt, was den
+    A*-Algorithmus in den Dijkstra-Algorithmus umwandelt), ist die Laufzeit auch hier $\mathcal{O}((V+E)\cdot\log V)$.\\\\
+    \textbf{Jump Point Search-Algorithmus}\\
+    Der  \ac{JPS}-Algorithmus, entwickelt von Daniel Harabor und Alban Grastien im Jahr 2011, ist eine Optimierung des
+    A*-Algorithmus speziell für uniforme Raster mit orthogonalen Bewegungen, wie sie häufig in Videospielen und ähnlichen
+    Simulationen zu finden sind. \cite{harabor2011}\\
+    \ac{JPS} beschleunigt A*, indem unnötige Knoten übersprungen werden und nur an den Stellen gesucht wird, die als ``Sprungpunkte'' bezeichnet werden.
+    Sprungpunkte sind Punkte, von denen aus der Pfad zu einem benachbarten Punkt gebogen werden könnte, um einen kürzeren Pfad zu erzielen.
+    Bei der Begutachtung der Nachbarn eines Knotens nimmt JPS nicht alle in die offene Liste auf (wie es A* tun würde),
+    sondern nur diejenigen, die als Sprungpunkte angesehen werden.
+    Dadurch kann JPS die Anzahl der zu berücksichtigenden Knoten erheblich reduzieren, was zu einer erheblichen Beschleunigung
+    gegenüber dem Standard-A*-Algorithmus führen kann.
+    Es ist zu beachten, dass JPS am effizientesten ist, wenn die Bewegungskosten im Raster einheitlich sind und nur
+    orthogonale Bewegungen erlaubt sind.
+    Bei nicht einheitlichen Kosten oder diagonalen Bewegungen ist A* in der Regel effizienter.
+    In Bezug auf die Zeitkomplexität kann JPS merklich effizienter als der A*-Algorithmus sein, die genaue Big-O-Notation
+    kann jedoch je nach Art des verwendeten Rasters und anderen Faktoren variieren.
+    Unter idealen Bedingungen, Suchen über große Raster mit vielen offenen Bereichen, kann JPS die Suchzeit im Vergleich
+    zu A* um einen Faktor von bis zu 10 reduzieren. \cite{harabor2014}
 \end{itemize}
 %********************************
 \section{Aufbau des Frontends}
@@ -140,9 +276,11 @@ Zunächst wird allerdings eine Übersicht über die Interfaceklassen gegeben.
 \subsection{Überblick - Interfaces}
 \label{subsec:aufbau_frontend_ueberblick_interfaces}
 %********************************
-Die Funktionalität des Interfaces beschränkt sich auf die Klasse \texttt{RunnerParent} und ihre Subklassen \texttt{SingleRun} und \texttt{MultiRun}.
+Die Funktionalität des Interfaces für die Benutzung des Programms mit \ac{GUI} beschränkt sich auf die Klasse \texttt{RunnerParent}
+und ihre Subklassen \texttt{SingleRun} und \texttt{MultiRun}.
 Direkt nach Initialisierung dieser Klassen werden die resultierenden Objekte auf einen neuen Thread verschoben, um den Event-Loop der \ac{GUI} nicht zu blockieren.
-Zur Kommunikation mit der \ac{GUI} wird das threadsichere \texttt{SIGNAL-SLOT}-Prinzip des \textit{Qt5}-Frameworks eingesetzt.
+Zur Kommunikation mit der \ac{GUI} wird das threadsichere \texttt{SIGNAL-SLOT}-Prinzip \cite{Qt52024} des \textit{Qt5}-Frameworks eingesetzt.
+Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{HeadlessRunner} definiert.
 \begin{itemize}
     \item \texttt{RunnerParent}\\
     \begin{figure}[H]
@@ -154,4 +292,17 @@ Zur Kommunikation mit der \ac{GUI} wird das threadsichere \texttt{SIGNAL-SLOT}-P
     \end{figure}
     Die Subklassen der \texttt{RunnerParent}-Klasse bieten Funktionalität für einzelne Durchläufe über Instanzen der \texttt{SingleRun}-Klasse
     oder Benchmarking-Durchläufe mit mehreren Gridkonfigurationen und Lösealgorithmen über die \texttt{MultiRun}-Klasse.
+    \item \texttt{HeadlessRunner}\\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/headlessRunner_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{HeadlessRunner}}
+        \label{fig:uml_headlessRunner}
+    \end{figure}
+    Die Klasse \texttt{HeadlessRunner} enthält neben der allgemeinen Schnittstellenfunktionalität von \ac{GUI}-Seite aus,
+    einige statische Helfermethode für Formatierung und Darstellung von \texttt{QString}-Objekten.
+    Die Klassen \texttt{SingleRunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner}, die allgemeine Funktionalität,
+    welche auch für die Darstellung mit \ac{GUI} relevant ist.
+    Auf diese beiden Klassen soll allerdings später noch genauer eingegangen werden.
 \end{itemize}

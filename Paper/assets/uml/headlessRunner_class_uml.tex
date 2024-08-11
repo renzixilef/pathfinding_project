@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{Application}
+            \umlclass[x=0, y=0]{HeadlessRunner}{
+                + EvalMapType: map\textless RunGridConfig, tuple\textless unordered\_map\textless PathfinderStrategy, list\textless PathfinderPerformanceMetric\textgreater\textgreater, uint32\_t, QString\textgreater\textgreater \\
+                \# evalMap: EvalMapType \\
+                \# runQueue: queue\textless pair\textless MultiRunConfig, QString\textgreater\textgreater \\
+            }{
+                + HeadlessRunner(queue: queue\textless pair\textless MultiRunConfig, QString\textgreater\textgreater\&): HeadlessRunner \\
+                + headlessSolveAllNoWait(): void \\
+                + \umlstatic{generateConfigQString(configItem: MultiRunConfig\&): QString} \\
+                + \umlstatic{generateEvalString(evalList: list\textless PathfinderPerformanceMetric\textgreater\&, formatForGui: bool): QString} \\
+                \# incrementUnsolvableCountForConfig(currentConfig: pair\textless MultiRunConfig, QString\textgreater\&): void \\
+                \# pushBackPathfinderExitForCurrentConfig(pathfinderExit: PathfinderPerformanceMetric\&, currentConfig: pair\textless MultiRunConfig, QString\textgreater\&): void \\
+                \# setDisplayableStringForCurrentConfig(currentConfig: pair\textless MultiRunConfig, QString\textgreater\&): void \\
+                - headlessSolveOneConfigNoWait(itemConfig: pair\textless MultiRunConfig, QString\textgreater\&): void \\
+                - headlessPrintEvaluation() : void \\
+                - \umlstatic{updateProgressBar(percent: uint16\_t): void} \\
+                - \umlstatic{getConsoleWidth(): uint32\_t} \\
+            }
+        \end{umlpackage}
+        \begin{umlpackage}{GUI}
+            \umlsimpleclass[x=-4, y=-6]{GUIDialogMultiRun}
+            \umlsimpleclass[x=4, y=-6]{GUIDialogSingleRun}
+        \end{umlpackage}
+        \umlinherit[geometry=-|]{GUIDialogMultiRun}{HeadlessRunner}
+        \umlinherit[geometry=-|]{GUIDialogSingleRun}{HeadlessRunner}
+    \end{tikzpicture}
+\end{document}
