@@ -207,7 +207,22 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     Wenn nun ein Knoten $u$ und eine Kante $(v, u)$ eingefügt werden, um einen neuen Pfad $P' = [s, \dots, v, u]$ zu
     bilden, dann ist $P'$ der kürzeste Pfad von $s$ zu $u$, wenn $P$ der kürzeste Pfad von $s$ zu $v$ war. \\\\
     \textbf{Distanzberechnung und Heuristiken}\\\\
-    %TODO: write this
+    Bei Pathfinding-Algorithmen spielen Distanzberechnung und Heuristiken eine entscheidende Rolle, um effiziente und optimale Pfade zu finden.
+    Die Distanzberechnung wird verwendet, um die tatsächliche Entfernung zwischen zwei Punkten auf einem Gitter zu bestimmen.
+    Eine gängige Methode hierfür ist die Oktile-Distanz, die nicht nur horizontale und vertikale, sondern auch diagonale Schritte berücksichtigt.
+    Für die Oktile-Distanz zwischen zwei Punkten $(x_1, y_1)$ und $(x_2, y_2)$ gilt:
+    \begin{equation}
+        \label{eq:distance_octile}
+        d_\text{okt}(P_1, P_2) = \max(|x_2 - x_1|, |y_2 - y_1|) + ( \sqrt{2} - 1) \min(|x_2 - x_1|, |y_2 - y_1|)
+    \end{equation}
+    Für die Heuristiken, die eine Schätzung der Entfernung von einem Punkt zum Ziel darstellen und somit die Suchrichtung
+    des Algorithmus lenken, wird oft die Euklidische Distanz verwendet.
+    Die Euklidische Distanz misst die direkte Luftlinie zwischen zwei Punkten und bietet eine präzise, jedoch rechenintensive Heuristik.
+    Für die Euklidische Distanz zwischen zwei Punkten $(x_1, y_1)$ und $(x_2, y_2)$ gilt:
+    \begin{equation}
+        \label{eq:distance_euklid}
+        d_\text{eukl}((x_1, y_1), (x_2, y_2)) = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
+    \end{equation}
     \textbf{Dijkstra's Algorithmus}\\
     Dijkstra's Algorithmus, benannt nach seinem Entwickler Edsger W. Dijkstra, ist ein prominenter Vertreter der Graphenalgorithmen,
     speziell der kürzesten-Pfad-Algorithmen. \cite{dijkstra1959}\\
@@ -241,7 +256,7 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     möglichen Knoten betrachten zu müssen.\\
     Damit ist A* besonders geeignet für Probleme, bei denen der Zielzustand bekannt ist, sodass eine sinnvolle Heuristik angewendet werden kann. \cite{hart1968}
     Eine Heuristik für den A*-Algorithmus sollte die tatsächlichen Kosten zum Ziel nie überschätzen, eine solche Heuristik
-    wird als optimistisch bezeichnet.
+    wird als optimistisch bezeichnet (ein Beweis, dass dies für die euklidische Distanz auf den vorliegenden Gittern gilt, ist in Abschnitt \ref{sec:beweis_heuristik} zu finden).
     Ist die Heuristik optimistisch, kann garantiert werden, dass der A*-Algorithmus immer die optimale Lösung findet.
     Im Gegensatz dazu, wenn eine Heuristik die tatsächlichen Kosten überschätzt, kann der A*-Algorithmus eine suboptimale
     Lösung finden, obwohl er möglicherweise schneller eine Lösung findet als Dijkstra's Algorithmus.\\
