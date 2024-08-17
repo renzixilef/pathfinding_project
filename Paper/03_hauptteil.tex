@@ -314,6 +314,7 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     \end{figure}
     Die Subklassen der \texttt{RunnerParent}-Klasse bieten Funktionalität für einzelne Durchläufe über Instanzen der \texttt{SingleRun}-Klasse
     oder Benchmarking-Durchläufe mit mehreren Gridkonfigurationen und Lösealgorithmen über die \texttt{MultiRun}-Klasse.
+
     \item \texttt{HeadlessRunner}\\
     \begin{figure}[H]
         \vspace{-0.5cm}
@@ -327,4 +328,21 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     Die Klassen \texttt{SingleRunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner}, die allgemeine Funktionalität,
     welche auch für die Darstellung mit \ac{GUI} relevant ist.
     Auf diese beiden Klassen soll allerdings später noch genauer eingegangen werden.
+
+    \item \texttt{PathfindingCommandParser}
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingCommandParser_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingCommandParser}}
+        \label{fig:uml_commandlineparser}
+    \end{figure}
+    Im Namespace \texttt{Application} befindet sich neben der eben erläuterten \texttt{HeadlessRunner}-Superklasse auch die
+    Funktionalität des Command-Line-Parsers.
+    Diese Klasse verarbeitet die etwaigen Command-Line-Argumente bei Ausführen der Applikation über das Terminal.
+    Die verschiedenen möglichen Flaggen die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
+    das \ac{CLI} übliche \texttt{-h} (\texttt{--help}) Argument abgerufen werden können.
+
 \end{itemize}
+
+
