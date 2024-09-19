@@ -90,12 +90,31 @@
 	numbers=left,
 	numberstyle=\tiny,
 	keywordstyle=\color{blue},
+	keywordstyle=[2]\color{orange},
+	keywordstyle=[3]\color{teal},
+	keywordstyle=[4]\color{red},
 	commentstyle=\color{green},
 	stringstyle=\color{red},
 	frame=tb,
 	columns=fullflexible,
 	breaklines=true,
 	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
+}
+
+% Define custom style for CMake
+\lstdefinelanguage{cmake}{
+	morekeywords={
+		add\_executable, add\_library, target\_link\_libraries,
+		include\_directories, project, cmake\_minimum\_required, set,
+		if, endif, elseif, else, message, find\_package, install,
+		target\_include\_directories, target\_compile\_options, target\_sources,
+		option, configure\_file, list, foreach, endforeach, file, add\_test
+	},
+	morekeywords=[2]{NAME, VERSION, PRIVATE, PUBLIC, INTERFACE, REQUIRED, COMMAND, WORKING_DIRECTORY, MAKE_DIRECTORY},
+	morekeywords=[3]{AStarPathfinder\_UnitTest, HeadlessRunner\_ModuleTest},
+	morekeywords=[4]{CMAKE\_CURRENT\_BINARY\_DIR, CMAKE\_CURRENT\_SOURCE\_DIR, GTEST\_INCLUDE\_DIRS},
+	sensitive=true,
+	morecomment=[l]{\#}
 }
 
 \makeatletter

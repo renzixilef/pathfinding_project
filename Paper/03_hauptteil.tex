@@ -192,9 +192,9 @@ label={lst:queue_compare_method}]{assets/listings/priority_queue_compare_method.
 Diese Implementation ermöglicht den Erhalt des Kontexts durch Rückgabe einer Lambda-Funktion von \texttt{compareCells()}.
 Der Erhalt des Kontextes spielt hier eine wichtige Rolle, da \texttt{compareCells()} eine Instanzfunktionalität der
 \texttt{Grid}-Klasse ist und über den \texttt{(*this)(GridCoordinate\&)}-Operator auf die jeweiligen \texttt{Cell}-Objekte
-zugegriffen wird.
-Zusätzlich kann die Laufzeiteffizienz auch durch eine gute Vorverarbeitung der Daten, zum Beispiel durch eine geeignete
-kartografische Abstraktion oder das Einbringen von Heuristiken, optimiert werden.
+zugegriffen wird.\\
+Zusätzlich zur Optimierung der Datenstrukturen kann die Laufzeiteffizienz auch durch eine gute Vorverarbeitung der Daten,
+zum Beispiel durch eine geeignete kartografische Abstraktion oder das Einbringen von Heuristiken, optimiert werden.
 Diese Techniken können jedoch unter Umständen die Qualität der Lösung beeinträchtigen, sodass immer ein Kompromiss zwischen
 der Qualität der Lösung und der erforderlichen Berechnungszeit gefunden werden muss.
 Auf die verwendeten Heuristiken soll im Folgenden noch genauer eingegangen werden.\\
@@ -342,7 +342,97 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     Diese Klasse verarbeitet die etwaigen Command-Line-Argumente bei Ausführen der Applikation über das Terminal.
     Die verschiedenen möglichen Flaggen die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
     das \ac{CLI} übliche \texttt{-h} (\texttt{--help}) Argument abgerufen werden können.
+\end{itemize}
+%********************************
+\subsection{Überblick - GUI}
+\label{subsec:aufbau_frontend_ueberblick_gui}
+%********************************
+Die Funktionalitäten des \ac{GUI} sind aufgeteilt auf die Namespaces \texttt{GUI} und den Subnamespace \texttt{GUI::Widgets}.
+Aus Gründen der Übersichtlichkeit wird für die hier implementierten GUI-Klassen kein UML-Diagramm bereitgestellt.
+Allerdings soll hier kurz auf das \textit{Qt5}-Framework, dessen Mechanismen und deren vorliegende Implementierung eingegangen werden.\\
+Das Qt5 Framework ist eine leistungsfähige Bibliothek zur Entwicklung plattformübergreifender Anwendungen und GUIs.
+Es wird in C++ entwickelt und bietet Bindings für verschiedene andere Programmiersprachen wie Python, Ruby und Java.
+Eine der herausragenden Eigenschaften von Qt5 ist seine Fähigkeit, aus einer einzigen Codebasis für mehrere Plattformen zu kompilieren, einschließlich Windows, macOS, Linux, iOS und Android.
+Dies ermöglicht Entwicklern, ohne tiefgreifende Änderungen am Code Anwendungen für verschiedene Betriebssysteme bereitzustellen.
+Unter der Haube bietet Qt5 Module für alles Mögliche: von GUI-Entwicklung über Netzwerkkommunikation bis hin zu Multimedia und Datenbanken. \cite{Qt52024}\\
+Ein zentrales Konzept von Qt ist der \texttt{SIGNAL}-\texttt{SLOT}-Mechanismus, der eine elegante Lösung für die Implementierung von ereignisgesteuerten Architekturen bietet.
+Signale und Slots ermöglichen die Kommunikation zwischen Objekten: Ein Signal wird von einem Objekt ausgesendet und kann mit einem oder mehreren Slots (Methoden) verbunden werden, die dann auf das Signal reagieren.
+Dieser Mechanismus ist dabei von C++'s nativer Pointer-Mechanik inspiriert, jedoch weitaus sicherer und flexibler.
+Ein großer Vorteil des \texttt{SIGNAL}-\texttt{SLOT}-Mechanismus ist seine Thread-Sicherheit.
+\textit{Qt5} sorgt dafür, dass die Signal-Emission und Slot-Ausführung, selbst wenn sie von verschiedenen Threads ausgeführt werden, ohne race conditions oder undefiniertes Verhalten stattfinden.
+Dies geschieht durch die Verwendung von Queued Connections, welche die Emitter-Thread-Aufrufe in der Event-Queue des Empfänger-Threads platzieren, ohne dass manuelle Sperrmechanismen wie \texttt{mutex} erforderlich sind.
+Dadurch wird eine klare Trennung und Synchronisation zwischen unterschiedlichen Ausführungskontexten ermöglicht und die Implementierung von komplexen, nebenläufigen Programmlogiken erleichtert.
+Die Nutzung von Signalen und Slots erlaubt eine klare Trennung zwischen der interaktiven Benutzeroberfläche und der Hintergrundverarbeitung (Worker-Threads).
+Worker-Threads können langwierige Aufgaben ausführen, ohne die Responsivität der GUI zu beeinträchtigen.
+Wenn die Hintergrundverarbeitung abgeschlossen ist oder Zwischenstände erreicht sind, kann ein Signal ausgesendet werden, um die GUI zu aktualisieren. \cite{Qt52024}\\
+Für den Benutzer steht in dieser Applikation ein Startfenster, bestehend aus einer Tabansicht mit Tabs für Single-Run und Multi-Run bereit.
+In diesen Tabs können ein oder mehrere Programmdurchläufe mit festen Parametern (Gitterhöhe und -breite, Algorithmen, etc.) versehen werden.
+Anschließend kann im Single-Run-Dialog das Lösen des Grids grafisch verfolgt oder im Multi-Run-Dialog ein Benchmark durchgeführt werden.
 
+%********************************
+\chapter{Eingesetztes Tooling}
+\label{ch:tooling}
+%********************************
+In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools eingegangen werden.
+%********************************
+\section{CMake}
+\label{sec:tooling-cmake}
+%********************************
+CMake ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
+Es ist insbesondere in größeren Projekten sehr hilfreich, da es die Projektkonfiguration und den Build-Prozess erheblich vereinfacht und standardisiert.
+Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann mit CMake eine einzige CMakeLists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt.\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Plattformunabhängigkeit}\\
+    CMake ermöglicht die Erzeugung von Build-Skripten auf verschiedenen Plattformen wie Windows, macOS und Linux.
+    Dies erleichtert die Pflege und Verteilung von Projekten, die auf mehreren Plattformen laufen müssen, da nur eine einzige Konfigurationsdatei benötigt wird.
+    \item \textbf{Flexibilität}\\
+    CMake unterstützt eine breite Palette von Compilern und Build-Systemen, einschließlich GNU Make, Ninja, MSBuild und Xcode.
+    Dies gibt Entwicklern die Flexibilität, das für ihr Projekt am besten geeignete Build-System zu wählen, ohne die Build-Konfiguration anpassen zu müssen.
+    \item \textbf{Modularität und Wiederverwendbarkeit}\\
+    CMake erleichtert die Modularität, indem es dem Entwickler ermöglicht, Bibliotheken und Abhängigkeiten in separate CMakeLists.txt-Dateien aufzuteilen.
+    Dies fördert die Wiederverwendbarkeit und erleichtert die Verwaltung von Abhängigkeiten, speziell in großen Projekten.
+    \item \textbf{Automatische Abhängigkeitsverwaltung}\\
+    CMake kann automatisch Abhängigkeiten zwischen den verschiedenen Komponenten eines Projekts erkennen und entsprechend steuern.
+    Dies führt zu effizienteren Builds und einer einfacheren Fehlersuche, da der Build-Prozess genau steuert, welche Dateien neu kompiliert werden müssen.
+\end{itemize}
+\textbf{Nachteile}
+\begin{itemize}
+    \item \textbf{Komplexität}\\
+    Obwohl CMake viele Vorteile bietet, kann es aufgrund seiner Flexibilität, der Vielzahl an verfügbaren Optionen und der teilweise fehlenden Standardisierung kompliziert zu erlernen und zu verwenden sein.
+    \item \textbf{Debugging-Optionen}\\
+    Das Debugging von CMake-Skripten kann manchmal schwierig sein, insbesondere wenn Fehlkonfigurationen oder komplexe Skripte verwendet werden.
 \end{itemize}
 
+%********************************
+\subsection{CTest und GoogleTest}
+\label{subsec:ctest-integration}
+%********************************
+CMake bietet nicht nur umfangreiche Funktionen zur Konfiguration des Build-Prozesses, sondern unterstützt auch Testframeworks über das Modul \textit{CTest}.
+CTest ist ein plattformübergreifendes Testtool, das speziell für die Integration in den CMake-Workflow konzipiert wurde.
+Es ermöglicht das Erstellen, Ausführen und Verwalten von Tests in einer einfachen und konsistenten Weise, was die Qualitätssicherung und Wartung großer Softwareprojekte erheblich erleichtert.\\
+In diesem Projekt wird das populäre Testframework \textit{GoogleTest} eingesetzt, welches eine flexible und leistungsfähige Lösung zur Erstellung von Unit- und Modultests bietet.
+GoogleTest ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität.
+Im Rahmen dieses Projekts wurden folgende Testcases über dieses Framework integriert:
+\begin{enumerate}
+    \item \textbf{Unit-Tests}\\
+    Für jeden eingesetzten Wegfindealgorithmus wurde ein eigenes Testszenario integriert.
+    Hierfür wurde jeweils ein \texttt{Grid}-Objekt in eine binäre Datei serialisiert (über die Funktion \texttt{Grid::serialize()}).
+    Dieses Objekt bildet ein mit dem jeweiligen Algorithmus gelöstes Gitter ab.
+    Um die Funktionalität des Algorithmus zu testen, muss demnach nur die Binärdatei deserialisiert, zurückgesetzt, gelöst und anschließend mit dem Eingangszustand verglichen werden.
+    \item \textbf{Headless Runner Module Test}\\
+    Bei diesem Test handelt es sich um einen Integrationstest, bei dem das Gesamtmodul mittels \texttt{headless\_runner\_module\_test.cpp} getestet wird.
+    Dieser Modultest soll die Funktionalität der Interfaces für kontinuierliches Lösen von Gittern sicherstellen.
+    Das Testszenario ist hierbei durch vorgegebene Gitterparameter beschrieben, die über mehrere Iterationen von allen Algorithmen gelöst werden müssen.
+\end{enumerate}
+Durch die Einbindung und Verknüpfung der Tests mit der CMakeLists.txt wird gewährleistet, dass die Tests unmittelbar nach dem Build-Prozess ausgeführt werden können.
+Dies steigert nicht nur die Zuverlässigkeit des Codes, sondern fördert auch den kontinuierlichen Verbesserungsprozess.
+Im Folgenden ist die Integration eines beispielhaften Unit-Tests und des Modultests in \texttt{CMakeLists.txt} dargestellt:
+\lstinputlisting[language=cmake, firstline=1, caption={CTest und GooleTest Integration},label={lst:tooling_ctest}]
+{assets/listings/ctest.txt}
 
+
+%********************************
+\section{Docker DevContainer}
+\label{sec:tooling-docker}
+%********************************
