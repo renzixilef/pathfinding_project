@@ -128,7 +128,6 @@ Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebiet
 Diese Funktion wird häufig zur Bildsynthese zur Generierung natürlicher Texturen für z.B. Wolken oder Gewässer eingesetzt.
 Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
 prozeduralen Generierung von Landschaftstopologien.
-%TODO: finish this and add part for pathfinding algorithms
 
 \subsubsection{Finden des kürzesten Pfades}
 In den Subklassen der \texttt{PathfinderParent}-Klasse werden verschiedenen Algorithmen implementiert um für gegebene
@@ -380,7 +379,7 @@ In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools ein
 %********************************
 CMake ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
 Es ist insbesondere in größeren Projekten sehr hilfreich, da es die Projektkonfiguration und den Build-Prozess erheblich vereinfacht und standardisiert.
-Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann mit CMake eine einzige CMakeLists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt.\\\\
+Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann mit CMake eine einzige CMakeLists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
 \textbf{Vorteile}
 \begin{itemize}
     \item \textbf{Plattformunabhängigkeit}\\
@@ -412,7 +411,7 @@ CMake bietet nicht nur umfangreiche Funktionen zur Konfiguration des Build-Proze
 CTest ist ein plattformübergreifendes Testtool, das speziell für die Integration in den CMake-Workflow konzipiert wurde.
 Es ermöglicht das Erstellen, Ausführen und Verwalten von Tests in einer einfachen und konsistenten Weise, was die Qualitätssicherung und Wartung großer Softwareprojekte erheblich erleichtert.\\
 In diesem Projekt wird das populäre Testframework \textit{GoogleTest} eingesetzt, welches eine flexible und leistungsfähige Lösung zur Erstellung von Unit- und Modultests bietet.
-GoogleTest ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität.
+GoogleTest ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität. \cite{Cmake2024, GTest2024}
 Im Rahmen dieses Projekts wurden folgende Testcases über dieses Framework integriert:
 \begin{enumerate}
     \item \textbf{Unit-Tests}\\
@@ -436,3 +435,36 @@ Im Folgenden ist die Integration eines beispielhaften Unit-Tests und des Modulte
 \section{Docker DevContainer}
 \label{sec:tooling-docker}
 %********************************
+\textit{DevContainer} basieren auf dem Prinzip der Containerisierung.
+Containerisierung ist ein Konzept zur Virtualisierung auf Betriebssystemebene, das es ermöglicht, Anwendungen mit all ihren Abhängigkeiten und Konfigurationen in einem isolierten Paket namens „Container“ zu bündeln.
+Dieser Container kann in jeder Umgebung ausgeführt werden – sei es auf einem lokalen Rechner, in der Cloud oder in einer CI/CD-Pipeline. \cite{Docker2024}\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Konsistente Entwicklungsumgebung}\\
+    Alle Entwickler arbeiten in einer einheitlichen Umgebung, unabhängig vom Host-Betriebssystem.
+    Dies verhindert das klassische Problem „it works on my machine“.
+    \item \textbf{Isolierte Abhängigkeiten}\\
+    Bibliotheken und Abhängigkeiten, die für das Projekt benötigt werden, sind im Container enthalten und beeinträchtigen nicht das Host-System.
+    \item \textbf{Einfache Skalierbarkeit}\\
+    Container können leicht repliziert und skaliert werden, was besonders in DevOps-Prozessen hilfreich ist.
+\end{itemize}
+Vor allem in Kombination mit CMake kann der Entwicklungsprozess über verteilte Maschinen so erheblich vereinfacht werden.
+Die einheitliche Umgebung wir durch den Container bereitgestellt und der Buildprozess über CMake automatisiert, was den Prozess stabil und reproduzierbar macht.
+
+%********************************
+\section{GitHub CI}
+\label{sec:tooling-ci}
+%********************************
+\ac{CI} ist eine Softwareentwicklungspraxis, bei der Codeänderungen regelmäßig in das zentrale Repository integriert und automatisierte Builds und Tests durchgeführt werden.\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Frühzeitige Fehlererkennung}\\
+    Automatisierte Tests und Builds bei jeder Codeänderung sorgen dafür, dass Fehler frühzeitig gefunden und behoben werden können.
+    Dies reduziert in erster Linie den Aufwand für die Fehlerbehebung.
+    \item \textbf{Qualitätssicherung}\\
+    Durch kontinuierliche Tests wird die Codequalität aufrechterhalten und verbessert.
+    CI-Tests helfen sicherzustellen, dass neue Änderungen die bestehende Funktionalität nicht beeinträchtigen.
+    \item \textbf{Kontinuierliche Bereitstellung}\\
+    CI ist oft der erste Schritt in Richtung Continuous Delivery (CD), bei dem die Software jederzeit in eine Produktionsumgebung bereitgestellt werden kann.
+\end{itemize}
+Durch die Integration von \textbf{Git}, \textbf{GitHub} und \textbf{CI} in das vorliegende Projekt wird ein schneller, sicherer und zentralisierter Entwicklungsprozess gewährleistet, der die Softwarequalität kontinuierlich überwacht und verbessert.
