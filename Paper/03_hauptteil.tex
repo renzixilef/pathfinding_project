@@ -22,7 +22,7 @@ Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf d
 \subsubsection{Namespace: GridGenerator}
 \label{subsubsec:aufbau_backend_ueberblick_gridgen}
 %********************************
-Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{ObstacleGenerator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
+Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{Obstacle\-Generator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
 \begin{itemize}
     \item \textttt{Cell} \\
     \begin{figure}[H]
@@ -33,7 +33,7 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_cell}
     \end{figure}
     Die \texttt{Cell}-Klasse hält Informationen und Funktionalität einer spezifischen Gridzelle.
-    Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{CellState}: Hindernis, begehbar, etc.).
+    Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{Cell\-State}: Hindernis, begehbar, etc.).
     Außerdem enthält die \texttt{Cell}-Klasse mehrere Helferfunktionen für die Interaktion mit den Gitterzellen.
 
     \item \textttt{Grid} \\
@@ -59,8 +59,8 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_obstacle_gen}
     \end{figure}
     Die \texttt{ObstacleGenerator}-Klasse und ihre Subklassen sind nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
-    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{ObstacleGenerator} gehalten.
-    Zudem wird hier eine virtuelle Methode \texttt{generateObstacles()} definiert, die von den Subklassen mit dem jeweiligen Algorithmus überschrieben wird.
+    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{Obstacle\-Generator} gehalten.
+    Zudem wird hier eine virtuelle Methode \texttt{generate\-Obstacles()} definiert, die von den Subklassen mit dem jeweiligen Algorithmus überschrieben wird.
     Für den Kontext ist der tatsächliche Algorithmus dadurch irrelevant, es kann mit einem generischen Objekt vom Typ \texttt{ObstacleGenerator} gearbeitet werden.
     Zusätzlich wird in der gleichen Header-Datei ein \texttt{enum} und ein dazugehöriger Parser-\texttt{struct} für die verschiedenen Algorithmen definiert.
 \end{itemize}
@@ -74,10 +74,10 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
     \item \texttt{PathfindingParent}\\
     Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
     In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
-    Der Instanz einer \texttt{PathinderParent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
+    Der Instanz einer \texttt{Pathinding\-Parent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
     Dieses Objekt repräsentiert den Handlungsrahmen des jeweiligen Pathfinding-Algorithmus.
     Über die virtuelle Methode \texttt{nextStep()} kann nach Initialisierung der nächste Schritt des jeweiligen Algorithmus durchgeführt werden.
-    Zu Debugging-Zwecken wurde außerdem eine Methode \texttt{solveNoWait()} implementiert, die bis zum Ende des Lösungsprozesses
+    Zu Debugging-Zwecken wurde außerdem eine Methode \\ \texttt{solveNoWait()} implementiert, die bis zum Ende des Lösungsprozesses
     iterativ die \texttt{nextStep()}-Methode aufruft.\\
     Für die diversen Subklassen wird auch hier noch ein zusätzlicher Parsing-\texttt{struct} und -\texttt{enum} für Interaktionen des Frontends definiert.
     \begin{figure}[H]
@@ -95,7 +95,7 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
         \caption{UML-Klassendiagramm der Klasse \texttt{PathfinderTimer}}
         \label{fig:uml_pathfinder_timer}
     \end{figure}
-    Die Klasse \texttt{PathfinderTimer} implementiert Metriken und Funktionalität zum rechenzeitbasierten Benchmarking der \texttt{PathfinderParent}-Subklasseninstanzen.
+    Die Klasse \texttt{PathfinderTimer} implementiert Metriken und Funktionalität zum rechenzeitbasierten Benchmarking der \texttt{PathfinderParent}-Subklassen\-instanzen.
 \end{itemize}
 %********************************
 \subsection{Algorithmen und Konzepte}
@@ -324,7 +324,7 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     \end{figure}
     Die Klasse \texttt{HeadlessRunner} enthält neben der allgemeinen Schnittstellenfunktionalität von \ac{GUI}-Seite aus,
     einige statische Helfermethoden für Formatierung und Darstellung von \texttt{QString}-Objekten.
-    Die Klassen \texttt{SingleRunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner}, die allgemeine Funktionalität,
+    Die Klassen \texttt{Single\-RunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner}, die allgemeine Funktionalität,
     welche auch für die Darstellung mit \ac{GUI} relevant ist.
     Auf diese beiden Klassen soll allerdings später noch genauer eingegangen werden.
 
@@ -336,7 +336,7 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
         \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingCommandParser}}
         \label{fig:uml_commandlineparser}
     \end{figure}
-    Im Namespace \texttt{Application} befindet sich neben der eben erläuterten \texttt{HeadlessRunner}-Superklasse auch die
+    Im Namespace \texttt{Application} befindet sich neben der eben erläuterten \\ \texttt{HeadlessRunner}-Superklasse auch die
     Funktionalität des Command-Line-Parsers.
     Diese Klasse verarbeitet die etwaigen Command-Line-Argumente bei Ausführen der Applikation über das Terminal.
     Die verschiedenen möglichen Flaggen die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
@@ -395,6 +395,7 @@ Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu
     CMake kann automatisch Abhängigkeiten zwischen den verschiedenen Komponenten eines Projekts erkennen und entsprechend steuern.
     Dies führt zu effizienteren Builds und einer einfacheren Fehlersuche, da der Build-Prozess genau steuert, welche Dateien neu kompiliert werden müssen.
 \end{itemize}
+\newpage
 \textbf{Nachteile}
 \begin{itemize}
     \item \textbf{Komplexität}\\
@@ -430,7 +431,6 @@ Im Folgenden ist die Integration eines beispielhaften Unit-Tests und des Modulte
 \lstinputlisting[language=cmake, firstline=1, caption={CTest und GooleTest Integration},label={lst:tooling_ctest}]
 {assets/listings/ctest.txt}
 
-
 %********************************
 \section{Docker DevContainer}
 \label{sec:tooling-docker}
@@ -450,7 +450,7 @@ Dieser Container kann in jeder Umgebung ausgeführt werden – sei es auf einem 
 \end{itemize}
 Vor allem in Kombination mit CMake kann der Entwicklungsprozess über verteilte Maschinen so erheblich vereinfacht werden.
 Die einheitliche Umgebung wir durch den Container bereitgestellt und der Buildprozess über CMake automatisiert, was den Prozess stabil und reproduzierbar macht.
-
+\newpage
 %********************************
 \section{GitHub CI}
 \label{sec:tooling-ci}

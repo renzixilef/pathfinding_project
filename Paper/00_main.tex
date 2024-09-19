@@ -179,13 +179,6 @@
 \listoffigures 														% Abbildungsverzeichnis
 \markleft{Abbildungsverzeichnis}
 
-\clearpage
-\pdfbookmark[0]{Tabellenverzeichnis}{tbv}
-\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
-\setlength{\cfttabindent}{0em}
-\listoftables														% Tabellenverzeichnis
-\renewcommand{\baselinestretch}{1}\normalsize
-
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
 \begingroup
 \pdfbookmark{Quelltextverzeichnis}{qtv}
@@ -202,13 +195,9 @@
 
 \include{01_einleitung}
 
-%\include{02_grundlagen}
-
 \include{03_hauptteil}
 
-%\include{04_ergebnisse}
-
-%\include{09_zusammenfassung_und_ausblick}
+\include{04_schlussteil}
 
 % ============= Literaturverzeichnis ============= %
 \renewcommand{\baselinestretch}{1.2}\normalsize
