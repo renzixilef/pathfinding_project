@@ -13,7 +13,7 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunC
         mainLayout(new QVBoxLayout(this)),
         buttonLayout(new QHBoxLayout()),
         runProgressView(new Widgets::RunProgressView()) {
-
+    // TODO: fix multi run with multiple configs
     qRegisterMetaType<Pathfinder::PathfinderPerformanceMetric>("Pathfinder::PathfinderPerformanceMetric");
     qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");

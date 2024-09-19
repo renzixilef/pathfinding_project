@@ -11,9 +11,9 @@
 #include <functional>
 #include <queue>
 #include <optional>
+
 #include "grid.h"
 #include "timer.h"
-
 
 /**
  * @namespace Pathfinder

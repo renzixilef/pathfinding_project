@@ -1,11 +1,4 @@
-#include <cstdint>
-#include <algorithm>
-#include <cmath>
-#include <unordered_set>
-#include <memory>
-
 #include "obstacle_gen.h"
-
 
 const std::map<GridGenerator::ObstacleGenStrategy, std::string>
         GridGenerator::ObstacleGenStrategyParser::obstacleGenStrategyToDisplayableText =
