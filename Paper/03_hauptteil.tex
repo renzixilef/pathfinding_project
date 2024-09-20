@@ -15,8 +15,8 @@ In diesem Abschnitt soll ein Überblick über den Aufbau und die Strukturierung 
 \label{subsec:aufbau_backend_ueberblick}
 %********************************
 Das Backend ist in zwei Namespaces unterteilt: `GridGenerator' und `Pathfinder'.
-Ersterer beinhaltet jegliche Funktionalität die zur Erstellung der Grid-Objekte, zum Platzieren der Hindernisse und zur Positionierung des Start- und Endpunkts notwendig sind.
-Der Namespace `Pathfinder' gruppiert Komponenten die zur Berechnung und Lösung ebendieser Objekte notwendig sind, sowie Funktionen zur Überwachung dieses Prozesses.
+Ersterer beinhaltet jegliche Funktionalität, die zur Erstellung der Grid-Objekte, zum Platzieren der Hindernisse und zur Positionierung des Start- und Endpunkts notwendig ist.
+Der Namespace `Pathfinder' gruppiert Komponenten, die zur Berechnung und Lösung ebendieser Objekte notwendig sind, sowie Funktionen zur Überwachung dieses Prozesses.
 Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf den Namespace `Pathfinder' eingegangen werden.
 %********************************
 \subsubsection{Namespace: GridGenerator}
@@ -24,7 +24,7 @@ Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf d
 %********************************
 Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{Obstacle\-Generator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
 \begin{itemize}
-    \item \textttt{Cell} \\
+    \item \texttt{Cell} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -36,7 +36,7 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
     Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{Cell\-State}: Hindernis, begehbar, etc.).
     Außerdem enthält die \texttt{Cell}-Klasse mehrere Helferfunktionen für die Interaktion mit den Gitterzellen.
 
-    \item \textttt{Grid} \\
+    \item \texttt{Grid} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -45,12 +45,12 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
         \label{fig:uml_grid}
     \end{figure}
     Die \texttt{Grid}-Klasse hält Informationen und Funktionalität die Interaktionen mit dem Grid ermöglichen.
-    Das tatsächliche Grid ist als \textttt{vector<vector<Cell> >} aufgebaut, der Zugriff findet über den \texttt{()}
+    Das tatsächliche Grid ist als \texttt{vector<vector<Cell> >} aufgebaut, der Zugriff findet über den \texttt{()}
     Operator und die Struktur \texttt{GridCoordinate} statt.
-    Bei der Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern \cite{nesteruk2021})
+    Bei der Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern \cite{nesteruk2021}),
     welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
     \newpage
-    \item \textttt{ObstacleGenerator} \\
+    \item \texttt{ObstacleGenerator} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
@@ -72,9 +72,9 @@ Der Namespace `Pathfinder' beeinhaltet die Klasse \texttt{PathfindingParent} und
 Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände und Interaktionen mit dem Frontend definiert.
 \begin{itemize}
     \item \texttt{PathfindingParent}\\
-    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \textttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
+    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \texttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
     In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
-    Der Instanz einer \texttt{Pathinding\-Parent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
+    Der Instanz einer \texttt{Pathfinding\-Parent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
     Dieses Objekt repräsentiert den Handlungsrahmen des jeweiligen Pathfinding-Algorithmus.
     Über die virtuelle Methode \texttt{nextStep()} kann nach Initialisierung der nächste Schritt des jeweiligen Algorithmus durchgeführt werden.
     Zu Debugging-Zwecken wurde außerdem eine Methode \\ \texttt{solveNoWait()} implementiert, die bis zum Ende des Lösungsprozesses
@@ -104,17 +104,17 @@ Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände u
 \subsubsection{Hindernisgenerierung}
 In den \texttt{ObstacleGenerator}-Subklassen werden verschiedene Algorithmen definiert, die zur prozeduralen Generierung von
 Hindernissen auf den 2D-\texttt{Grid}-Objekten eingesetzt werden.
-So definiert die Subklasse \texttt{RandomObstacleGenerator} einen Algorithmus der bis zur gewünschten \texttt{obstacleDensity}
+So definiert die Subklasse \texttt{RandomObstacleGenerator} einen Algorithmus, der bis zur gewünschten \texttt{obstacleDensity}
 pseudozufällig Hindernisse auf dem Gitter verteilt.
 In diesem Abschnitt soll allerdings kurz auf die in der Literatur bekannten Algorithmen `Drunken Walk' und `Perlin Noise' eingegangen werden.
-Diese Algorithmen werden auch im Design von Computerspielen eingesetzt um prozedural Level zu generieren \cite{koesnaedi2022, andrian2023},
+Diese Algorithmen werden auch im Design von Computerspielen eingesetzt, um prozedural Level zu generieren \cite{koesnaedi2022, andrian2023},
 was einen sehr ähnlichen Use-Case zu diesem Projekt darstellt.\\\\
 
 \textbf{Drunken Walk}\\
-Der `Drunken Walk'-Algorithmus (auch `Random Walk' oder `Drunkard's Walk'), stellt einen simplen aber effektiven Algorithmus
+Der `Drunken Walk'-Algorithmus (auch `Random Walk' oder `Drunkard's Walk'), stellt einen simplen, aber effektiven Algorithmus
 zur Erstellung von zufälligen Pfaden auf einem Gitter beliebiger Dimension dar.
-Mathematisch betrachtet bildet dieser Algorithmus einen stochastischen Prozess, welcher eine Spur bestehend aus
-einer Folge von Zufallsschritten beschreibt ab. \cite{pearson1905}
+Mathematisch betrachtet bildet dieser Algorithmus einen stochastischen Prozess ab, welcher eine Spur, bestehend aus
+einer Folge von Zufallsschritten, beschreibt. \cite{pearson1905}
 In der vorliegenden Implementation wird dafür zunächst das komplette Gitter mit Hindernissen gefüllt, anschließend wird
 eine zufällige Zelle für den Startpunkt des Pfades ausgewählt.
 Daraufhin wird mit zufälligen Schritten (basierend auf einem \textit{Mersenne Twister}-Generator) so lange ein begehbares Gebiet aus den Hindernissen heraus``gemeißelt'', bis der
@@ -124,13 +124,13 @@ spezifizierte Hindernisanteil erreicht ist.
 Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebieten wie der Physik, Psychologie oder auch Wirtschaftswissenschaft. \cite{weiss1982, nosofsky1997, kodde1984}\\\\
 
 \textbf{Perlin Noise}\\
-`Perlin Noise' ist eine pseudozufällige Rauschfunktion basierend auf Gradientenwerten in einem äquidistanten Gitter.
+`Perlin Noise' ist eine pseudozufällige Rauschfunktion, basierend auf Gradientenwerten in einem äquidistanten Gitter.
 Diese Funktion wird häufig zur Bildsynthese zur Generierung natürlicher Texturen für z.B. Wolken oder Gewässer eingesetzt.
 Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
 prozeduralen Generierung von Landschaftstopologien.
 
 \subsubsection{Finden des kürzesten Pfades}
-In den Subklassen der \texttt{PathfinderParent}-Klasse werden verschiedenen Algorithmen implementiert um für gegebene
+In den Subklassen der \texttt{PathfinderParent}-Klasse werden verschiedenen Algorithmen implementiert, um für gegebene
 \texttt{Grid}-Objekte einen möglichen Pfad von Startpunkt zu Endpunkt zu identifizieren.
 Die eingesetzten Algorithmen unterscheiden sich hauptsächlich im Hinblick auf die Laufzeiteffizienz (Dauer eines Berechnungsschritts)
 und die Ressourceneffizienz (Anzahl der untersuchten \texttt{Cell}-Objekte während der kompletten Berechnung).
@@ -165,7 +165,7 @@ die jeweils ihre eigenen Vor- und Nachteile mitbringen. \cite{iso2020}
     mit Komplexität $\mathcal{O}(n\cdot\log n)$.
     Die zugrundeliegende Datenstruktur ist auch hier normalerweise ein \texttt{std::vector}, kann aber bei Bedarf angepasst werden.
     Für die Objekte, die von der \texttt{std::priority\_queue} gehalten werden, muss eine Methode zur Bestimmung des
-    größeren zweier Elemente definiert sein.
+    größeren von zwei Elemente definiert sein.
     \item \texttt{std::set} und \texttt{std::map}\\
     \texttt{std::set} und \texttt{std::map} erlauben das Einfügen, Löschen und Suchen von Elementen in $\mathcal{O}(\log n)$ Zeit
     dank ihrer Implementierung als balancierte binäre Suchbäume.
@@ -205,7 +205,7 @@ must constitute an optimal policy with regard to the state resulting from the fi
 -- BELLMANN, 1957 \cite{bellman2010}
 \end{quotation}
 Im Kontext der implementierten Algorithmen lässt sich das folgendermaßen ausdrücken:
-Angenommen, zwischen Knoten $v$ und Startknoten $s$, existiert der Pfad $P$ von $s$ zu $v$ mit $P = [s, \dots, v]$.
+Angenommen, zwischen Knoten $v$ und Startknoten $s$ existiert der Pfad $P$ von $s$ zu $v$ mit $P = [s, \dots, v]$.
 Wenn nun ein Knoten $u$ und eine Kante $(v, u)$ eingefügt werden, um einen neuen Pfad $P' = [s, \dots, v, u]$ zu
 bilden, dann ist $P'$ der kürzeste Pfad von $s$ zu $u$, wenn $P$ der kürzeste Pfad von $s$ zu $v$ war. \\\\
 
@@ -263,8 +263,8 @@ Damit ist A* besonders geeignet für Probleme, bei denen der Zielzustand bekannt
 Eine Heuristik für den A*-Algorithmus sollte die tatsächlichen Kosten zum Ziel nie überschätzen, eine solche Heuristik
 wird als optimistisch bezeichnet (ein Beweis, dass dies für die euklidische Distanz auf den vorliegenden Gittern gilt, ist in Abschnitt \ref{sec:beweis_heuristik} zu finden).
 Ist die Heuristik optimistisch, kann garantiert werden, dass der A*-Algorithmus immer die optimale Lösung findet.
-Im Gegensatz dazu, wenn eine Heuristik die tatsächlichen Kosten überschätzt, kann der A*-Algorithmus eine suboptimale
-Lösung finden, obwohl er möglicherweise schneller eine Lösung findet als Dijkstra's Algorithmus.\\
+Wenn im Gegensatz dazu, eine Heuristik die tatsächlichen Kosten überschätzt, kann der A*-Algorithmus eine suboptimale
+Lösung finden, obwohl er möglicherweise schneller ist als Dijkstra's Algorithmus.\\
 Im schlechtesten Fall, wenn die Heuristik keine nützliche Information liefert (zum Beispiel immer null zurückgibt, was den
 A*-Algorithmus in den Dijkstra-Algorithmus umwandelt), ist die Laufzeit auch hier $\mathcal{O}((V+E)\cdot\log V)$.\\\\
 
@@ -322,9 +322,9 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
         \caption{UML-Klassendiagramm der Klasse \texttt{HeadlessRunner}}
         \label{fig:uml_headlessRunner}
     \end{figure}
-    Die Klasse \texttt{HeadlessRunner} enthält neben der allgemeinen Schnittstellenfunktionalität von \ac{GUI}-Seite aus,
+    Die Klasse \texttt{HeadlessRunner} enthält neben der allgemeinen Schnittstellenfunktionalität von \ac{GUI}-Seite aus
     einige statische Helfermethoden für Formatierung und Darstellung von \texttt{QString}-Objekten.
-    Die Klassen \texttt{Single\-RunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner}, die allgemeine Funktionalität,
+    Die Klassen \texttt{Single\-RunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner} die allgemeine Funktionalität,
     welche auch für die Darstellung mit \ac{GUI} relevant ist.
     Auf diese beiden Klassen soll allerdings später noch genauer eingegangen werden.
 
@@ -338,8 +338,8 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     \end{figure}
     Im Namespace \texttt{Application} befindet sich neben der eben erläuterten \\ \texttt{HeadlessRunner}-Superklasse auch die
     Funktionalität des Command-Line-Parsers.
-    Diese Klasse verarbeitet die etwaigen Command-Line-Argumente bei Ausführen der Applikation über das Terminal.
-    Die verschiedenen möglichen Flaggen die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
+    Diese Klasse verarbeitet die etwaigen Command-Line-Argumente beim Ausführen der Applikation über das Terminal.
+    Die verschiedenen möglichen Flaggen, die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
     das \ac{CLI} übliche \texttt{-h} (\texttt{--help}) Argument abgerufen werden können.
 \end{itemize}
 %********************************
@@ -360,13 +360,13 @@ Dieser Mechanismus ist dabei von C++'s nativer Pointer-Mechanik inspiriert, jedo
 Ein großer Vorteil des \texttt{SIGNAL}-\texttt{SLOT}-Mechanismus ist seine Thread-Sicherheit.
 \textit{Qt5} sorgt dafür, dass die Signal-Emission und Slot-Ausführung, selbst wenn sie von verschiedenen Threads ausgeführt werden, ohne race conditions oder undefiniertes Verhalten stattfinden.
 Dies geschieht durch die Verwendung von Queued Connections, welche die Emitter-Thread-Aufrufe in der Event-Queue des Empfänger-Threads platzieren, ohne dass manuelle Sperrmechanismen wie \texttt{mutex} erforderlich sind.
-Dadurch wird eine klare Trennung und Synchronisation zwischen unterschiedlichen Ausführungskontexten ermöglicht und die Implementierung von komplexen, nebenläufigen Programmlogiken erleichtert.
+Dadurch werden eine klare Trennung und Synchronisation zwischen unterschiedlichen Ausführungskontexten ermöglicht und die Implementierung von komplexen, nebenläufigen Programmlogiken erleichtert.
 Die Nutzung von Signalen und Slots erlaubt eine klare Trennung zwischen der interaktiven Benutzeroberfläche und der Hintergrundverarbeitung (Worker-Threads).
 Worker-Threads können langwierige Aufgaben ausführen, ohne die Responsivität der GUI zu beeinträchtigen.
 Wenn die Hintergrundverarbeitung abgeschlossen ist oder Zwischenstände erreicht sind, kann ein Signal ausgesendet werden, um die GUI zu aktualisieren. \cite{Qt52024}\\
 Für den Benutzer steht in dieser Applikation ein Startfenster, bestehend aus einer Tabansicht mit Tabs für Single-Run und Multi-Run bereit.
 In diesen Tabs können ein oder mehrere Programmdurchläufe mit festen Parametern (Gitterhöhe und -breite, Algorithmen, etc.) versehen werden.
-Anschließend kann im Single-Run-Dialog das Lösen des Grids grafisch verfolgt oder im Multi-Run-Dialog ein Benchmark durchgeführt werden.
+Anschließend können im Single-Run-Dialog das Lösen des Grids grafisch verfolgt oder im Multi-Run-Dialog ein Benchmark durchgeführt werden.
 
 %********************************
 \chapter{Eingesetztes Tooling}
@@ -374,45 +374,45 @@ Anschließend kann im Single-Run-Dialog das Lösen des Grids grafisch verfolgt o
 %********************************
 In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools eingegangen werden.
 %********************************
-\section{CMake}
+\section{\textit{CMake}}
 \label{sec:tooling-cmake}
 %********************************
-CMake ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
+\textit{CMake} ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
 Es ist insbesondere in größeren Projekten sehr hilfreich, da es die Projektkonfiguration und den Build-Prozess erheblich vereinfacht und standardisiert.
-Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann mit CMake eine einzige CMakeLists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
+Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann man mit \textit{CMake} eine einzige \textit{CMake}Lists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
 \textbf{Vorteile}
 \begin{itemize}
     \item \textbf{Plattformunabhängigkeit}\\
-    CMake ermöglicht die Erzeugung von Build-Skripten auf verschiedenen Plattformen wie Windows, macOS und Linux.
+    \textit{CMake} ermöglicht die Erzeugung von Build-Skripten auf verschiedenen Plattformen wie Windows, macOS und Linux.
     Dies erleichtert die Pflege und Verteilung von Projekten, die auf mehreren Plattformen laufen müssen, da nur eine einzige Konfigurationsdatei benötigt wird.
     \item \textbf{Flexibilität}\\
-    CMake unterstützt eine breite Palette von Compilern und Build-Systemen, einschließlich GNU Make, Ninja, MSBuild und Xcode.
+    \textit{CMake} unterstützt eine breite Palette von Compilern und Build-Systemen, einschließlich GNU Make, Ninja, MSBuild und Xcode.
     Dies gibt Entwicklern die Flexibilität, das für ihr Projekt am besten geeignete Build-System zu wählen, ohne die Build-Konfiguration anpassen zu müssen.
     \item \textbf{Modularität und Wiederverwendbarkeit}\\
-    CMake erleichtert die Modularität, indem es dem Entwickler ermöglicht, Bibliotheken und Abhängigkeiten in separate CMakeLists.txt-Dateien aufzuteilen.
+    \textit{CMake} erleichtert die Modularität, indem es dem Entwickler ermöglicht, Bibliotheken und Abhängigkeiten in separate \texttt{CMakeLists.txt}-Dateien aufzuteilen.
     Dies fördert die Wiederverwendbarkeit und erleichtert die Verwaltung von Abhängigkeiten, speziell in großen Projekten.
     \item \textbf{Automatische Abhängigkeitsverwaltung}\\
-    CMake kann automatisch Abhängigkeiten zwischen den verschiedenen Komponenten eines Projekts erkennen und entsprechend steuern.
+    \textit{CMake} kann automatisch Abhängigkeiten zwischen den verschiedenen Komponenten eines Projekts erkennen und entsprechend steuern.
     Dies führt zu effizienteren Builds und einer einfacheren Fehlersuche, da der Build-Prozess genau steuert, welche Dateien neu kompiliert werden müssen.
 \end{itemize}
 \newpage
 \textbf{Nachteile}
 \begin{itemize}
     \item \textbf{Komplexität}\\
-    Obwohl CMake viele Vorteile bietet, kann es aufgrund seiner Flexibilität, der Vielzahl an verfügbaren Optionen und der teilweise fehlenden Standardisierung kompliziert zu erlernen und zu verwenden sein.
+    Obwohl \textit{CMake} viele Vorteile bietet, kann es aufgrund seiner Flexibilität, der Vielzahl an verfügbaren Optionen und der teilweise fehlenden Standardisierung kompliziert zu erlernen und zu verwenden sein.
     \item \textbf{Debugging-Optionen}\\
-    Das Debugging von CMake-Skripten kann manchmal schwierig sein, insbesondere wenn Fehlkonfigurationen oder komplexe Skripte verwendet werden.
+    Das Debugging von \textit{CMake}-Skripten kann manchmal schwierig sein, insbesondere wenn Fehlkonfigurationen oder komplexe Skripte verwendet werden.
 \end{itemize}
 
 %********************************
-\subsection{CTest und GoogleTest}
+\subsection{\textit{CTest} und \textit{GoogleTest}}
 \label{subsec:ctest-integration}
 %********************************
-CMake bietet nicht nur umfangreiche Funktionen zur Konfiguration des Build-Prozesses, sondern unterstützt auch Testframeworks über das Modul \textit{CTest}.
-CTest ist ein plattformübergreifendes Testtool, das speziell für die Integration in den CMake-Workflow konzipiert wurde.
+\textit{CMake} bietet nicht nur umfangreiche Funktionen zur Konfiguration des Build-Prozesses, sondern unterstützt auch Testframeworks über das Modul \textit{CTest}.
+\textit{CTest} ist ein plattformübergreifendes Testtool, das speziell für die Integration in den \textit{CMake}-Workflow konzipiert wurde.
 Es ermöglicht das Erstellen, Ausführen und Verwalten von Tests in einer einfachen und konsistenten Weise, was die Qualitätssicherung und Wartung großer Softwareprojekte erheblich erleichtert.\\
 In diesem Projekt wird das populäre Testframework \textit{GoogleTest} eingesetzt, welches eine flexible und leistungsfähige Lösung zur Erstellung von Unit- und Modultests bietet.
-GoogleTest ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität. \cite{Cmake2024, GTest2024}
+\textit{GoogleTest} ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität. \cite{Cmake2024, GTest2024}
 Im Rahmen dieses Projekts wurden folgende Testcases über dieses Framework integriert:
 \begin{enumerate}
     \item \textbf{Unit-Tests}\\
@@ -425,10 +425,10 @@ Im Rahmen dieses Projekts wurden folgende Testcases über dieses Framework integ
     Dieser Modultest soll die Funktionalität der Interfaces für kontinuierliches Lösen von Gittern sicherstellen.
     Das Testszenario ist hierbei durch vorgegebene Gitterparameter beschrieben, die über mehrere Iterationen von allen Algorithmen gelöst werden müssen.
 \end{enumerate}
-Durch die Einbindung und Verknüpfung der Tests mit der CMakeLists.txt wird gewährleistet, dass die Tests unmittelbar nach dem Build-Prozess ausgeführt werden können.
+Durch die Einbindung und Verknüpfung der Tests mit der \texttt{CMakeLists.txt} wird gewährleistet, dass die Tests unmittelbar nach dem Build-Prozess ausgeführt werden können.
 Dies steigert nicht nur die Zuverlässigkeit des Codes, sondern fördert auch den kontinuierlichen Verbesserungsprozess.
 Im Folgenden ist die Integration eines beispielhaften Unit-Tests und des Modultests in \texttt{CMakeLists.txt} dargestellt:
-\lstinputlisting[language=cmake, firstline=1, caption={CTest und GooleTest Integration},label={lst:tooling_ctest}]
+\lstinputlisting[language=cmake, firstline=1, caption={\textit{CTest} und GooleTest Integration},label={lst:tooling_ctest}]
 {assets/listings/ctest.txt}
 
 %********************************
@@ -448,8 +448,8 @@ Dieser Container kann in jeder Umgebung ausgeführt werden – sei es auf einem 
     \item \textbf{Einfache Skalierbarkeit}\\
     Container können leicht repliziert und skaliert werden, was besonders in DevOps-Prozessen hilfreich ist.
 \end{itemize}
-Vor allem in Kombination mit CMake kann der Entwicklungsprozess über verteilte Maschinen so erheblich vereinfacht werden.
-Die einheitliche Umgebung wir durch den Container bereitgestellt und der Buildprozess über CMake automatisiert, was den Prozess stabil und reproduzierbar macht.
+Vor allem in Kombination mit \textit{CMake} kann der Entwicklungsprozess über verteilte Maschinen so erheblich vereinfacht werden.
+Die einheitliche Umgebung wird durch den Container bereitgestellt und der Buildprozess über \textit{CMake} automatisiert, was den Prozess stabil und reproduzierbar macht.
 \newpage
 %********************************
 \section{GitHub CI}
@@ -465,6 +465,6 @@ Die einheitliche Umgebung wir durch den Container bereitgestellt und der Buildpr
     Durch kontinuierliche Tests wird die Codequalität aufrechterhalten und verbessert.
     CI-Tests helfen sicherzustellen, dass neue Änderungen die bestehende Funktionalität nicht beeinträchtigen.
     \item \textbf{Kontinuierliche Bereitstellung}\\
-    CI ist oft der erste Schritt in Richtung Continuous Delivery (CD), bei dem die Software jederzeit in eine Produktionsumgebung bereitgestellt werden kann.
+    CI ist oft der erste Schritt in Richtung \ac{CD}, bei dem die Software jederzeit in eine Produktionsumgebung bereitgestellt werden kann.
 \end{itemize}
 Durch die Integration von \textbf{Git}, \textbf{GitHub} und \textbf{CI} in das vorliegende Projekt wird ein schneller, sicherer und zentralisierter Entwicklungsprozess gewährleistet, der die Softwarequalität kontinuierlich überwacht und verbessert.
