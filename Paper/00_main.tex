@@ -155,7 +155,8 @@
 \pagestyle{scrheadings}
 \renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
 \begingroup
-\pdfbookmark[0]{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
+\clearpage\phantomsection
+\pdfbookmark{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
 \renewcommand{\baselinestretch}{1.2}\normalsize						% Zeilenabstand
 \let\clearpage\relax
 \tableofcontents													% Inhaltsverzeichnis
@@ -171,17 +172,17 @@
 \renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
 \markleft{Nomenklatur}
 
-\clearpage
+\newpage
 \setlength{\cftfigindent}{0em}
 \renewcommand{\baselinestretch}{1.1}\normalsize
 \pdfbookmark{Abbildungsverzeichnis}{lof}
-\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
-\listoffigures 														% Abbildungsverzeichnis
+\listoffigures
 \markleft{Abbildungsverzeichnis}
+%\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
 
 \renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
 \begingroup
-\pdfbookmark{Quelltextverzeichnis}{qtv}
+%\pdfbookmark{Quelltextverzeichnis}{qtv}
 \setlength{\cfttabindent}{0em}
 \let\cleardoublepage\clearpage
 \lstlistoflistings  % Code-Verzeichnis
