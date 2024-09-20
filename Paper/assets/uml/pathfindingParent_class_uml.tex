@@ -1,0 +1,88 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{Pathfinder}
+                \umlenum[x=-3, y=6, fill=white]{PathfinderStrategy}{
+                    PATHFINDER\_DIJKSTRA = 1\\
+                    PATHFINDER\_A\_STAR = 2\\
+                    PATHFINDER\_JUMP\_POINT\_SEARCH = 3
+                }{
+                }
+
+                \umlclass[x=-1,y=-7,type=struct]{PathfinderPerformanceMetric}{
+                    pathCells: uint32\_t\\
+                    visitedCells: uint32\_t\\
+                    closedCells: uint32\_t\\
+                    solvingUSeconds: double\\
+                    avgUSecondsPerStep: double\\
+                    stepCount: uint32\_t\\
+                    strat: PathfinderStrategy
+                }{}
+
+                \umlclass[x=10,y=6,type=struct]{PathfinderStrategyParser}{
+                    \umlstatic{pathfindingStrategyToDisplayableText: map\textless PathfinderStrategy, string\textgreater}
+                }{
+                    \umlstatic{parsePathfinderStrategy(strat: PathfinderStrategy, grid: Grid\&): unique\_ptr\textless PathfindingParent\textgreater}
+                }
+
+                \umlclass[x=-3, y=0, abstract]{PathfindingParent}{
+                    \# timer: PathfinderTimer\\
+                    \# grid: Grid\&\\
+                    \# nextCellQueue: priority\_queue\\
+                }{
+                    + PathfindingParent(grid: Grid\&): PathfindingParent\\
+                    - initGenericSolver(): void
+                    + \umlvirt{\textapprox PathfindingParent() = default}\\
+                    + \umlvirt{nextStep(): void}\\
+                    \# \umlvirt{getStrat() const: PathfinderStrategy}\\
+                    + queueEmpty(): bool\\
+                    + getPerformanceMetric() const: PathfinderPerformanceMetric \\
+                    + solveNoWait(): void\\
+                    + reInit(): void\\
+                    \# isCellBlockedOrOutOfBounds(x: int64\_t, y: int64\_t): bool\\
+                }
+
+                \umlclass[x=10, y=3]{DijkstraSolve}{
+                }{
+                    + DijkstraSolve(grid: Grid\&): DijkstraSolve\\
+                    + nextStep() override: void\\
+                    + getStrat() override const: PathfinderStrategy
+                }
+
+                \umlclass[x=10, y=0]{AStarSolve}{
+                }{
+                    + AStarSolve(grid: Grid\&): AStarSolve\\
+                    + nextStep() override: void\\
+                    + getStrat() override const: PathfinderStrategy
+                }
+
+                \umlclass[x=10, y=-3]{JumpPointSolve}{
+                }{
+                    + JumpPointSolve(grid: Grid\&): JumpPointSolve\\
+                    + nextStep() override: void \\
+                    + getStrat() override const: PathfinderStrategy\\
+                    - jump(currentCoord: GridCoordinate,  direction: pair\textless int8\_t, int8\_t\textgreater): optional\textless GridCoordinate\textgreater
+                }
+
+                \umlsimpleclass[x=-5, y=3.5]{Grid}
+
+                \umlsimpleclass[x=-5, y=-4]{PathfinderTimer}
+
+
+            \umlinherit[geometry=-|-]{DijkstraSolve}{PathfindingParent}
+            \umlinherit{AStarSolve}{PathfindingParent}
+            \umlinherit[geometry=|-, anchor1=166]{JumpPointSolve}{PathfindingParent}
+            \umlunicompo[mult=1, pos=2.8, geometry=|-|, anchor1=-75]{PathfindingParent}{PathfinderPerformanceMetric}
+            \umlunicompo[mult=1, pos=1.7, geometry=|-, anchor1=-75]{PathfindingParent}{PathfinderTimer}
+            \umldep{PathfindingParent}{PathfinderStrategy}
+            \umldep{PathfinderStrategyParser}{PathfinderStrategy}
+            \umldep[geometry=|-]{PathfindingParent}{Grid}
+        \end{umlpackage}
+    \end{tikzpicture}
+
+\end{document}

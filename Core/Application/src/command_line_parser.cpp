@@ -58,9 +58,9 @@ Application::PathfindingCommandParser::PathfindingCommandParser()
                        "Specify the pathfinding algorithm to use for the generated grid as uint in [1,3].\n"
                        "1: Dijkstra's Algorithm\n2: A* Algorithm\n3: Jump-Point-Search Algorithm",
                        "pathfinding-algorithm"),
-          iterationsOption(QStringList() << "i" << "iterations"
-                                         << "Specify the number of iterations for the input configuration as uint."
-                                         << "iterations") {
+          iterationsOption(QStringList() << "i" << "iterations",
+                                         "Specify the number of iterations for the input configuration as uint.",
+                                         "iterations") {
     setApplicationDescription(
             "Command-line and GUI Application for pathfinding algorithm benchmarking");
 

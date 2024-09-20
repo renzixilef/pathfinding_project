@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{GridGenerator}
+
+            \umlenum[x=0, y=-4.04, fill=white]{CellState}{
+                CELL\_OBSTACLE = 0 \\
+                CELL\_OPEN = 1 \\
+                CELL\_VISITED = 2 \\
+                CELL\_CLOSED = 3 \\
+                CELL\_PATH = 4
+            }
+            {}
+
+            \umlclass[x=0, y=0, type=struct]{CellStateParser}{
+            }
+            {
+                \umlstatic{parseCellStateToQColor(state : CellState, startEnd : bool = false) : QColor} \\
+            }
+
+            \umlclass[x=0, y=-7.98, type=struct]{CellCost}{
+                gCost : double \\
+                hCost : double \\
+            }
+            {
+                totalCost() : double \\
+            }
+
+            \umlclass[x=8, y=-6]{Cell}{
+                - state : CellState \\
+                - cost : CellCost \\
+            }
+            {
+                + Cell(): Cell\\
+                + markObstacle() : void \\
+                + markOpen() : void \\
+                + markVisited() : void \\
+                + markClosed() : void \\
+                + markPath() : void \\
+                + setGCost(gCost : double) : void \\
+                + setHCost(hCost : double) : void \\
+                + setParentCellPointer(parentCell : Cell*) : void \\
+                + setParentCoordinates(parentCoords : pair) : void \\
+                + getParentIfCellPointer() : Cell** \\
+                + getParentIfCoord() : pair* \\
+                + getState() : CellState \\
+                + getCost() : CellCost \\
+            }
+
+            \umlunicompo[anchor1=-154, mult2=1]{Cell}{CellCost}
+            \umlunicompo[anchor1=154, mult2=1]{Cell}{CellState}
+            \umlassoc{CellStateParser}{CellState}
+
+        \end{umlpackage}
+    \end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,470 @@
+%********************************
+\chapter{Programmaufbau und -struktur}
+\label{ch:aufbau}
+%********************************
+
+%********************************
+\section{Aufbau des Backends}
+\label{sec:aufbau_backend}
+%********************************
+In diesem Abschnitt soll ein Überblick über den Aufbau und die Strukturierung des Backends gegeben werden.
+`Backend' bezeichnet hierbei den ausführenden Teil des Programms, also Objekte und Strukturen die zur Berechnung/Lösung des Grids notwendig sind und keinen direkten User-Kontakt haben.
+
+%********************************
+\subsection{Überblick}
+\label{subsec:aufbau_backend_ueberblick}
+%********************************
+Das Backend ist in zwei Namespaces unterteilt: `GridGenerator' und `Pathfinder'.
+Ersterer beinhaltet jegliche Funktionalität, die zur Erstellung der Grid-Objekte, zum Platzieren der Hindernisse und zur Positionierung des Start- und Endpunkts notwendig ist.
+Der Namespace `Pathfinder' gruppiert Komponenten, die zur Berechnung und Lösung ebendieser Objekte notwendig sind, sowie Funktionen zur Überwachung dieses Prozesses.
+Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf den Namespace `Pathfinder' eingegangen werden.
+%********************************
+\subsubsection{Namespace: GridGenerator}
+\label{subsubsec:aufbau_backend_ueberblick_gridgen}
+%********************************
+Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{Obstacle\-Generator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
+\begin{itemize}
+    \item \texttt{Cell} \\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/cell_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{Cell}}
+        \label{fig:uml_cell}
+    \end{figure}
+    Die \texttt{Cell}-Klasse hält Informationen und Funktionalität einer spezifischen Gridzelle.
+    Jede Zelle hält ihre Kosten (\texttt{CellCost}) und einen Zustand (\texttt{Cell\-State}: Hindernis, begehbar, etc.).
+    Außerdem enthält die \texttt{Cell}-Klasse mehrere Helferfunktionen für die Interaktion mit den Gitterzellen.
+
+    \item \texttt{Grid} \\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/grid_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{Grid}}
+        \label{fig:uml_grid}
+    \end{figure}
+    Die \texttt{Grid}-Klasse hält Informationen und Funktionalität die Interaktionen mit dem Grid ermöglichen.
+    Das tatsächliche Grid ist als \texttt{vector<vector<Cell> >} aufgebaut, der Zugriff findet über den \texttt{()}
+    Operator und die Struktur \texttt{GridCoordinate} statt.
+    Bei der Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern \cite{nesteruk2021}),
+    welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
+    \newpage
+    \item \texttt{ObstacleGenerator} \\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/obstacleGen_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{ObstacleGenerator}}
+        \label{fig:uml_obstacle_gen}
+    \end{figure}
+    Die \texttt{ObstacleGenerator}-Klasse und ihre Subklassen sind nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
+    Übergreifende Funktionalität der verschiedenen Algorithmen zur Erstellung der Hindernisse wird in der Elternklasse \texttt{Obstacle\-Generator} gehalten.
+    Zudem wird hier eine virtuelle Methode \texttt{generate\-Obstacles()} definiert, die von den Subklassen mit dem jeweiligen Algorithmus überschrieben wird.
+    Für den Kontext ist der tatsächliche Algorithmus dadurch irrelevant, es kann mit einem generischen Objekt vom Typ \texttt{ObstacleGenerator} gearbeitet werden.
+    Zusätzlich wird in der gleichen Header-Datei ein \texttt{enum} und ein dazugehöriger Parser-\texttt{struct} für die verschiedenen Algorithmen definiert.
+\end{itemize}
+%********************************
+\subsubsection{Namespace: Pathfinder}
+\label{subsubsec:aufbau_backend_ueberblick_pathfinder}
+%********************************
+Der Namespace `Pathfinder' beeinhaltet die Klasse \texttt{PathfindingParent} und ihre Subklassen, sowie die Klasse \texttt{PathfinderTimer}.
+Zusätzlich werden über diverse \texttt{structs} und \texttt{enums} Zustände und Interaktionen mit dem Frontend definiert.
+\begin{itemize}
+    \item \texttt{PathfindingParent}\\
+    Die \texttt{PathfindingParent}-Klasse und ihre Subklassen sind ähnlich wie die \texttt{ObstacleGen}-Klasse nach einem Strategy-Pattern aufgebaut \cite{nesteruk2021}.
+    In der Elternklasse wird ein generischer Pathfinder initialisiert, der konkrete Algorithmus ist auch hier vor dem Kontext verborgen.
+    Der Instanz einer \texttt{Pathfinding\-Parent}-Subklasse wird bei Konstruktion eine Referenz zu einem \texttt{Grid}-Objekt übergeben.
+    Dieses Objekt repräsentiert den Handlungsrahmen des jeweiligen Pathfinding-Algorithmus.
+    Über die virtuelle Methode \texttt{nextStep()} kann nach Initialisierung der nächste Schritt des jeweiligen Algorithmus durchgeführt werden.
+    Zu Debugging-Zwecken wurde außerdem eine Methode \\ \texttt{solveNoWait()} implementiert, die bis zum Ende des Lösungsprozesses
+    iterativ die \texttt{nextStep()}-Methode aufruft.\\
+    Für die diversen Subklassen wird auch hier noch ein zusätzlicher Parsing-\texttt{struct} und -\texttt{enum} für Interaktionen des Frontends definiert.
+    \begin{figure}[H]
+              \vspace{-0.5cm}
+              \centering
+              \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingParent_class_uml}
+              \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingParent}}
+              \label{fig:uml_pathfinder}
+    \end{figure}
+    \item \texttt{PathfinderTimer}\\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingTimer_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{PathfinderTimer}}
+        \label{fig:uml_pathfinder_timer}
+    \end{figure}
+    Die Klasse \texttt{PathfinderTimer} implementiert Metriken und Funktionalität zum rechenzeitbasierten Benchmarking der \texttt{PathfinderParent}-Subklassen\-instanzen.
+\end{itemize}
+%********************************
+\subsection{Algorithmen und Konzepte}
+\label{subsec:aufbau_backend_konzepte}
+%********************************
+\subsubsection{Hindernisgenerierung}
+In den \texttt{ObstacleGenerator}-Subklassen werden verschiedene Algorithmen definiert, die zur prozeduralen Generierung von
+Hindernissen auf den 2D-\texttt{Grid}-Objekten eingesetzt werden.
+So definiert die Subklasse \texttt{RandomObstacleGenerator} einen Algorithmus, der bis zur gewünschten \texttt{obstacleDensity}
+pseudozufällig Hindernisse auf dem Gitter verteilt.
+In diesem Abschnitt soll allerdings kurz auf die in der Literatur bekannten Algorithmen `Drunken Walk' und `Perlin Noise' eingegangen werden.
+Diese Algorithmen werden auch im Design von Computerspielen eingesetzt, um prozedural Level zu generieren \cite{koesnaedi2022, andrian2023},
+was einen sehr ähnlichen Use-Case zu diesem Projekt darstellt.\\\\
+
+\textbf{Drunken Walk}\\
+Der `Drunken Walk'-Algorithmus (auch `Random Walk' oder `Drunkard's Walk'), stellt einen simplen, aber effektiven Algorithmus
+zur Erstellung von zufälligen Pfaden auf einem Gitter beliebiger Dimension dar.
+Mathematisch betrachtet bildet dieser Algorithmus einen stochastischen Prozess ab, welcher eine Spur, bestehend aus
+einer Folge von Zufallsschritten, beschreibt. \cite{pearson1905}
+In der vorliegenden Implementation wird dafür zunächst das komplette Gitter mit Hindernissen gefüllt, anschließend wird
+eine zufällige Zelle für den Startpunkt des Pfades ausgewählt.
+Daraufhin wird mit zufälligen Schritten (basierend auf einem \textit{Mersenne Twister}-Generator) so lange ein begehbares Gebiet aus den Hindernissen heraus``gemeißelt'', bis der
+spezifizierte Hindernisanteil erreicht ist.
+\lstinputlisting[language=C++, firstline=1, caption={Drunken Walk-Algorithmus},label={lst:obstacle_drunken_walk}]
+    {assets/listings/obstacle_drunken_walk.txt}
+Der `Drunken Walk'-Algorithmus findet außerdem zahlreiche Anwendungen in Gebieten wie der Physik, Psychologie oder auch Wirtschaftswissenschaft. \cite{weiss1982, nosofsky1997, kodde1984}\\\\
+
+\textbf{Perlin Noise}\\
+`Perlin Noise' ist eine pseudozufällige Rauschfunktion, basierend auf Gradientenwerten in einem äquidistanten Gitter.
+Diese Funktion wird häufig zur Bildsynthese zur Generierung natürlicher Texturen für z.B. Wolken oder Gewässer eingesetzt.
+Zudem findet sie auch in vielen modernen Computerspielen (beispielsweise \textit{Minecraft} (Microsoft)) Anwendung zur
+prozeduralen Generierung von Landschaftstopologien.
+
+\subsubsection{Finden des kürzesten Pfades}
+In den Subklassen der \texttt{PathfinderParent}-Klasse werden verschiedenen Algorithmen implementiert, um für gegebene
+\texttt{Grid}-Objekte einen möglichen Pfad von Startpunkt zu Endpunkt zu identifizieren.
+Die eingesetzten Algorithmen unterscheiden sich hauptsächlich im Hinblick auf die Laufzeiteffizienz (Dauer eines Berechnungsschritts)
+und die Ressourceneffizienz (Anzahl der untersuchten \texttt{Cell}-Objekte während der kompletten Berechnung).
+Im Folgenden soll zunächst auf allgemeine Überlegungen für die Implementierung dieser Algorithmen und danach kurz auf
+jeden eingesetzten Algorithmus im Detail eingegangen werden.\\\\
+
+\textbf{Allgemeine Überlegungen}\\
+Die in diesem Projekt eingesetzten Algorithmen benötigen alle eine über die Rechenschritte persistente Datenstruktur,
+welche die \texttt{Cell}-Objekte hält, die als nächstes untersucht werden müssen.
+Da in jedem der Algorithmen eine konstante Entwicklung des Pfades vom Startpunkt aus durchgeführt wird, wächst diese
+Datenstruktur mit jedem Berechnungsschritt und muss demnach dynamisch angelegt sein.
+Die Performanz der Algorithmen hängt stark von der Effizienz des Zugriffs auf und der Manipulation dieser Datenstruktur an bestimmten Indices ab.
+Ein gutes Datenmanagement und optimierte Datenstrukturen können somit die Laufzeiteffizienz erheblich steigern.
+Ein sorgfältiges Ausbalancieren zwischen Speichernutzung und Rechenleistung ist elementar, da eine zu hohe Speicherkomplexität
+das System vor allem für sehr große Gitter stark belasten könnte.
+Bei der Implementierung von Wegfindungsalgorithmen in C++ stehen uns eine Vielzahl von Datenstrukturen zur Verfügung,
+die jeweils ihre eigenen Vor- und Nachteile mitbringen. \cite{iso2020}
+\begin{itemize}
+    \item \texttt{std::vector}\\
+    Eine gängige Wahl ist \texttt{std::vector}.
+    Diese Struktur bietet schnellen Zugriff ($\mathcal{O}(1)$) auf Elemente durch direkte Indizierung, allerdings ist
+    das Einfügen und Entfernen von Elementen in der Mitte des Vektors eine kostspieligere Operation ($\mathcal{O}(n)$).
+    \item \texttt{std::list}\\
+    \texttt{std::list}, eine doppelt verkettete Liste, erlaubt schnelles Einfügen und Entfernen von Elementen ($\mathcal{O}(1)$),
+    da lediglich Zeiger umgestellt werden müssen.
+    Der Zugriff auf ein bestimmtes Element ist allerdings langsamer und benötigt im Allgemeinen eine Durchquerung der Liste (($\mathcal{O}(n)$)).
+    \item \texttt{std::dequeue}\\
+    Diese Datenstruktur bietet ähnliche Eigenschaften wie \texttt{std::vector}, erlaubt aber zusätzlich das Einfügen
+    und Entfernen von Elementen in konstanter Zeit ($\mathcal{O}(1)$) am Anfang, wie auch am Ende des Containers.
+    \item \texttt{std::priority\_queue}\\
+    \texttt{std::priority\_queue} (Implementierung eines \textit{Binary Heap}) ermöglicht das Einfügen von Elementen und das Extrahieren des größten Elements jeweils
+    mit Komplexität $\mathcal{O}(n\cdot\log n)$.
+    Die zugrundeliegende Datenstruktur ist auch hier normalerweise ein \texttt{std::vector}, kann aber bei Bedarf angepasst werden.
+    Für die Objekte, die von der \texttt{std::priority\_queue} gehalten werden, muss eine Methode zur Bestimmung des
+    größeren von zwei Elemente definiert sein.
+    \item \texttt{std::set} und \texttt{std::map}\\
+    \texttt{std::set} und \texttt{std::map} erlauben das Einfügen, Löschen und Suchen von Elementen in $\mathcal{O}(\log n)$ Zeit
+    dank ihrer Implementierung als balancierte binäre Suchbäume.
+    In der Praxis kann jedoch die konstante Faktorzeit erheblich sein, aufgrund der Rot-Schwarz-Baum-Balancierungsschritte.
+    \item \texttt{std::unordered\_set} und \texttt{std::unordered\_map}\\
+    \texttt{std::unordered\_set} und \texttt{std::unordered\_map}, die hashbasierte Datenstrukturen sind, bieten im
+    Idealfall konstante Zeit ($\mathcal{O}(1)$) für Einfügen, Löschen und Suchen, jedoch kann dies im Worst-Case auf $\mathcal{O}(n)$
+    ansteigen, z.B. bei ungünstigen Hashfunktionen.
+\end{itemize}
+Für die Anforderungen von Pfadfindealgorithmen, insbesondere von Algorithmen wie A* und Dijkstra's Algorithmus,
+stellt die Datenstruktur \texttt{std::priority\_queue} in diesem Projekt eine optimale Wahl dar.
+Diese Algorithmen arbeiten nach einem `Greedy'-Ansatz \cite{korte2006}, indem sie immer den Pfad mit den geringsten angesammelten Kosten wählen.
+Daher ist eine Datenstruktur, die einen effizienten Zugriff auf das Element mit der höchsten Priorität (in diesem Fall
+das Element mit den geringsten Kosten) ermöglicht, von großem Nutzen.\\
+Bei der Verwendung einer \texttt{std::priority\_queue} ist es, wie bereits erwähnt, entscheidend, eine geeignete Vergleichsfunktion
+zu implementieren, um die Priorität der Elemente zu bestimmen.
+Im Kontext von Pfadfindealgorithmen wäre diese Funktion typischerweise so gestaltet, dass sie die geringsten angesammelten
+Kosten als höchste Priorität behandelt.
+In diesem Projekt werden Objekte vom primitiven Typ \texttt{GridCoordinate} gehalten (siehe \ref{subsubsec:aufbau_backend_ueberblick_gridgen}),
+daher wurde die Vergleichsmethode wie folgt implementiert:
+\lstinputlisting[language=C++, firstline=1, caption={Vergleichsmethode für die \texttt{std::priority\_queue}},
+label={lst:queue_compare_method}]{assets/listings/priority_queue_compare_method.txt}
+Diese Implementation ermöglicht den Erhalt des Kontexts durch Rückgabe einer Lambda-Funktion von \texttt{compareCells()}.
+Der Erhalt des Kontextes spielt hier eine wichtige Rolle, da \texttt{compareCells()} eine Instanzfunktionalität der
+\texttt{Grid}-Klasse ist und über den \texttt{(*this)(GridCoordinate\&)}-Operator auf die jeweiligen \texttt{Cell}-Objekte
+zugegriffen wird.\\
+Zusätzlich zur Optimierung der Datenstrukturen kann die Laufzeiteffizienz auch durch eine gute Vorverarbeitung der Daten,
+zum Beispiel durch eine geeignete kartografische Abstraktion oder das Einbringen von Heuristiken, optimiert werden.
+Diese Techniken können jedoch unter Umständen die Qualität der Lösung beeinträchtigen, sodass immer ein Kompromiss zwischen
+der Qualität der Lösung und der erforderlichen Berechnungszeit gefunden werden muss.
+Auf die verwendeten Heuristiken soll im Folgenden noch genauer eingegangen werden.\\
+Mathematisch betrachtet basieren alle hier implementierten Algorithmen \cite{morin1982} auf dem Optimalitätsprinzip von Bellman, nach
+dem sich eine optimale Lösung aus optimalen Teillösungen zusammensetzt:
+\begin{quotation}
+An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions
+must constitute an optimal policy with regard to the state resulting from the first decision.\\
+-- BELLMANN, 1957 \cite{bellman2010}
+\end{quotation}
+Im Kontext der implementierten Algorithmen lässt sich das folgendermaßen ausdrücken:
+Angenommen, zwischen Knoten $v$ und Startknoten $s$ existiert der Pfad $P$ von $s$ zu $v$ mit $P = [s, \dots, v]$.
+Wenn nun ein Knoten $u$ und eine Kante $(v, u)$ eingefügt werden, um einen neuen Pfad $P' = [s, \dots, v, u]$ zu
+bilden, dann ist $P'$ der kürzeste Pfad von $s$ zu $u$, wenn $P$ der kürzeste Pfad von $s$ zu $v$ war. \\\\
+
+\textbf{Distanzberechnung und Heuristiken}\\
+Bei Pathfinding-Algorithmen spielen Distanzberechnung und Heuristiken eine entscheidende Rolle, um effiziente und optimale Pfade zu finden.
+Die Distanzberechnung wird verwendet, um die tatsächliche Entfernung zwischen zwei Punkten auf einem Gitter zu bestimmen.
+Eine gängige Methode hierfür ist die Oktile-Distanz, die nicht nur horizontale und vertikale, sondern auch diagonale Schritte berücksichtigt.
+Für die Oktile-Distanz zwischen zwei Punkten $(x_1, y_1)$ und $(x_2, y_2)$ gilt:
+\begin{equation}
+    \label{eq:distance_octile}
+    d_\text{okt}(P_1, P_2) = \max(|x_2 - x_1|, |y_2 - y_1|) + ( \sqrt{2} - 1) \min(|x_2 - x_1|, |y_2 - y_1|)
+\end{equation}
+Für die Heuristiken, die eine Schätzung der Entfernung von einem Punkt zum Ziel darstellen und somit die Suchrichtung
+des Algorithmus lenken, wird oft die Euklidische Distanz verwendet.
+Die Euklidische Distanz misst die direkte Luftlinie zwischen zwei Punkten und bietet eine präzise, jedoch rechenintensive Heuristik.
+Für die Euklidische Distanz zwischen zwei Punkten $(x_1, y_1)$ und $(x_2, y_2)$ gilt:
+\begin{equation}
+    \label{eq:distance_euklid}
+    d_\text{eukl}((x_1, y_1), (x_2, y_2)) = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
+\end{equation}
+
+\textbf{Dijkstra's Algorithmus}\\
+Dijkstra's Algorithmus, benannt nach seinem Entwickler Edsger W. Dijkstra, ist ein prominenter Vertreter der Graphenalgorithmen,
+speziell der kürzesten-Pfad-Algorithmen. \cite{dijkstra1959}\\
+Der Algorithmus funktioniert folgendermaßen: Zunächst wird dem Startknoten der Abstandswert $0$ zugewiesen.
+Für den aktuellen Knoten betrachtet man nun dessen ungeprüfte Nachbarknoten und summiert den Abstandswert des aktuellen
+Knotens und das Gewicht der Kante, die zum Nachbarknoten führt (Distanz zum Nachbarknoten).
+Diese Summe wird auch als $G(n)$ (G-Kosten) bezeichnet.
+Wenn die eben berechnete Summe kleiner ist als der aktuelle Wert für $G(n)$ des Nachbarknotens, aktualisiert man diesen Wert.
+Wenn alle Nachbarn des aktuellen Knotens geprüft wurden, kennzeichnet man ihn als geprüft.
+Anschließend wird der Knoten mit dem geringsten vorläufigen Wert, der noch nicht geprüft wurde, als neuer aktueller Knoten gewählt.
+Dieser Vorgang wird wiederholt, bis der zu prüfende Knoten der Endknoten ist.
+Am Ende des Algorithmus ist/sind der kürzeste Pfad/die kürzesten Pfade von Startknoten zu Endknoten bekannt.
+Die Laufzeit von Dijkstra's Algorithmus ist im Allgemeinen abhängig von der Implementierung der verwendeten Datenstrukturen
+und des Abstandes von Start- und Endknoten. \cite{dijkstra1959}
+Im schlechtesten Fall ist die Zeitkomplexität $\mathcal{O}((V+E)\cdot\log V)$, wobei $V$ die Menge der Knoten und $E$
+die Menge der Kanten des Graphen ist. \cite{cormen2022}\\\\
+
+\textbf{A* Algorithmus}\\
+Der A*-Algorithmus ist, ähnlich wie Dijkstra's Algorithmus, ein prominenter Vertreter der Graphenalgorithmen und speziell
+der kürzesten-Pfad-Algorithmen.
+Entwickelt von Peter Hart, Nils Nilsson und Bertram Raphael, löst er das Problem des kürzesten Pfads von einem Startknoten
+zu einem Zielknoten in einem gewichteten Graphen mit nichtnegativen Kantengewichten. \cite{hart1968}\\
+Der A*-Algorithmus ist eine Erweiterung des Dijkstra-Algorithmus, der zusätzlich eine sogenannte Heuristik verwendet,
+um die Suche zum Zielknoten zu leiten.
+Bei der A*-Methode werden zu jedem Knoten zunächst, wie bei Dijkstra, Abstandswerte oder $G(n)$ berechnet.
+Die Besonderheit ist jedoch, dass zusätzlich die erwartete Reststrecke zum Zielknoten, auch $H(n)$ (H-Kosten) genannt, berücksichtigt wird.
+Die Gesamtstrecke, auch $F(n)$ (F-Kosten), setzt sich also aus dem aktuellen Abstandswert und der heuristisch geschätzten
+Distanz vom betrachteten Knoten zum Ziel zusammen.
+Anstatt den Knoten mit den geringsten G-Kosten (wie bei Dijkstra) als nächsten Knoten auszuwählen, wird der
+Knoten mit den geringsten F-Kosten als nächster zu überprüfender Knoten gewählt.
+Dies ermöglicht A*, effizienter als Dijkstra den kürzesten Weg zu einem gegebenen Zielknoten zu finden, ohne jeden
+möglichen Knoten betrachten zu müssen.\\
+Damit ist A* besonders geeignet für Probleme, bei denen der Zielzustand bekannt ist, sodass eine sinnvolle Heuristik angewendet werden kann. \cite{hart1968}
+Eine Heuristik für den A*-Algorithmus sollte die tatsächlichen Kosten zum Ziel nie überschätzen, eine solche Heuristik
+wird als optimistisch bezeichnet (ein Beweis, dass dies für die euklidische Distanz auf den vorliegenden Gittern gilt, ist in Abschnitt \ref{sec:beweis_heuristik} zu finden).
+Ist die Heuristik optimistisch, kann garantiert werden, dass der A*-Algorithmus immer die optimale Lösung findet.
+Wenn im Gegensatz dazu, eine Heuristik die tatsächlichen Kosten überschätzt, kann der A*-Algorithmus eine suboptimale
+Lösung finden, obwohl er möglicherweise schneller ist als Dijkstra's Algorithmus.\\
+Im schlechtesten Fall, wenn die Heuristik keine nützliche Information liefert (zum Beispiel immer null zurückgibt, was den
+A*-Algorithmus in den Dijkstra-Algorithmus umwandelt), ist die Laufzeit auch hier $\mathcal{O}((V+E)\cdot\log V)$.\\\\
+
+\textbf{Jump Point Search-Algorithmus}\\
+Der  \ac{JPS}-Algorithmus, entwickelt von Daniel Harabor und Alban Grastien im Jahr 2011, ist eine Optimierung des
+A*-Algorithmus speziell für uniforme Raster mit orthogonalen Bewegungen, wie sie häufig in Videospielen und ähnlichen
+Simulationen zu finden sind. \cite{harabor2011}\\
+\ac{JPS} beschleunigt A*, indem unnötige Knoten übersprungen werden und nur an den Stellen gesucht wird, die als ``Sprungpunkte'' bezeichnet werden.
+Sprungpunkte sind Punkte, von denen aus der Pfad zu einem benachbarten Punkt gebogen werden könnte, um einen kürzeren Pfad zu erzielen.
+Bei der Begutachtung der Nachbarn eines Knotens nimmt JPS nicht alle in die offene Liste auf (wie es A* tun würde),
+sondern nur diejenigen, die als Sprungpunkte angesehen werden.
+Dadurch kann JPS die Anzahl der zu berücksichtigenden Knoten erheblich reduzieren, was zu einer erheblichen Beschleunigung
+gegenüber dem Standard-A*-Algorithmus führen kann.
+Es ist zu beachten, dass JPS am effizientesten ist, wenn die Bewegungskosten im Raster einheitlich sind und nur
+orthogonale Bewegungen erlaubt sind.
+Bei nicht einheitlichen Kosten oder diagonalen Bewegungen ist A* in der Regel effizienter.
+In Bezug auf die Zeitkomplexität kann JPS merklich effizienter als der A*-Algorithmus sein, die genaue Big-O-Notation
+kann jedoch je nach Art des verwendeten Rasters und anderen Faktoren variieren.
+Unter idealen Bedingungen, Suchen über große Raster mit vielen offenen Bereichen, kann JPS die Suchzeit im Vergleich
+zu A* um einen Faktor von bis zu 10 reduzieren. \cite{harabor2014}
+
+%********************************
+\section{Aufbau des Frontends}
+\label{sec:aufbau_frontend}
+%********************************
+Im Folgenden soll ein kurzer Überblick über den Aufbau des Frontends und des Interfaces zwischen Front- und Backend gegeben werden.
+Das Frontend beinhaltet hierbei vor allem Funktionalität der \ac{GUI} (Widgets, Fenster, Layouts, etc.) und des \ac{CLI}.
+Zunächst wird allerdings eine Übersicht über die Interfaceklassen gegeben.
+%********************************
+\subsection{Überblick - Interfaces}
+\label{subsec:aufbau_frontend_ueberblick_interfaces}
+%********************************
+Die Funktionalität des Interfaces für die Benutzung des Programms mit \ac{GUI} beschränkt sich auf die Klasse \texttt{RunnerParent}
+und ihre Subklassen \texttt{SingleRun} und \texttt{MultiRun}.
+Direkt nach Initialisierung dieser Klassen werden die resultierenden Objekte auf einen neuen Thread verschoben, um den Event-Loop der \ac{GUI} nicht zu blockieren.
+Zur Kommunikation mit der \ac{GUI} wird das threadsichere \texttt{SIGNAL-SLOT}-Prinzip \cite{Qt52024} des \textit{Qt5}-Frameworks eingesetzt.
+Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{HeadlessRunner} definiert.
+\begin{itemize}
+    \item \texttt{RunnerParent}\\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/runnerParent_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{RunnerParent}}
+        \label{fig:uml_runner_parent}
+    \end{figure}
+    Die Subklassen der \texttt{RunnerParent}-Klasse bieten Funktionalität für einzelne Durchläufe über Instanzen der \texttt{SingleRun}-Klasse
+    oder Benchmarking-Durchläufe mit mehreren Gridkonfigurationen und Lösealgorithmen über die \texttt{MultiRun}-Klasse.
+
+    \item \texttt{HeadlessRunner}\\
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/headlessRunner_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{HeadlessRunner}}
+        \label{fig:uml_headlessRunner}
+    \end{figure}
+    Die Klasse \texttt{HeadlessRunner} enthält neben der allgemeinen Schnittstellenfunktionalität von \ac{GUI}-Seite aus
+    einige statische Helfermethoden für Formatierung und Darstellung von \texttt{QString}-Objekten.
+    Die Klassen \texttt{Single\-RunDialog} und \texttt{MultiRunDialog} erben von \texttt{HeadlessRunner} die allgemeine Funktionalität,
+    welche auch für die Darstellung mit \ac{GUI} relevant ist.
+    Auf diese beiden Klassen soll allerdings später noch genauer eingegangen werden.
+
+    \item \texttt{PathfindingCommandParser}
+    \begin{figure}[H]
+        \vspace{-0.5cm}
+        \centering
+        \includestandalone[width=0.7\textwidth]{assets/uml/pathfindingCommandParser_class_uml}
+        \caption{UML-Klassendiagramm der Klasse \texttt{PathfindingCommandParser}}
+        \label{fig:uml_commandlineparser}
+    \end{figure}
+    Im Namespace \texttt{Application} befindet sich neben der eben erläuterten \\ \texttt{HeadlessRunner}-Superklasse auch die
+    Funktionalität des Command-Line-Parsers.
+    Diese Klasse verarbeitet die etwaigen Command-Line-Argumente beim Ausführen der Applikation über das Terminal.
+    Die verschiedenen möglichen Flaggen, die gesetzt werden können, haben jeweils eine eigene Beschreibung, die über
+    das \ac{CLI} übliche \texttt{-h} (\texttt{--help}) Argument abgerufen werden können.
+\end{itemize}
+%********************************
+\subsection{Überblick - GUI}
+\label{subsec:aufbau_frontend_ueberblick_gui}
+%********************************
+Die Funktionalitäten des \ac{GUI} sind aufgeteilt auf die Namespaces \texttt{GUI} und den Subnamespace \texttt{GUI::Widgets}.
+Aus Gründen der Übersichtlichkeit wird für die hier implementierten GUI-Klassen kein UML-Diagramm bereitgestellt.
+Allerdings soll hier kurz auf das \textit{Qt5}-Framework, dessen Mechanismen und deren vorliegende Implementierung eingegangen werden.\\
+Das Qt5 Framework ist eine leistungsfähige Bibliothek zur Entwicklung plattformübergreifender Anwendungen und GUIs.
+Es wird in C++ entwickelt und bietet Bindings für verschiedene andere Programmiersprachen wie Python, Ruby und Java.
+Eine der herausragenden Eigenschaften von Qt5 ist seine Fähigkeit, aus einer einzigen Codebasis für mehrere Plattformen zu kompilieren, einschließlich Windows, macOS, Linux, iOS und Android.
+Dies ermöglicht Entwicklern, ohne tiefgreifende Änderungen am Code Anwendungen für verschiedene Betriebssysteme bereitzustellen.
+Unter der Haube bietet Qt5 Module für alles Mögliche: von GUI-Entwicklung über Netzwerkkommunikation bis hin zu Multimedia und Datenbanken. \cite{Qt52024}\\
+Ein zentrales Konzept von Qt ist der \texttt{SIGNAL}-\texttt{SLOT}-Mechanismus, der eine elegante Lösung für die Implementierung von ereignisgesteuerten Architekturen bietet.
+Signale und Slots ermöglichen die Kommunikation zwischen Objekten: Ein Signal wird von einem Objekt ausgesendet und kann mit einem oder mehreren Slots (Methoden) verbunden werden, die dann auf das Signal reagieren.
+Dieser Mechanismus ist dabei von C++'s nativer Pointer-Mechanik inspiriert, jedoch weitaus sicherer und flexibler.
+Ein großer Vorteil des \texttt{SIGNAL}-\texttt{SLOT}-Mechanismus ist seine Thread-Sicherheit.
+\textit{Qt5} sorgt dafür, dass die Signal-Emission und Slot-Ausführung, selbst wenn sie von verschiedenen Threads ausgeführt werden, ohne race conditions oder undefiniertes Verhalten stattfinden.
+Dies geschieht durch die Verwendung von Queued Connections, welche die Emitter-Thread-Aufrufe in der Event-Queue des Empfänger-Threads platzieren, ohne dass manuelle Sperrmechanismen wie \texttt{mutex} erforderlich sind.
+Dadurch werden eine klare Trennung und Synchronisation zwischen unterschiedlichen Ausführungskontexten ermöglicht und die Implementierung von komplexen, nebenläufigen Programmlogiken erleichtert.
+Die Nutzung von Signalen und Slots erlaubt eine klare Trennung zwischen der interaktiven Benutzeroberfläche und der Hintergrundverarbeitung (Worker-Threads).
+Worker-Threads können langwierige Aufgaben ausführen, ohne die Responsivität der GUI zu beeinträchtigen.
+Wenn die Hintergrundverarbeitung abgeschlossen ist oder Zwischenstände erreicht sind, kann ein Signal ausgesendet werden, um die GUI zu aktualisieren. \cite{Qt52024}\\
+Für den Benutzer steht in dieser Applikation ein Startfenster, bestehend aus einer Tabansicht mit Tabs für Single-Run und Multi-Run bereit.
+In diesen Tabs können ein oder mehrere Programmdurchläufe mit festen Parametern (Gitterhöhe und -breite, Algorithmen, etc.) versehen werden.
+Anschließend können im Single-Run-Dialog das Lösen des Grids grafisch verfolgt oder im Multi-Run-Dialog ein Benchmark durchgeführt werden.
+
+%********************************
+\chapter{Eingesetztes Tooling}
+\label{ch:tooling}
+%********************************
+In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools eingegangen werden.
+%********************************
+\section{\textit{CMake}}
+\label{sec:tooling-cmake}
+%********************************
+\textit{CMake} ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
+Es ist insbesondere in größeren Projekten sehr hilfreich, da es die Projektkonfiguration und den Build-Prozess erheblich vereinfacht und standardisiert.
+Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann man mit \textit{CMake} eine einzige \textit{CMake}Lists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Plattformunabhängigkeit}\\
+    \textit{CMake} ermöglicht die Erzeugung von Build-Skripten auf verschiedenen Plattformen wie Windows, macOS und Linux.
+    Dies erleichtert die Pflege und Verteilung von Projekten, die auf mehreren Plattformen laufen müssen, da nur eine einzige Konfigurationsdatei benötigt wird.
+    \item \textbf{Flexibilität}\\
+    \textit{CMake} unterstützt eine breite Palette von Compilern und Build-Systemen, einschließlich GNU Make, Ninja, MSBuild und Xcode.
+    Dies gibt Entwicklern die Flexibilität, das für ihr Projekt am besten geeignete Build-System zu wählen, ohne die Build-Konfiguration anpassen zu müssen.
+    \item \textbf{Modularität und Wiederverwendbarkeit}\\
+    \textit{CMake} erleichtert die Modularität, indem es dem Entwickler ermöglicht, Bibliotheken und Abhängigkeiten in separate \texttt{CMakeLists.txt}-Dateien aufzuteilen.
+    Dies fördert die Wiederverwendbarkeit und erleichtert die Verwaltung von Abhängigkeiten, speziell in großen Projekten.
+    \item \textbf{Automatische Abhängigkeitsverwaltung}\\
+    \textit{CMake} kann automatisch Abhängigkeiten zwischen den verschiedenen Komponenten eines Projekts erkennen und entsprechend steuern.
+    Dies führt zu effizienteren Builds und einer einfacheren Fehlersuche, da der Build-Prozess genau steuert, welche Dateien neu kompiliert werden müssen.
+\end{itemize}
+\newpage
+\textbf{Nachteile}
+\begin{itemize}
+    \item \textbf{Komplexität}\\
+    Obwohl \textit{CMake} viele Vorteile bietet, kann es aufgrund seiner Flexibilität, der Vielzahl an verfügbaren Optionen und der teilweise fehlenden Standardisierung kompliziert zu erlernen und zu verwenden sein.
+    \item \textbf{Debugging-Optionen}\\
+    Das Debugging von \textit{CMake}-Skripten kann manchmal schwierig sein, insbesondere wenn Fehlkonfigurationen oder komplexe Skripte verwendet werden.
+\end{itemize}
+
+%********************************
+\subsection{\textit{CTest} und \textit{GoogleTest}}
+\label{subsec:ctest-integration}
+%********************************
+\textit{CMake} bietet nicht nur umfangreiche Funktionen zur Konfiguration des Build-Prozesses, sondern unterstützt auch Testframeworks über das Modul \textit{CTest}.
+\textit{CTest} ist ein plattformübergreifendes Testtool, das speziell für die Integration in den \textit{CMake}-Workflow konzipiert wurde.
+Es ermöglicht das Erstellen, Ausführen und Verwalten von Tests in einer einfachen und konsistenten Weise, was die Qualitätssicherung und Wartung großer Softwareprojekte erheblich erleichtert.\\
+In diesem Projekt wird das populäre Testframework \textit{GoogleTest} eingesetzt, welches eine flexible und leistungsfähige Lösung zur Erstellung von Unit- und Modultests bietet.
+\textit{GoogleTest} ist bekannt für seine leicht verständliche Syntax und umfangreiche Funktionalität. \cite{Cmake2024, GTest2024}
+Im Rahmen dieses Projekts wurden folgende Testcases über dieses Framework integriert:
+\begin{enumerate}
+    \item \textbf{Unit-Tests}\\
+    Für jeden eingesetzten Wegfindealgorithmus wurde ein eigenes Testszenario integriert.
+    Hierfür wurde jeweils ein \texttt{Grid}-Objekt in eine binäre Datei serialisiert (über die Funktion \texttt{Grid::serialize()}).
+    Dieses Objekt bildet ein mit dem jeweiligen Algorithmus gelöstes Gitter ab.
+    Um die Funktionalität des Algorithmus zu testen, muss demnach nur die Binärdatei deserialisiert, zurückgesetzt, gelöst und anschließend mit dem Eingangszustand verglichen werden.
+    \item \textbf{Headless Runner Module Test}\\
+    Bei diesem Test handelt es sich um einen Integrationstest, bei dem das Gesamtmodul mittels \texttt{headless\_runner\_module\_test.cpp} getestet wird.
+    Dieser Modultest soll die Funktionalität der Interfaces für kontinuierliches Lösen von Gittern sicherstellen.
+    Das Testszenario ist hierbei durch vorgegebene Gitterparameter beschrieben, die über mehrere Iterationen von allen Algorithmen gelöst werden müssen.
+\end{enumerate}
+Durch die Einbindung und Verknüpfung der Tests mit der \texttt{CMakeLists.txt} wird gewährleistet, dass die Tests unmittelbar nach dem Build-Prozess ausgeführt werden können.
+Dies steigert nicht nur die Zuverlässigkeit des Codes, sondern fördert auch den kontinuierlichen Verbesserungsprozess.
+Im Folgenden ist die Integration eines beispielhaften Unit-Tests und des Modultests in \texttt{CMakeLists.txt} dargestellt:
+\lstinputlisting[language=cmake, firstline=1, caption={\textit{CTest} und GooleTest Integration},label={lst:tooling_ctest}]
+{assets/listings/ctest.txt}
+
+%********************************
+\section{Docker DevContainer}
+\label{sec:tooling-docker}
+%********************************
+\textit{DevContainer} basieren auf dem Prinzip der Containerisierung.
+Containerisierung ist ein Konzept zur Virtualisierung auf Betriebssystemebene, das es ermöglicht, Anwendungen mit all ihren Abhängigkeiten und Konfigurationen in einem isolierten Paket namens „Container“ zu bündeln.
+Dieser Container kann in jeder Umgebung ausgeführt werden – sei es auf einem lokalen Rechner, in der Cloud oder in einer CI/CD-Pipeline. \cite{Docker2024}\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Konsistente Entwicklungsumgebung}\\
+    Alle Entwickler arbeiten in einer einheitlichen Umgebung, unabhängig vom Host-Betriebssystem.
+    Dies verhindert das klassische Problem „it works on my machine“.
+    \item \textbf{Isolierte Abhängigkeiten}\\
+    Bibliotheken und Abhängigkeiten, die für das Projekt benötigt werden, sind im Container enthalten und beeinträchtigen nicht das Host-System.
+    \item \textbf{Einfache Skalierbarkeit}\\
+    Container können leicht repliziert und skaliert werden, was besonders in DevOps-Prozessen hilfreich ist.
+\end{itemize}
+Vor allem in Kombination mit \textit{CMake} kann der Entwicklungsprozess über verteilte Maschinen so erheblich vereinfacht werden.
+Die einheitliche Umgebung wird durch den Container bereitgestellt und der Buildprozess über \textit{CMake} automatisiert, was den Prozess stabil und reproduzierbar macht.
+\newpage
+%********************************
+\section{GitHub CI}
+\label{sec:tooling-ci}
+%********************************
+\ac{CI} ist eine Softwareentwicklungspraxis, bei der Codeänderungen regelmäßig in das zentrale Repository integriert und automatisierte Builds und Tests durchgeführt werden.\\\\
+\textbf{Vorteile}
+\begin{itemize}
+    \item \textbf{Frühzeitige Fehlererkennung}\\
+    Automatisierte Tests und Builds bei jeder Codeänderung sorgen dafür, dass Fehler frühzeitig gefunden und behoben werden können.
+    Dies reduziert in erster Linie den Aufwand für die Fehlerbehebung.
+    \item \textbf{Qualitätssicherung}\\
+    Durch kontinuierliche Tests wird die Codequalität aufrechterhalten und verbessert.
+    CI-Tests helfen sicherzustellen, dass neue Änderungen die bestehende Funktionalität nicht beeinträchtigen.
+    \item \textbf{Kontinuierliche Bereitstellung}\\
+    CI ist oft der erste Schritt in Richtung \ac{CD}, bei dem die Software jederzeit in eine Produktionsumgebung bereitgestellt werden kann.
+\end{itemize}
+Durch die Integration von \textbf{Git}, \textbf{GitHub} und \textbf{CI} in das vorliegende Projekt wird ein schneller, sicherer und zentralisierter Entwicklungsprozess gewährleistet, der die Softwarequalität kontinuierlich überwacht und verbessert.

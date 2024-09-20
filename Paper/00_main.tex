@@ -1,0 +1,218 @@
+%***********************************************************************************************%
+%===============================================================================================%
+% 																								%
+%										Ausarbeitung zum Thema  								%
+% 																								%
+%               "Implementierung einer GUI-basierten Pathfinding-Algorithmen Benchmarking       %
+%                            Software im Modul 'Effizient Programmieren'" 					    %
+% 																								%
+%									 von Felix Renzikowski, 2024							    %
+% 																								%
+%===============================================================================================%
+%***********************************************************************************************%
+
+
+% ============= Klassendefinition ============= %
+
+\documentclass[
+	%draft, 		% Entwurfsstadium
+	final, 			% fertiges Dokument
+	paper=a4,
+	pagesize=auto,
+	fontsize=12pt,
+	ngerman,
+	openright,
+	%twoside,		% Aktivieren, falls doppelseitiger Druck
+	numbers=noendperiod,
+	bibliography=totoc,
+	listof=totoc
+]{scrreprt}
+
+% ============= Verwendete Pakete ============= %
+
+% Dokumentinformationen
+\usepackage{hyperref}
+\hypersetup{
+	pdftitle={Implementierung einer GUI-basierten Pathfinding-Algorithmen Benchmarking Software im Modul 'Effizient Programmieren'},
+	pdfsubject={Abschlussausarbeitung},
+	pdfauthor={Felix Renzikowski},
+	pdfkeywords={C++, CMake, Qt5, Effizient programmieren},
+	pdfborder={0 0 0},
+	colorlinks=true,
+	breaklinks=true,
+	linktocpage=true,
+	citecolor=black,
+	linkcolor=black,	
+	menucolor=black,	
+	urlcolor=black
+}
+\urlstyle{same}
+
+% Allgemeine Pakete
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}	% Sonderzeichen
+\usepackage{graphicx,color}
+\usepackage[ngerman]{babel}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{acronym}
+\usepackage[labelfont=bf]{caption}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[headsepline,automark,markcase=ignoreuppercase]{scrlayer-scrpage}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfkeys{/pgf/number format/.cd, use comma, 1000 sep={.}}
+\usepgfplotslibrary{groupplots}
+\usepackage{pgfgantt}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\pgfplotsset{compat=newest}
+\usepackage{grffile}
+\usepackage{subcaption}
+\usepackage{lmodern}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage[export]{adjustbox}
+\sisetup{output-decimal-marker = {,}}
+\usepackage{mathtools}
+\usepackage[mode=buildnew, subpreambles=true]{standalone}
+\usepackage{wrapfig}
+\usepackage{anyfontsize}
+\usepackage[ngerman=ngerman-x-latest]{hyphsubst}
+\raggedbottom
+
+\lstset{ % Global setup
+	basicstyle=\fontsize{6}{7}\selectfont\ttfamily,
+	numbers=left,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue},
+	keywordstyle=[2]\color{orange},
+	keywordstyle=[3]\color{teal},
+	keywordstyle=[4]\color{red},
+	commentstyle=\color{green},
+	stringstyle=\color{red},
+	frame=tb,
+	columns=fullflexible,
+	breaklines=true,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
+}
+
+% Define custom style for CMake
+\lstdefinelanguage{cmake}{
+	morekeywords={
+		add\_executable, add\_library, target\_link\_libraries,
+		include\_directories, project, cmake\_minimum\_required, set,
+		if, endif, elseif, else, message, find\_package, install,
+		target\_include\_directories, target\_compile\_options, target\_sources,
+		option, configure\_file, list, foreach, endforeach, file, add\_test
+	},
+	morekeywords=[2]{NAME, VERSION, PRIVATE, PUBLIC, INTERFACE, REQUIRED, COMMAND, WORKING_DIRECTORY, MAKE_DIRECTORY},
+	morekeywords=[3]{AStarPathfinder\_UnitTest, HeadlessRunner\_ModuleTest},
+	morekeywords=[4]{CMAKE\_CURRENT\_BINARY\_DIR, CMAKE\_CURRENT\_SOURCE\_DIR, GTEST\_INCLUDE\_DIRS},
+	sensitive=true,
+	morecomment=[l]{\#}
+}
+
+\makeatletter
+\renewcommand{\fnum@figure}{Abb. \thefigure}
+\makeatother
+\renewcommand{\lstlistingname}{Quelltext}
+
+% Einstellungen der Kopf- und Fußzeilen
+\ohead{\headmark}									% Oben Rechts etwas angeben
+\chead{}											% Keine Ausgabe oben in der Mitte
+\cfoot[]{}											% Keine Seitenzahl in der Mitte
+\ofoot[\pagemark]{\pagemark}						% Seitenzahlen rechts
+%\automark{section}									% Sektionen in Kopfzeile (Einseitiger Modus)
+\renewcommand*{\headfont}{\normalfont}				% Kein kursiver Text in Kopfzeile
+\pagestyle{scrheadings}
+
+% Absätze und Abstände
+\renewcommand{\baselinestretch}{1}\normalsize		% Zeilenabstand
+\setlength{\parindent}{0pt}							% Kein Einrücken nach Absatz
+\geometry{inner=31.5mm,outer=31.5mm,bottom=3cm}		% Abstand zu unterem Seitenrand
+\textwidth147mm
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ============= 	 Beginn des Dokuments  	   ============= %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\pagenumbering{Roman}							% Römische Seitenzahlen bis zum Hauptteil
+% ============= Titelseite =========== %
+\newpage
+\input{95_titelseite}
+\addtocounter{page}{-1}
+
+% ============= Vorspann ============= %
+\pagestyle{scrheadings}
+\renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
+\begingroup
+\clearpage\phantomsection
+\pdfbookmark{Inhaltsverzeichnis}{toc}							% Inhaltsverzeichnis im pdf als Bookmark anzeigen
+\renewcommand{\baselinestretch}{1.2}\normalsize						% Zeilenabstand
+\let\clearpage\relax
+\tableofcontents													% Inhaltsverzeichnis
+\endgroup
+\renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
+\renewcommand*{\chapterheadstartvskip}{\vspace*{2.3\baselineskip}}	% Abstand einstellen
+
+% ============= Symbolverzeichnis ============= %
+\chapter*{Nomenklatur}
+\addcontentsline{toc}{chapter}{Nomenklatur}
+\renewcommand{\baselinestretch}{1.1}\normalsize						% Zeilenabstand
+\input{97_nomenklatur}
+\renewcommand{\baselinestretch}{1.25}\normalsize					% Zeilenabstand
+\markleft{Nomenklatur}
+
+\newpage
+\setlength{\cftfigindent}{0em}
+\renewcommand{\baselinestretch}{1.1}\normalsize
+\pdfbookmark{Abbildungsverzeichnis}{lof}
+\listoffigures
+\markleft{Abbildungsverzeichnis}
+%\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+
+\renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
+\begingroup
+%\pdfbookmark{Quelltextverzeichnis}{qtv}
+\setlength{\cfttabindent}{0em}
+\let\cleardoublepage\clearpage
+\lstlistoflistings  % Code-Verzeichnis
+\endgroup
+\renewcommand{\baselinestretch}{1}\normalsize
+
+% ============= Hauptteil ============= %
+\cleardoubleoddpage
+
+\pagenumbering{arabic}  											% Arabische Zahlen im Hauptteil bis zum Anhang
+
+\include{01_einleitung}
+
+\include{03_hauptteil}
+
+\include{04_schlussteil}
+
+% ============= Literaturverzeichnis ============= %
+\renewcommand{\baselinestretch}{1.2}\normalsize
+\clearpage						% Zeilenabstand
+\bibliographystyle{plaindin}
+%\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\bibliography{bibluS}
+\renewcommand{\baselinestretch}{1}\normalsize						% Zeilenabstand
+
+% =============Anhang ============= %
+\appendix
+\input{10_anhang}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ============= 	  Ende des Dokuments  	   ============= %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

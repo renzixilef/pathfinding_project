@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{Application}
+            \umlenum[x=-3, y=7, fill=white]{UIType}{
+                UI\_TYPE\_GUI \\
+                UI\_TYPE\_HEADLESS
+            }{
+            }
+
+            \umlenum[x=4, y=7, fill=white]{HeadlessConfigInputType}{
+                INPUT\_JSON\_PATH\\
+                INPUT\_COMMAND\_LINE\_FLAGS
+            }{
+            }
+
+            \umlclass[x=0,y=0]{PathfindingCommandParser}{
+                - optionSets: QHash\textless QString, QSet\textless OptionWrapper\textgreater\textgreater \\
+                - guiOption: QCommandLineOption \\
+                - headlessOption: QCommandLineOption \\
+                - headlessJSONConfigOption: QCommandLineOption \\
+                - gridDimensionsOption: QCommandLineOption \\
+                - obstacleGenOption: QCommandLineOption \\
+                - obstacleDensityOption: QCommandLineOption \\
+                - minStartEndOption: QCommandLineOption \\
+                - solverOption: QCommandLineOption \\
+                - iterationsOption: QCommandLineOption
+            }{
+                + \umlstatic{getInstance(): PathfindingCommandParser\&} \\
+                + inputOptionsValid(): QPair\textless bool, QString\textgreater \\
+                + getUIType(): UIType \\
+                + getConfigInputType(): optional\textless HeadlessConfigInputType\textgreater \\
+                + getRunConfig(): variant\textless MultiRunConfig, QString\textgreater \\
+                + parseJSONConfig(inputFile: optional\textless QString\textgreater = nullopt): variant\textless list\textless MultiRunConfig\textgreater, QString\textgreater \\
+                + PathfindingCommandParser(PathfindingCommandParser\&) = delete \\
+                + \&operator=(const PathfindingCommandParser\&) = delete \\
+                - PathfindingCommandParser() \\
+                - \umlstatic{printDefaultingToMessage(option: QCommandLineOption\&, defaultValue: QString\&\&)} \\
+                - addOption(option: QCommandLineOption\&, setIds: QStringList\&)\\
+                - \umlstatic{parseWithRegex(str: QString\&, regex: QRegularExpression\&\&): optional\textless QStringList\textgreater} \\
+                - \umlstatic{parseJSONGridConfig(gridConfigJson: QJsonObject\&): variant\textless RunGridConfig, QString\textgreater} \\
+                - \umlstatic{parseJSONStrats(stratsJson: QJsonArray\&): variant\textless list\textless PathfinderStrategy\textgreater, QString\textgreater} \\
+            }
+
+            \umlclass[x=-3.05, y=-9]{OptionWrapper}{
+                - option: QCommandLineOption\&
+            }{
+                + OptionWrapper(option: QCommandLineOption\&): OptionWrapper \\
+                + getOption(): QCommandLineOption\&\\
+                + operator==(other: OptionWrapper\&): bool
+            }
+
+            \umlnote[x=3, y=-6.5, width=9cm]{PathfindingCommandParser}{
+                qHash(key: OptionWrapper\&, seed: uint32\_t = 0): uint32\_t
+            }
+
+        \end{umlpackage}
+        \umlsimpleclass[x=0, y=9.5]{QCommandLineParser}
+
+        \umldep[geometry=|-|]{PathfindingCommandParser}{UIType}
+        \umldep[geometry=|-|]{PathfindingCommandParser}{HeadlessConfigInputType}
+        \umlunicompo[anchor1=-120,mult=0..*]{PathfindingCommandParser}{OptionWrapper}
+        \umlinherit[geometry=|-|]{PathfindingCommandParser}{QCommandLineParser}
+    \end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,58 @@
+\AtAppendix{\counterwithin{equation}{section}}
+%********************************
+\chapter{Anhang}
+\label{ch:appendix}
+%********************************
+\section{Beweis des Optimismus der euklidischen Distanz als Heuristik}
+\label{sec:beweis_heuristik}
+%********************************
+\textbf{Beweis: Die Euklidische Distanz ist immer geringer als die Oktile Distanz und daher eine optimistische Heuristik.} \\
+Zu zeigen:
+\begin{equation}
+    \label{eq:beweis_heuristik_bedingung}
+    d_\text{eukl} \leq d_\text{okt}\)
+\end{equation}
+
+Wir betrachten die Distanzen für beliebige Punkte $(x_1, y_1)$ und $(x_2, y_2)$.\\
+Betrachten wir den Fall, dass  $|x_2 - x_1| = |y_2 - y_1|$.
+Dann gilt:
+\begin{align*}
+    d_\text{eukl} &= \sqrt{2} \cdot |x_2 - x_1|\\
+    d_\text{okt} &= |x_2 - x_1| + (\sqrt{2}-1) \cdot |x_2 - x_1| = |x_2 - x_1| \cdot \sqrt{2}
+\end{align*}
+In diesem Fall sind die Distanzen identisch, was der Bedingung aus Gl. \ref{eq:beweis_heuristik_bedingung} entspricht.
+
+Betrachten wir nun den Fall $|x_2 - x_1| \neq |y_2 - y_1|$.
+Ohne Beschränkung der Allgemeinheit nehmen wir an $|x_2 - x_1| > |y_2 - y_1|$.
+Dann gilt:
+\begin{align*}
+    d_\text{eukl} &= \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}\\
+    d_\text{okt} &= |x_2 - x_1| + (\sqrt{2}-1) \cdot |y_2 - y_1|
+\end{align*}
+
+Nun muss die folgende Ungleichung bewiesen werden:
+\begin{equation*}
+    \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \leq |x_2 - x_1| + |y_2 - y_1|
+\end{equation*}
+
+Da beide Seiten der Ungleichung nicht-negativ sind, ist das Quadrieren beider Seiten gültig und bewahrt die Richtung der Ungleichung.
+Löst man den binomialen Term auf, ergibt sich:
+\begin{equation*}
+(x_2 - x_1)^2 + (y_2 - y_1)^2 \leq \left(|x_2 - x_1|\right)^2 + 2|x_2 - x_1||y_2 - y_1| + \left(|y_2 - y_1|\right)^2
+\end{equation*}
+
+Aufgrund von $|a|^2 = a^2$ für jede Zahl $a\in\mathbb{R}$ wird die Ungleichung zu:
+\begin{equation*}
+(x_2 - x_1)^2 + (y_2 - y_1)^2 \leq (x_2 - x_1)^2 + 2|x_2 - x_1||y_2 - y_1| + (y_2 - y_1)^2
+\end{equation*}
+Vereinfacht ergibt sich:
+\begin{equation*}
+    0 \leq 2|x_2 - x_1||y_2 - y_1|
+\end{equation*}
+Der Ausdruck $2|x_2 - x_1||y_2 - y_1|$ ist immer positiv, da es sich um das Produkt von Beträgen handelt, die selbst positiv sind.
+
+Daraus folgt, dass für alle möglichen Paare $(x_1, y_1)$ und $(x_2, y_2)$:
+\begin{equation*}
+    d_\text{Euklidisch} \leq d_\text{Oktile}
+\end{equation*}
+Damit ist gezeigt, dass die Euklidische Distanz eine optimistische Heuristik darstellt.

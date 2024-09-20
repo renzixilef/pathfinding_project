@@ -25,10 +25,24 @@ jobs:
           cmake -GNinja -S ${{github.workspace}} -B ${{github.workspace}}/build
           cmake --build ${{github.workspace}}/build 
 
-        # TODO: maybe specify BUILD-TYPE env var and tests depending on build type
       - name: Test
         working-directory: ${{github.workspace}}/build
         run: ctest
+
+      - name: Compile Paper
+        working-directory: ${{github.workspace}}/Paper
+        run: |
+          pdflatex 00_main.tex
+          bibtex 00_main.aux
+          pdflatex 00_main.tex
+          pdflatex 00_main.tex
+
+      - name: Upload Paper
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper
+          path: Paper/00_main.pdf
+          compression-level: 0
 
       - name: Upload binary
         uses: actions/upload-artifact@v4

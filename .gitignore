@@ -34,3 +34,7 @@
 # Custom
 cmake-build-debug/
 .idea/
+Paper/out
+*.log
+*.aux
+*.pdf

@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{tikz-uml}
+\usepackage[active,tightpage]{preview}
+\begin{document}
+    \PreviewEnvironment{tikzpicture}
+    \setlength\PreviewBorder{2mm}
+    \begin{tikzpicture}
+        \begin{umlpackage}{GridGenerator}
+
+            \umlclass[x=0.96, y=11, type=struct]{GridCoordinate}{
+                x: uint32\_t \\
+                y: uint32\_t
+            }{
+                operator pair\textless uint32\_t, uint32\_t\textgreater() const: const pair\textless uint32\_t, uint32\_t\textgreater \\
+                GridCoordinate(const pair\textless uint32\_t, uint32\_t\textgreater\&): GridCoordinate \\
+                GridCoordinate(uint32\_t = 0, uint32\_t = 0): GridCoordinate \\
+                operator==(const GridCoordinate \&) const: const bool \\
+                operator+(const GridCoordinate \&) const: GridCoordinate
+            }
+
+            \umlclass[x=-2, y=0]{Grid}{
+                - sizeX: uint32\_t \\
+                - sizeY: uint32\_t \\
+                - cells: vector\textless vector\textless Cell\textgreater\textgreater \\
+                - startCell: Cell* \\
+                - endCell: Cell* \\
+                - startCoordinates: GridCoordinate \\
+                - endCoordinates: GridCoordinate \\
+                - exitStatus: GridSolvedStatus \\
+                - pathCellCount: uint32\_t \\
+                - closedCellCount: uint32\_t \\
+                - visitedCellCount: uint32\_t
+            }{
+                + Grid(width, height: uint32\_t, obstacleGen: ObstacleGenerator\&, obstacleDensity, startEndDistance: float): Grid \\
+                + operator()(coord: GridCoordinate): Cell\& \\
+                + isInBounds(x: int64\_t, y: int64\_t) const: bool \\
+                + markPathByParentCells(markByCellPointer: bool) \\
+                + getStartCoordinates() const: GridCoordinate \\
+                + getEndCoordinates() const: GridCoordinate \\
+                + setStart(start: GridCoordinate \&) \\
+                + setEnd(const GridCoordinate \&) \\
+                + getEndCell() const: Cell* \\
+                + getSizeX() const: uint32\_t \\
+                + getSizeY() const: uint32\_t \\
+                + incrementClosedCellCount() \\
+                + incrementVisitedCellCount() \\
+                + setSolved() \\
+                + setUnsolvable() \\
+                + getStatus() const: GridSolvedStatus \\
+                + getPathCellCount() const: uint32\_t \\
+                + getVisitedCellCount() const: uint32\_t \\
+                + getClosedCellCount() const: uint32\_t \\
+                + resetGrid() \\
+                + serialize(filepath: string\&) const \\
+                + \umlstatic{deserialize(filepath: string\&): Grid}
+            }
+
+            \umlenum[x=10, y=-1.975, fill=white]{GridSolvedStatus}{
+                GRID\_SOLVED = 0 \\
+                GRID\_UNSOLVABLE = 1 \\
+                GRID\_UNSOLVED = 2
+            }{
+            }
+
+            \umlsimpleclass[x=10, y=4]{ObstacleGenerator}
+
+            \umlsimpleclass[x=-8.06, y=10]{Cell}
+
+            \umluniassoc[anchor1=67, mult=2..*]{Grid}{GridCoordinate}
+            \umlunicompo[anchor1=131, mult=width$\cdot$height]{Grid}{Cell}
+            \umlassoc[anchor1=-13]{Grid}{GridSolvedStatus}
+            \def\stereoalignment{l}
+            \umldep[anchor1=13, geometry=-|, stereo=calls, pos stereo=1.2]{Grid}{ObstacleGenerator}
+        \end{umlpackage}
+    \end{tikzpicture}
+\end{document}
