@@ -2,7 +2,9 @@
 \chapter{Programmaufbau und -struktur}
 \label{ch:aufbau}
 %********************************
-
+In den folgenden Abschnitten soll ein kurzer Überblick über die im Rahmen des Projekts implementierten Softwarekomponenten gegeben werden.
+Die logiktragenden Komponenten des Backends und des Frontend-Backend-Interfaces sind hierbei am relevantesten.
+Für diese Klassen soll jeweils ein veranschaulichendes \ac{UML}-Klassendiagramm bereitgestellt werden.
 %********************************
 \section{Aufbau des Backends}
 \label{sec:aufbau_backend}
@@ -23,6 +25,7 @@ Im Folgenden soll zunächst auf die Erstellung der Grid-Objekte und sodann auf d
 \label{subsubsec:aufbau_backend_ueberblick_gridgen}
 %********************************
 Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid} und \texttt{Obstacle\-Generator}, sowie einigen Subklassen, unterstützenden Datenstrukturen und Enumerationen.
+\newpage
 \begin{itemize}
     \item \texttt{Cell} \\
     \begin{figure}[H]
@@ -49,7 +52,6 @@ Dieser Namespace setzt sich zusammen aus den Klassen \texttt{Cell}, \texttt{Grid
     Operator und die Struktur \texttt{GridCoordinate} statt.
     Bei der Instantiierung eines \texttt{Grid}-Objekts wird eine Referenz zu einem \texttt{ObstacleGenerator}-Objekt (ähnlich eines Decorator-Pattern \cite{nesteruk2021}),
     welchem die Verantwortung für die Hindernisgenerierung und das Festsetzen des Start- und Endpunkts übergeben wird.
-    \newpage
     \item \texttt{ObstacleGenerator} \\
     \begin{figure}[H]
         \vspace{-0.5cm}
@@ -148,6 +150,7 @@ Ein sorgfältiges Ausbalancieren zwischen Speichernutzung und Rechenleistung ist
 das System vor allem für sehr große Gitter stark belasten könnte.
 Bei der Implementierung von Wegfindungsalgorithmen in C++ stehen uns eine Vielzahl von Datenstrukturen zur Verfügung,
 die jeweils ihre eigenen Vor- und Nachteile mitbringen. \cite{iso2020}
+\newpage
 \begin{itemize}
     \item \texttt{std::vector}\\
     Eine gängige Wahl ist \texttt{std::vector}.
@@ -313,12 +316,11 @@ Außerdem wird für die Benutzung als \ac{CLI} die Schnittstelle \texttt{Headles
     \end{figure}
     Die Subklassen der \texttt{RunnerParent}-Klasse bieten Funktionalität für einzelne Durchläufe über Instanzen der \texttt{SingleRun}-Klasse
     oder Benchmarking-Durchläufe mit mehreren Gridkonfigurationen und Lösealgorithmen über die \texttt{MultiRun}-Klasse.
-
     \item \texttt{HeadlessRunner}\\
     \begin{figure}[H]
         \vspace{-0.5cm}
         \centering
-        \includestandalone[width=0.7\textwidth]{assets/uml/headlessRunner_class_uml}
+        \includestandalone[width=0.6\textwidth]{assets/uml/headlessRunner_class_uml}
         \caption{UML-Klassendiagramm der Klasse \texttt{HeadlessRunner}}
         \label{fig:uml_headlessRunner}
     \end{figure}
@@ -372,14 +374,14 @@ Anschließend können im Single-Run-Dialog das Lösen des Grids grafisch verfolg
 \chapter{Eingesetztes Tooling}
 \label{ch:tooling}
 %********************************
-In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools eingegangen werden.
+In diesem Abschnitt soll auf die im Rahmen dieses Projekts verwendeten Tools, deren Vor- und Nachteile und deren Nutzen für das effiziente Gestalten des vorliegenden Workflows eingegangen werden.
 %********************************
 \section{\textit{CMake}}
 \label{sec:tooling-cmake}
 %********************************
 \textit{CMake} ist ein plattformübergreifendes Open-Source-Tool, das zur Steuerung des Kompiliervorgangs in Softwareprojekten verwendet wird.
 Es ist insbesondere in größeren Projekten sehr hilfreich, da es die Projektkonfiguration und den Build-Prozess erheblich vereinfacht und standardisiert.
-Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann man mit \textit{CMake} eine einzige \textit{CMake}Lists.txt-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
+Anstatt separate Makefiles für unterschiedliche Betriebssysteme und Compiler zu schreiben, kann man mit \textit{CMake} eine einzige \texttt{CMakeLists.txt}-Datei erstellen, die unabhängig von der Zielplattform funktioniert und diese in spezifische Build-Skripte übersetzt. \cite{Cmake2024}\\\\
 \textbf{Vorteile}
 \begin{itemize}
     \item \textbf{Plattformunabhängigkeit}\\
