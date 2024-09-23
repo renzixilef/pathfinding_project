@@ -17,8 +17,9 @@ jobs:
           sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake doxygen 
           sudo apt-get install -y cmake graphviz texlive-full ninja-build make libgtest-dev libopencv-dev
           sudo mkdir /usr/src/gtest/build
-          sudo cd /usr/src/gtest/build && sudo cmake .. && sudo make && sudo cd lib && sudo cp *.a /usr/lib
+          cd /usr/src/gtest/build && sudo cmake .. && sudo make && cd lib && sudo cp *.a /usr/lib
           sudo rm -r /usr/src/gtest/build
+          tlmgr init-usertree
           sudo tlmgr update --self
           sudo tlmgr update --all
 
