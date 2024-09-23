@@ -19,6 +19,8 @@ jobs:
           sudo mkdir /usr/src/gtest/build
           sudo cd /usr/src/gtest/build && sudo cmake .. && sudo make && sudo cd lib && sudo cp *.a /usr/lib
           sudo rm -r /usr/src/gtest/build
+          sudo tlmgr update --self
+          sudo tlmgr update --all
 
       - name: Configure and Build CMake
         run: |
