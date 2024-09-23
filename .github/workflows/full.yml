@@ -6,7 +6,7 @@ on:
 
 jobs:
   full:
-    runs-on: [ ubuntu-20.04 ]
+    runs-on: [ubuntu-latest]
     steps:
       - name: Checkout github repo
         uses: actions/checkout@v4
@@ -19,6 +19,7 @@ jobs:
           sudo mkdir /usr/src/gtest/build
           cd /usr/src/gtest/build && sudo cmake .. && sudo make && cd lib && sudo cp *.a /usr/lib
           sudo rm -r /usr/src/gtest/build
+          sudo apt upgrade -y
 
       - name: Configure and Build CMake
         run: |
@@ -32,7 +33,7 @@ jobs:
       - name: Compile Paper
         working-directory: ${{github.workspace}}/Paper
         run: |
-          latexmk -pdf 00_main.tex
+          latexmk -outdir="./out" -pdf 00_main.tex
 
       - name: Upload Paper
         uses: actions/upload-artifact@v4
