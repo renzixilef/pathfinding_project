@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 LABEL maintainer="Felix Renzikowski <st166260@stud.uni-stuttgart.de>"
 

@@ -15,7 +15,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y qtcreator qtbase5-dev qt5-qmake doxygen 
-          sudo apt-get install -y cmake latexmk graphviz texlive-full ninja-build make libgtest-dev libopencv-dev
+          sudo apt-get install -y cmake graphviz ninja-build make libgtest-dev libopencv-dev
           sudo mkdir /usr/src/gtest/build
           cd /usr/src/gtest/build && sudo cmake .. && sudo make && cd lib && sudo cp *.a /usr/lib
           sudo rm -r /usr/src/gtest/build
@@ -29,18 +29,6 @@ jobs:
       - name: Test
         working-directory: ${{github.workspace}}/build
         run: ctest
-
-      - name: Compile Paper
-        working-directory: ${{github.workspace}}/Paper
-        run: |
-          latexmk -outdir="./out" -pdf 00_main.tex
-
-      - name: Upload Paper
-        uses: actions/upload-artifact@v4
-        with:
-          name: paper
-          path: Paper/00_main.pdf
-          compression-level: 0
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
