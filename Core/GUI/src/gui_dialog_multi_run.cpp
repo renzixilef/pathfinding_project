@@ -18,6 +18,7 @@ GUI::MultiRunDialog::MultiRunDialog(std::queue<std::pair<RunInterface::MultiRunC
     qRegisterMetaType<RunInterface::RunGridConfig>("RunInterface::RunGridConfig");
     qRegisterMetaType<std::list<Pathfinder::PathfinderStrategy>>("std::list<Pathfinder::PathfinderStrategy>");
     qRegisterMetaType<int32_t>("int32_t");
+    qRegisterMetaType<RunInterface::MultiRunConfig>("RunInterface::MultiRunConfig");
 
     setWindowTitle("Pathfinder 1.0 - MultiRun");
 

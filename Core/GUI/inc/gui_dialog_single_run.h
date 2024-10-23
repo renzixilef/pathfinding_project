@@ -15,6 +15,8 @@
 
 Q_DECLARE_METATYPE(std::string)
 
+Q_DECLARE_METATYPE(RunInterface::SingleRunConfig)
+
 namespace GUI {
     class SingleRunDialog : public QDialog {
     Q_OBJECT

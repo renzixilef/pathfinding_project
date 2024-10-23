@@ -28,6 +28,7 @@ GUI::SingleRunDialog::SingleRunDialog(const RunInterface::SingleRunConfig &runCo
         nextStepTimer(new QTimer(this)) {
 
     qRegisterMetaType<std::string>("std::string");
+    qRegisterMetaType<RunInterface::SingleRunConfig>("RunInterface::SingleRunConfig");
     showMaximized();
     setWindowTitle("Pathfinder 1.0 - Single Run");
 
