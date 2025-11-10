@@ -33,6 +33,7 @@
 
 # Custom
 cmake-build-debug/
+build/
 .idea/
 Paper/out
 *.log
