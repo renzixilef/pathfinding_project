@@ -11,7 +11,6 @@ Pathfinder::DijkstraSolveAda::DijkstraSolveAda(GridGenerator::Grid &grid) : Path
 
 void Pathfinder::DijkstraSolveAda::nextStep()
 {
-    // TODO: implement Ada backend call and translate for Ada interfacing
     timer.stepBegin();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 

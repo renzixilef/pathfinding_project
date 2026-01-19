@@ -1,7 +1,7 @@
 #include "pathfinding.h"
 #include "pathfinding_c_inf.h"
 
-extern "C" void ada_astar_next_step(void *grid_handle, grid_coordinate_struct_t current, grid_coordinate_struct_t end, void *queue_handle);
+extern "C" void ada_astar_next_step(void *grid_handle, long currentX, long currentY, long endX, long endY, void *queue_handle);
 extern "C" void pathfinder_push_impl(void *queue_handle, long x, long y);
 
 Pathfinder::AStarSolveAda::AStarSolveAda(GridGenerator::Grid &grid) : PathfindingParent(grid)
@@ -11,7 +11,6 @@ Pathfinder::AStarSolveAda::AStarSolveAda(GridGenerator::Grid &grid) : Pathfindin
 
 void Pathfinder::AStarSolveAda::nextStep()
 {
-    // TODO: implement Ada backend call and translate for Ada interfacing
     timer.stepBegin();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
 
@@ -28,14 +27,11 @@ void Pathfinder::AStarSolveAda::nextStep()
         return;
     }
 
-    grid_coordinate_struct_t current = {static_cast<long>(currentCoordinates.x),
-                                        static_cast<long>(currentCoordinates.y)};
-    grid_coordinate_struct_t end = {static_cast<long>(endCoordinates.x),
-                                    static_cast<long>(endCoordinates.y)};
-
     ada_astar_next_step(reinterpret_cast<void *>(&grid),
-                        current,
-                        end,
+                        static_cast<long>(currentCoordinates.x),
+                        static_cast<long>(currentCoordinates.y),
+                        static_cast<long>(endCoordinates.x),
+                        static_cast<long>(endCoordinates.y),
                         reinterpret_cast<void *>(&nextCellQueue));
 
     currentCell.markClosed();
