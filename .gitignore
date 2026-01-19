@@ -34,6 +34,8 @@
 # Custom
 cmake-build-debug/
 build/
+Core/Pathfinder/ada_backend/lib
+Core/Pathfinder/ada_backend/obj
 .idea/
 Paper/out
 *.log

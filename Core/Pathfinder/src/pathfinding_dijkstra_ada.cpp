@@ -1,8 +1,16 @@
 #include "pathfinding.h"
+#include "pathfinding_c_inf.h"
 
-#include <queue>
+extern "C" void ada_dijkstra_next_step(void *grid_handle, long currentX, long currentY, void *queue_handle);
+extern "C" void pathfinder_push_impl(void *queue_handle, long x, long y);
 
-void Pathfinder::DijkstraSolveAda::nextStep() {
+Pathfinder::DijkstraSolveAda::DijkstraSolveAda(GridGenerator::Grid &grid) : PathfindingParent(grid)
+{
+    register_queue_push(pathfinder_push_impl);
+}
+
+void Pathfinder::DijkstraSolveAda::nextStep()
+{
     // TODO: implement Ada backend call and translate for Ada interfacing
     timer.stepBegin();
     GridGenerator::GridCoordinate endCoordinates = grid.getEndCoordinates();
@@ -10,36 +18,19 @@ void Pathfinder::DijkstraSolveAda::nextStep() {
     GridGenerator::GridCoordinate currentCoordinates = nextCellQueue.top();
     nextCellQueue.pop();
     GridGenerator::Cell &currentCell = grid(currentCoordinates);
-    if (currentCoordinates == endCoordinates) {
+    if (currentCoordinates == endCoordinates)
+    {
         timer.stepEnd();
         grid.markPathByParentCells(true);
         return;
     }
 
-    std::vector<GridGenerator::GridCoordinate> neighbors = grid.getNeighborsCoordinates(currentCoordinates);
+    ada_dijkstra_next_step(reinterpret_cast<void *>(&grid),
+                           static_cast<long>(currentCoordinates.x),
+                           static_cast<long>(currentCoordinates.y),
+                           reinterpret_cast<void *>(&nextCellQueue));
 
-    for (const auto &neighborCoordinates: neighbors) {
-        GridGenerator::Cell &neighborCell = grid(neighborCoordinates);
-        double neighborCellGCostFromCurrentCell = currentCell.getCost().gCost +
-                                                  neighborCoordinates.getOctileDistanceTo(currentCoordinates);
-        if (neighborCell.getState() == GridGenerator::CellState::CELL_OPEN) {
-            neighborCell.setGCost(neighborCellGCostFromCurrentCell);
-            neighborCell.setParentCellPointer(&grid(currentCoordinates));
-            neighborCell.markVisited();
-            nextCellQueue.push(neighborCoordinates);
-            grid.incrementVisitedCellCount();
-        } else if (neighborCell.getState() == GridGenerator::CellState::CELL_VISITED) {
-            if (neighborCell.getCost().gCost > neighborCellGCostFromCurrentCell) {
-                neighborCell.setGCost(neighborCellGCostFromCurrentCell);
-                neighborCell.setParentCellPointer(&grid(currentCoordinates));
-                nextCellQueue.push(neighborCoordinates);
-                grid.incrementVisitedCellCount();
-            }
-        }
-    }
     currentCell.markClosed();
     grid.incrementClosedCellCount();
     timer.stepEnd();
 }
-
-

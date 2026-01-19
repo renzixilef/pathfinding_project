@@ -76,6 +76,9 @@ namespace Pathfinder {
      */
     class PathfindingParent {
     public:
+        using compareCellsFunction = std::function<bool(const GridGenerator::GridCoordinate &,
+                                                        const GridGenerator::GridCoordinate &)>;
+                                                        
         /**
          * @brief Constructor for the PathfindingParent class.
          * @param grid Reference to the Grid object used in the pathfinding.
@@ -132,8 +135,6 @@ namespace Pathfinder {
         void reInit();
 
     protected:
-        using compareCellsFunction = std::function<bool(const GridGenerator::GridCoordinate &,
-                                                        const GridGenerator::GridCoordinate &)>;
 
         /**
          * @fn virtual getStrat
@@ -270,7 +271,7 @@ namespace Pathfinder {
          * @brief Constructor for the JumpPointSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the Jump-Point-Search algorithm will be applied.
          */
-        explicit DijkstraSolveAda(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
+        explicit DijkstraSolveAda(GridGenerator::Grid &grid);
 
         /**
          * @fn void nextStep
@@ -298,7 +299,7 @@ namespace Pathfinder {
          * @brief Constructor for the AStarSolve class. Uses the parent Class constructor.
          * @param grid Reference to the Grid object where the A* algorithm will be applied.
          */
-        explicit AStarSolveAda(GridGenerator::Grid &grid) : PathfindingParent(grid) {}
+        explicit AStarSolveAda(GridGenerator::Grid &grid);
 
         /**
          * @fn void nextStep
