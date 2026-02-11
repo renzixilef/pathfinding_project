@@ -1,20 +1,21 @@
 with Ada.Numerics.Long_Elementary_Functions;
 use Ada.Numerics.Long_Elementary_Functions;
+with Interfaces.C; use Interfaces.C;
 
 package body Pathfinder_Common is
 
    function Octile_Distance (A, B : Grid_Coord) return Safe_Cost
    with SPARK_Mode => On
    is
-      DX, DY : Long_Float;
+      DX, DY : Grid_Idx_Dev;
       Val    : Long_Float;
    begin
-      DX := Long_Float (A.x) - Long_Float (B.x);
-      DY := Long_Float (A.y) - Long_Float (B.y);
-      if DX < 0.0 then
+      DX := Grid_Idx_Dev(A.x - B.x);
+      DY := Grid_Idx_Dev(A.y - B.y);
+      if DX < 0 then
          DX := -DX;
       end if;
-      if DY < 0.0 then
+      if DY < 0 then
          DY := -DY;
       end if;
 

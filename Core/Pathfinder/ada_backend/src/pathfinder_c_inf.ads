@@ -11,6 +11,7 @@ package Pathfinder_C_Inf is
    subtype C_Double is Interfaces.C.double;
    -- Grid indices are implemented in the backend as uint32_t and not long
    subtype Grid_Idx is C_Long range 0 .. 2**32-1;
+   subtype Grid_Idx_Dev is C_Long range -2**32-1 .. 2**32-1;
    subtype Safe_Cost is C_Double range 0.0 .. 6.1E9;
 
    -- C-types
