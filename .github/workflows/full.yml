@@ -15,7 +15,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y qtcreator qtbase5-dev texlive-full qt5-qmake doxygen build-essential
-          sudo apt-get install -y cmake graphviz ninja-build make libgtest-dev libopencv-dev
+          sudo apt-get install -y cmake graphviz ninja-build make libgtest-dev libopencv-dev gprbuild
           sudo mkdir /usr/src/gtest/build
           cd /usr/src/gtest/build && sudo cmake .. && sudo make && cd lib && sudo cp *.a /usr/lib
           sudo rm -r /usr/src/gtest/build
@@ -23,8 +23,8 @@ jobs:
 
       - name: Configure and Build CMake
         run: |
-          cmake -GNinja -S ${{github.workspace}} -B ${{github.workspace}}/build
-          cmake --build ${{github.workspace}}/build 
+          cmake -GNinja -S ${{github.workspace}} -B ${{github.workspace}}/build -DWITH_DOCS=ON -DWITH_PAPER=ON
+          cmake --build ${{github.workspace}}/build
 
       - name: Test
         working-directory: ${{github.workspace}}/build
