@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:25.10
 
 LABEL maintainer="Felix Renzikowski <st166260@stud.uni-stuttgart.de>"
 
@@ -16,7 +16,10 @@ RUN apt-get update && apt-get install -y \
     qtbase5-dev \
     qt5-qmake \
     libgtest-dev \
-    libopencv-dev
+    libopencv-dev \
+    gprbuild \
+    ninja-build \
+    gnat
 
 RUN mkdir /usr/src/gtest/build
 RUN cd /usr/src/gtest/build && cmake .. && make && cd lib && cp *.a /usr/lib

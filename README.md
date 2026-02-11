@@ -13,18 +13,19 @@ There are three key pathfinding algorithms that are currently implemented in thi
 
 - **Dijkstra**: This is a renowned pathfinding algorithm that operates by exploring the neighbouring nodes of the start
   point. It then traverses towards the goal by frequently jumping to the node with the lowest cost. The Dijkstra
-  pathfinding algorithm guarantees the shortest path.
+  pathfinding algorithm guarantees the shortest path. This algorithm is implemented in C++ and in Ada.
 
 - **A\* Algorithm**: This pathfinding algorithm employs a heuristic to guide its way towards the goal. The key
   distinguishing factor between the A\* and Dijkstra's algorithm is that, while Dijkstra's algorithm seeks the shortest
   path to all possible destinations, the A\* algorithm uses a heuristic to estimate the cost to the goal, which allows
   it to focus on more promising paths and reach the goal more efficiently. In other words, A\* is more strategic in
   terms of selecting the next node for expansion, quickly finding an optimal path in large graphs compared to Dijkstra's
-  algorithm.
+  algorithm. This algorithm is implemented in C++ and in Ada.
 
 - **Jump Point Search**: This search algorithm is essentially an optimization of the A\* algorithm for uniform-cost
   grid maps, and this is achieved without affecting optimality. Here, instead of examining each individual cell, the
-  algorithm has the liberty to "jump" in between points in the direction of the goal, bypassing any irrelevant nodes.
+  algorithm has the liberty to "jump" in between points in the direction of the goal, bypassing any irrelevant nodes. 
+  This algorithm is only implemented in C++.
 
 ## Obstacle Generation
 
@@ -55,6 +56,7 @@ cmake
 qtcreator
 qtbase5-dev
 qt5-qmake
+gprbuild
 ```
 
 For the Doxygen documentation generation, you will need to have the following dependencies:
@@ -75,7 +77,19 @@ fontenc
 
 In order to simplify the setup and usage process, a Devcontainer has been provided. This essentially allows you to use
 the project inside a Docker environment. This isolates your development environment from your local machine. To get
-started all you need to do is clone the Git repository and then use the Devcontainer.
+started all you need to do is clone the Git repository and then use the Devcontainer. Building the Container may take some
+time as a texlive-full installation is a part of the container to be able to build the documentation and PDF-Paper.
+To build the project using the Devcontainer, set it up and then run the following commands in the devcontainer shell:
+```console
+cmake -GNinja -S . -B ./build -DWITH_DOCS=ON -DWITH_PAPER=ON
+cmake --build ./build
+```
+To only build the executable and not the documentation and the PDF-Paper run the following commands instead:
+```console
+cmake -GNinja -S . -B ./build
+cmake --build ./build
+```
+When operating on Windows, WSL can be used to execute the compiled binary afterwards.
 
 ## Documentation
 

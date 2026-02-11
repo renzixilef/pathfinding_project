@@ -28,7 +28,9 @@ namespace Pathfinder {
     enum class PathfinderStrategy {
         PATHFINDER_DIJKSTRA = 1, /**< Dijkstra's algorithm pathfinding. */
         PATHFINDER_A_STAR = 2, /**< A* algorithm pathfinding. */
-        PATHFINDER_JUMP_POINT_SEARCH = 3 /**< Jump-Point-Search algorithm pathfinding. */
+        PATHFINDER_JUMP_POINT_SEARCH = 3, /**< Jump Point Search pathfinding. */
+        PATHFINDER_DIJKSTRA_ADA = 4, /**< Dijkstra's algorithm pathfinding using Ada backend. */
+        PATHFINDER_A_STAR_ADA = 5 /**< A* algorithm pathfinding using the Ada backend. */
     };
 
     /**
@@ -74,6 +76,9 @@ namespace Pathfinder {
      */
     class PathfindingParent {
     public:
+        using compareCellsFunction = std::function<bool(const GridGenerator::GridCoordinate &,
+                                                        const GridGenerator::GridCoordinate &)>;
+                                                        
         /**
          * @brief Constructor for the PathfindingParent class.
          * @param grid Reference to the Grid object used in the pathfinding.
@@ -130,8 +135,6 @@ namespace Pathfinder {
         void reInit();
 
     protected:
-        using compareCellsFunction = std::function<bool(const GridGenerator::GridCoordinate &,
-                                                        const GridGenerator::GridCoordinate &)>;
 
         /**
          * @fn virtual getStrat
@@ -256,6 +259,62 @@ namespace Pathfinder {
          */
         std::optional<GridGenerator::GridCoordinate> jump(GridGenerator::GridCoordinate currentCoord,
                                                           std::pair<int8_t, int8_t> direction);
+    };
+
+    /**
+     * @class DijkstraSolveAda
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the Dijkstra algorithm for pathfinding using the Ada backend.
+     */
+    class DijkstraSolveAda : public PathfindingParent {
+    public:
+        /**
+         * @brief Constructor for the JumpPointSolve class. Uses the parent Class constructor.
+         * @param grid Reference to the Grid object where the Jump-Point-Search algorithm will be applied.
+         */
+        explicit DijkstraSolveAda(GridGenerator::Grid &grid);
+
+        /**
+         * @fn void nextStep
+         * @brief Overrides the nextStep() function to implement the Dijkstra algorithm's next step.
+         */
+        void nextStep() override;
+
+    private:
+        /**
+         * @fn getStrat
+         * @brief Overrides the getStrat() function to get the strategy (Dijkstra).
+         */
+        [[nodiscard]] inline PathfinderStrategy getStrat() const override {
+            return PathfinderStrategy::PATHFINDER_DIJKSTRA_ADA;
+        }
+    };
+
+    /**
+     * @class AStarSolveAda
+     * @brief Extension of the PathfindingParent class. Defines an object which applies the A* algorithm for pathfinding using the Ada backend.
+     */
+    class AStarSolveAda : public PathfindingParent {
+    public:
+        /**
+         * @brief Constructor for the AStarSolve class. Uses the parent Class constructor.
+         * @param grid Reference to the Grid object where the A* algorithm will be applied.
+         */
+        explicit AStarSolveAda(GridGenerator::Grid &grid);
+
+        /**
+         * @fn void nextStep
+         * @brief Overrides the nextStep() function to implement the A* algorithm's next step.
+         */
+        void nextStep() override;
+
+    private:
+        /**
+         * @fn getStrat
+         * @brief Overrides the getStrat() function to get the strategy (A*).
+         */
+        [[nodiscard]] inline PathfinderStrategy getStrat() const override {
+            return PathfinderStrategy::PATHFINDER_A_STAR_ADA;
+        }
     };
 
 }
