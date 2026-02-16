@@ -89,7 +89,10 @@ To only build the executable and not the documentation and the PDF-Paper run the
 cmake -GNinja -S . -B ./build
 cmake --build ./build
 ```
-When operating on Windows, WSL can be used to execute the compiled binary afterwards.
+When operating on Windows, the same docker container can be used to execute the binary afterwards (in gui mode) using the following command:
+```console
+./build/Pathfinding_Bench_Program --gui
+```
 
 ## Documentation
 

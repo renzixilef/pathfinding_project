@@ -21,6 +21,15 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     gnat
 
+RUN apt-get update && apt-get install -y \
+    libx11-6 \
+    libxext6 \
+    libxrender1 \
+    libxkbcommon0 \
+    libgl1 \
+    libgtk-3-0 \
+    x11-apps
+
 RUN mkdir /usr/src/gtest/build
 RUN cd /usr/src/gtest/build && cmake .. && make && cd lib && cp *.a /usr/lib
 RUN rm -r /usr/src/gtest/build

@@ -5,7 +5,7 @@ endif()
 
 include(ExternalProject)
 
-set(ADA_OUTPUT_LIB "${CMAKE_CURRENT_SOURCE_DIR}/ada_backend/lib/libpathfinding_ada.so")
+set(ADA_OUTPUT_LIB "${CMAKE_CURRENT_SOURCE_DIR}/ada_backend/lib/libpathfinding_ada.a")
 set(ADA_PROJECT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ada_backend/libpathfinding_ada.gpr")
 
 add_custom_command(
@@ -23,7 +23,7 @@ add_custom_target(Pathfinder_Ada_Proj ALL
 add_library(Pathfinder_C_ABI STATIC ${CMAKE_CURRENT_SOURCE_DIR}/c_abi/src/pathfinding_c_inf.cpp)
 target_include_directories(Pathfinder_C_ABI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/c_abi/inc)
 
-add_library(Pathfinder_Ada SHARED IMPORTED GLOBAL)
+add_library(Pathfinder_Ada STATIC IMPORTED GLOBAL)
 set_target_properties(Pathfinder_Ada PROPERTIES
   IMPORTED_LOCATION "${ADA_OUTPUT_LIB}"
 )

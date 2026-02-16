@@ -1,21 +1,16 @@
 {
   "name": "Pathfinding",
   "dockerFile": "Dockerfile",
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-  },
+
+  "runArgs": [
+    "--network=host",
+    "--mount=type=bind,source=/mnt/wslg,target=/mnt/wslg",
+    "--mount=type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix"
+  ],
+
   "containerEnv": {
-    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
-    "GITHUB_USER": "${localEnv:GITHUB_USER}",
     "DISPLAY": ":0",
     "WAYLAND_DISPLAY": "wayland-0",
-    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
-    "PULSE_SERVER": "/mnt/wslg/PulseServer"
-  },
-  "runArgs": [
-    "--name=Pathfinding",
-    "-v", "/run/desktop/mnt/host/wslg/.X11-unix:/tmp/.X11-unix",
-    "-v", "/run/desktop/mnt/host/wslg:/mnt/wslg",
-    "-e", "DISPLAY=host.docker.internal:0"
-  ]
+    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir"
+  }
 }
